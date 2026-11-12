@@ -1,0 +1,152 @@
+/* =====================================================================
+   CHO MARAWI CITY PORTAL — MASTER STYLESHEET
+   Stack: Tailwind CSS v4.3 + Flowbite v4.0 + Poppins & Averta Fonts
+   Brand Palette extracted from Official MOH-BARMM CHO Marawi Seal:
+   - Primary: Deep Royal / BARMM Navy (#0b3366, #0f3b82, #1a4f9c)
+   - Secondary: Golden Crest / Yellow (#fab915, #f59e0b, #d97706)
+   - Accent / Islamic Green: (#00843d, #059669)
+   - Dark Slate Neutral: (#0b1320, #0f172a, #1e293b)
+===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+
+@source "../../../frontend";
+@source "../../../index.php";
+@source "../../../node_modules/flowbite";
+
+@theme {
+  --font-sans: 'Averta', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Averta', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Poppins', 'Averta', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-money: 'Outfit', 'Poppins', -apple-system, BlinkMacSystemFont, monospace, sans-serif;
+
+  /* Brand Colors from CHO Marawi Seal */
+  --color-cho-blue-50: #eef5fc;
+  --color-cho-blue-100: #d8e8f9;
+  --color-cho-blue-200: #b5d5f4;
+  --color-cho-blue-300: #81baec;
+  --color-cho-blue-400: #4699e1;
+  --color-cho-blue-500: #1f7cd3;
+  --color-cho-blue-600: #1360b3;
+  --color-cho-blue-700: #104d92;
+  --color-cho-blue-800: #0f3b82;
+  --color-cho-blue-900: #0b3366;
+  --color-cho-blue-950: #071e3d;
+
+  --color-cho-gold-50: #fefce8;
+  --color-cho-gold-100: #fef9c3;
+  --color-cho-gold-200: #fef08a;
+  --color-cho-gold-300: #fde047;
+  --color-cho-gold-400: #facc15;
+  --color-cho-gold-500: #fab915;
+  --color-cho-gold-600: #ca8a04;
+  --color-cho-gold-700: #a16207;
+  --color-cho-gold-800: #854d0e;
+  --color-cho-gold-900: #713f12;
+
+  --color-cho-green-50: #f0fdf4;
+  --color-cho-green-100: #dcfce7;
+  --color-cho-green-500: #16a34a;
+  --color-cho-green-600: #00843d;
+  --color-cho-green-700: #15803d;
+  --color-cho-green-800: #166534;
+}
+
+/* Base resets & typography */
+html {
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--color-zinc-100, #f4f4f5);
+  color: var(--color-zinc-900, #18181b);
+}
+
+.dark body {
+  background-color: var(--color-slate-950, #020617);
+  color: var(--color-zinc-100, #f4f4f5);
+}
+
+/* User Accessible Font Scaling (Settings preference) */
+html[data-font-size="sm"] {
+  font-size: 14px;
+}
+html[data-font-size="md"] {
+  font-size: 16px;
+}
+html[data-font-size="lg"] {
+  font-size: 18px;
+}
+html[data-font-size="xl"] {
+  font-size: 20px;
+}
+
+/* Heading font styling */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 59, 130, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(15, 59, 130, 0.4);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Mature 35+ Style Form Input (medium-sized, elegant, unboxed flat elegance) */
+.cho-input-field {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cho-input-field:focus {
+  outline: none;
+  border-color: #0f3b82;
+  box-shadow: 0 0 0 3px rgba(15, 59, 130, 0.18);
+}
+
+.dark .cho-input-field:focus {
+  border-color: #4699e1;
+  box-shadow: 0 0 0 3px rgba(70, 153, 225, 0.25);
+}
+
+/* High-Impact Numerical & Money Font Display */
+.font-money {
+  font-family: var(--font-money, 'Outfit', 'Poppins', sans-serif);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+/* Smooth badge glow animation */
+@keyframes choPulseSubtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+.cho-pulse-subtle {
+  animation: choPulseSubtle 4s ease-in-out infinite;
+}

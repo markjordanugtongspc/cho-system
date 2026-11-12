@@ -1,0 +1,31 @@
+{
+  "name": "cho-system",
+  "version": "1.0.0",
+  "description": "City Health Office (CHO) Marawi City Portal System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "keywords": [
+    "marawi",
+    "cho",
+    "healthcare",
+    "flowbite",
+    "tailwindcss"
+  ],
+  "author": "CHO Marawi IT Services",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "@fontsource/poppins": "^5.3.0",
+    "apexcharts": "^3.46.0",
+    "exceljs": "^4.4.0",
+    "flowbite": "^4.0.2"
+  }
+}

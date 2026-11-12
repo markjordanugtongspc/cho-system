@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="mchnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#mchnGrad)"/>
+  <path d="M24 33s-9-5.5-9-12a5.5 5.5 0 0 1 9-4.2A5.5 5.5 0 0 1 33 21c0 6.5-9 12-9 12z" fill="#ffffff"/>
+</svg>
+

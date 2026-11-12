@@ -1,0 +1,51 @@
+# =====================================================================
+#  CHO Marawi Portal — Apache rules (Laragon default web server)
+#  The project root IS the web root, so sensitive folders must be blocked here.
+# =====================================================================
+
+Options -Indexes -MultiViews
+ServerSignature Off
+DirectoryIndex index.php
+
+<IfModule mod_headers.c>
+    Header always unset X-Powered-By
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1) Block hidden files & folders (.env, .git, .vite, .htaccess ...)
+    RewriteRule (^|/)\. - [F,L]
+
+    # 2) Block private folders when requested directly from the browser.
+    #    (REDIRECT_STATUS is empty only for direct requests, so our own
+    #     internal rewrite to backend/api/index.php below still works.)
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteRule ^(backend|config|database|storage|node_modules|vendor|docs|frontend/components|frontend/layouts)(/|$) - [F,L]
+
+    # 3) Block config / source / data files at any level
+    RewriteRule \.(env|ini|log|sql|md|lock|sh|bak|dump|yml|yaml)$ - [F,L]
+    RewriteRule ^(package(-lock)?\.json|vite\.config\.js|composer\.(json|lock))$ - [F,L]
+
+    # 4) API front controller:  /api/v1/auth/login -> backend/api/index.php?route=v1/auth/login
+    RewriteRule ^api/(.*)$ backend/api/index.php?route=$1 [QSA,L]
+
+    # 5) Clean page URLs:  /dashboard -> frontend/pages/dashboard/index.php
+    RewriteCond %{DOCUMENT_ROOT}/frontend/pages/$1/index.php -f [OR]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^([a-z0-9\-]+)/?$ frontend/pages/$1/index.php [L]
+</IfModule>
+
+# Long cache for fingerprinted build files & static media
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css               "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType font/woff2             "access plus 1 year"
+    ExpiresByType image/webp             "access plus 1 month"
+    ExpiresByType image/png              "access plus 1 month"
+    ExpiresByType image/jpeg             "access plus 1 month"
+    ExpiresByType image/svg+xml          "access plus 1 month"
+    ExpiresByType audio/mpeg             "access plus 1 month"
+</IfModule>

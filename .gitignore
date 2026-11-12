@@ -1,0 +1,44 @@
+# ---- Secrets ---------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---- Dependencies ----------------------------------------------------
+node_modules/
+vendor/
+
+# ---- Build output ----------------------------------------------------
+dist/
+dist-ssr/
+*.local
+
+# ---- Runtime storage (keep folders, ignore contents) ----------------
+storage/logs/*
+storage/ratelimit/*
+storage/cache/*
+storage/sessions/*
+storage/vite.hot
+!storage/**/.gitkeep
+
+# ---- Logs ------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Database dumps / backups ---------------------------------------
+*.sql.gz
+*.dump
+*.bak
+database/backups/
+
+# ---- OS / Editor -----------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.suo

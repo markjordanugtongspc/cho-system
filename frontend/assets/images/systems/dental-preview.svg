@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" width="160" height="120">
+  <defs>
+    <linearGradient id="bgDen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ecfeff"/>
+      <stop offset="100%" stop-color="#cffafe"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="120" rx="12" fill="url(#bgDen)"/>
+  <rect x="18" y="18" width="124" height="84" rx="8" fill="#ffffff" stroke="#a5f3fc" stroke-width="1.5"/>
+  <!-- Tooth outline -->
+  <path d="M68 40c-6 0-12 6-12 14 0 12 4 28 8 28 4 0 6-8 16-8s12 8 16 8c4 0 8-16 8-28 0-8-6-14-12-14-6 0-10 4-12 8-2-4-6-8-12-8z" fill="#06b6d4"/>
+</svg>
+

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" width="160" height="120">
+  <defs>
+    <linearGradient id="bgTb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#faf5ff"/>
+      <stop offset="100%" stop-color="#f3e8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="120" rx="12" fill="url(#bgTb)"/>
+  <rect x="18" y="18" width="124" height="84" rx="8" fill="#ffffff" stroke="#e9d5ff" stroke-width="1.5"/>
+  <!-- Lungs / Medical cross -->
+  <path d="M68 44c-10 0-16 8-16 22 0 10 6 16 14 16 3 0 6-2 8-5V44h-6zm24 0c10 0 16 8 16 22 0 10-6 16-14 16-3 0-6-2-8-5V44h6z" fill="#c084fc" opacity="0.6"/>
+  <path d="M80 34v48m-8-24h16" stroke="#9333ea" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
