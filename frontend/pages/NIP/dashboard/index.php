@@ -77,7 +77,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
                 <!-- Big Value with Money Font -->
                 <div id="cho-stat-val-barangays" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    176,029
+                    --
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -86,7 +86,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Bottom Row: Subtitle & Status Badge -->
                 <div id="cho-stat-footer-barangays" class="flex items-center justify-between text-xs text-white/90">
                     <span id="cho-stat-sub-barangays" class="text-[11px] font-medium text-white/80">
-                        74 Master Barangays
+                        Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-barangays" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
                         <span>↑</span> Active Cohort
@@ -116,7 +116,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Top Row: Label & Index -->
                 <div id="cho-stat-header-infants" class="flex items-center justify-between">
                     <span id="cho-stat-label-infants" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                        Annual Target
+                        Total Population
                     </span>
                     <span id="cho-stat-idx-infants" class="text-xs font-black tracking-widest text-white/60">
                         02
@@ -125,7 +125,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
                 <!-- Big Value with Money Font -->
                 <div id="cho-stat-val-infants" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    4,965
+                    --
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -134,10 +134,10 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Bottom Row: Subtitle & Status Badge -->
                 <div id="cho-stat-footer-infants" class="flex items-center justify-between text-xs text-white/90">
                     <span id="cho-stat-sub-infants" class="text-[11px] font-medium text-white/80">
-                        Eligible 0-11mo Infants
+                        Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-infants" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                        <span>🎯</span> Target Baseline
+                        <span>👥</span> Master Pop
                     </span>
                 </div>
             </div>
@@ -173,7 +173,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
                 <!-- Big Value with Money Font -->
                 <div id="cho-stat-val-childrens" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    3,661
+                    --
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -182,7 +182,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Bottom Row: Subtitle & Status Badge -->
                 <div id="cho-stat-footer-childrens" class="flex items-center justify-between text-xs text-white/90">
                     <span id="cho-stat-sub-childrens" class="text-[11px] font-medium text-white/80">
-                        Fully Immunized Children
+                        Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-childrens" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
                         <span>✓</span> Verified FIC
@@ -221,7 +221,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
                 <!-- Big Value with Money Font -->
                 <div id="cho-stat-val-coverage" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    73.7%
+                    --
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -230,7 +230,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Bottom Row: Subtitle & Status Badge -->
                 <div id="cho-stat-footer-coverage" class="flex items-center justify-between text-xs text-white/90">
                     <span id="cho-stat-sub-coverage" class="text-[11px] font-medium text-white/80">
-                        Benchmark: 95.0%
+                        Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-coverage" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
                         <span>📊</span> Gap: 21.3%
@@ -252,12 +252,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 NIP Program Data Management & Excel Actions
             </h2>
             <span id="cho-nip-systems-sub" class="text-xs text-slate-400">
-                Connected to <code class="text-cho-blue-700 dark:text-cho-blue-400 font-mono">d:/laragon/www/SHEETS</code>
+                Uploaded Workbook: <button type="button" id="cho-nip-active-file-btn" title="Click to copy workbook path" class="cursor-pointer hover:underline"><code id="cho-nip-active-file-code" class="text-cho-blue-700 dark:text-cho-blue-400 font-mono">None</code></button>
             </span>
         </div>
 
         <!-- 3-Column Responsive Grid matching cho-systems-grid with Decreased Height -->
-        <div id="cho-systems-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div id="cho-systems-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
 
             <!-- Card 1: Load / Switch Excel Workbook (Opens Dedicated Right Drawer #drawer-nip-load) -->
             <button type="button" 
@@ -430,7 +430,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
          When Excel Loaded: Swapped with Dynamic Interactive Charts Grid (#cho-nip-charts-container)
          ========================================================================= -->
     <!-- Placeholder Canvas (Shown by default when no sheet is loaded or waiting) -->
-    <div id="cho-nip-canvas-card" class="min-h-[44vh] flex flex-col items-center justify-center p-8 bg-slate-50/70 border border-slate-200/90 rounded-xl shadow-xs text-center space-y-3">
+    <div id="cho-nip-canvas-card" class="min-h-[65vh] flex flex-col items-center justify-center p-8 bg-slate-50/70 border border-slate-200/90 rounded-xl shadow-xs text-center space-y-3">
         <div id="cho-nip-canvas-icon-wrap" class="w-12 h-12 rounded-xl bg-white text-slate-600 border border-slate-200/80 shadow-xs flex items-center justify-center">
             <svg id="cho-nip-canvas-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -456,36 +456,6 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
     <!-- Hidden Charts Container (Revealed dynamically by charts.js when workbook data is scanned & loaded) -->
     <div id="cho-nip-charts-container" class="hidden space-y-4">
-        <!-- Workbook Active Banner & File Info -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white border border-slate-200/90 rounded-xl shadow-xs gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                            Active Sheet Live
-                        </span>
-                        <h4 id="cho-nip-active-filename" class="text-sm font-bold text-slate-800 truncate max-w-[280px] sm:max-w-md">
-                            MARAWI NIP DATA - UPGRADED.xlsx
-                        </h4>
-                    </div>
-                    <p id="cho-nip-active-sheet-meta" class="text-xs text-slate-500 mt-0.5">
-                        Year 2026 &bull; Quarter Q1 &bull; 18 Antigens Monitored &bull; 74 Master Barangays
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 self-end sm:self-auto">
-                <button type="button" 
-                        data-cho-drawer-target="drawer-nip-load" 
-                        class="text-xs px-3 py-1.5 font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors cursor-pointer">
-                    Change Sheet
-                </button>
-            </div>
-        </div>
 
         <!-- 2-Column Responsive Charts Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -586,65 +556,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Form: Load Workbook -->
         <form id="nip-drawer-load-form" class="space-y-4">
-            <div id="nip-drawer-load-field" class="space-y-2">
+            <div id="nip-drawer-load-field" class="hidden space-y-2">
                 <label for="nip-select-active-file" class="block text-xs font-semibold text-slate-700">
                     Discovered Workbooks (Auto-Detected)
                 </label>
-                <!-- Dynamic Radio List from API -->
-                <div id="nip-drawer-load-files-list" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
-
-                <!-- Flowbite Wided Dropdown Component -->
-                <div class="pt-1">
-                    <label class="block text-[11px] font-medium text-slate-500 mb-1">
-                        Or select active file from dropdown:
-                    </label>
-                    <div class="relative w-full">
-                        <button id="nip-dropdown-btn-active-file" 
-                                data-dropdown-toggle="nip-dropdown-menu-active-file" 
-                                type="button" 
-                                class="cursor-pointer w-full flex items-center justify-between text-slate-800 bg-slate-50 border border-slate-300 hover:bg-slate-100 font-medium rounded-lg text-xs sm:text-sm px-3.5 py-2.5 focus:outline-none focus:ring-4 focus:ring-slate-200 shadow-xs text-left transition-colors">
-                            <span id="nip-dropdown-label-active-file" class="truncate">MARAWI NIP DATA - UPGRADED.xlsx (Master Active)</span>
-                            <svg class="w-4 h-4 ms-2 shrink-0 text-slate-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
-                        </button>
-
-                        <!-- Dropdown Menu (Wided) -->
-                        <div id="nip-dropdown-menu-active-file" class="z-50 hidden bg-white border border-slate-200 rounded-xl shadow-lg w-full max-h-56 overflow-y-auto">
-                            <ul id="nip-dropdown-list-active-file" class="p-2 text-xs sm:text-sm text-slate-700 font-medium space-y-1" aria-labelledby="nip-dropdown-btn-active-file">
-                                <li>
-                                    <button type="button" data-val="MARAWI NIP DATA - UPGRADED.xlsx" class="nip-dropdown-item inline-flex items-center w-full p-2 hover:bg-slate-100 text-slate-800 rounded-lg text-left cursor-pointer transition-colors">
-                                        MARAWI NIP DATA - UPGRADED.xlsx (Master Active)
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="button" data-val="MARAWI NIP DATA - 2026.xlsx" class="nip-dropdown-item inline-flex items-center w-full p-2 hover:bg-slate-100 text-slate-800 rounded-lg text-left cursor-pointer transition-colors">
-                                        MARAWI NIP DATA - 2026.xlsx (Blank Template)
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="button" data-val="MARAWI NIP DATA - 2025.xlsx" class="nip-dropdown-item inline-flex items-center w-full p-2 hover:bg-slate-100 text-slate-800 rounded-lg text-left cursor-pointer transition-colors">
-                                        MARAWI NIP DATA - 2025.xlsx (Archive)
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Hidden Select Element for form serialization & programmatic binding -->
-                    <select id="nip-select-active-file" 
-                            name="filename" 
-                            class="hidden cursor-pointer">
-                        <option value="MARAWI NIP DATA - UPGRADED.xlsx" selected>MARAWI NIP DATA - UPGRADED.xlsx (Master Active)</option>
-                        <option value="MARAWI NIP DATA - 2026.xlsx">MARAWI NIP DATA - 2026.xlsx (Blank Template)</option>
-                        <option value="MARAWI NIP DATA - 2025.xlsx">MARAWI NIP DATA - 2025.xlsx (Archive)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Divider with Label -->
-            <div class="relative flex py-1 items-center">
-                <div class="flex-grow border-t border-slate-200"></div>
-                <span class="shrink-0 mx-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Or Upload New Sheet</span>
-                <div class="flex-grow border-t border-slate-200"></div>
+                <!-- Dynamic Dropdown from Storage.nipWorkbooks -->
+                <div id="nip-drawer-load-files-list" class="relative"></div>
             </div>
 
             <!-- Flowbite Medium Dropzone File Upload -->

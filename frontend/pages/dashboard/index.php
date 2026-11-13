@@ -159,7 +159,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
         <div id="cho-systems-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
             <!-- Card 1: NIP Program Data Monitoring -->
-            <a href="#" id="cho-system-card-nip" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <a href="../NIP/dashboard/" id="cho-system-card-nip" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
                 <div id="cho-system-left-nip" class="flex-1 pr-3 space-y-2">
                     <div id="cho-system-icon-nip" class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -210,6 +210,10 @@ export const Auth = {
 
       e.preventDefault();
       Notifications.playSound('info');
+      if (typeof Storage !== 'undefined') {
+        if (Storage.nipWorkbooks) Storage.nipWorkbooks.clearWorkbooks();
+        if (Storage.nipDashboardCache) Storage.nipDashboardCache.clear();
+      }
 
       try {
         const res = await Api.post('/api/v1/auth/logout');

@@ -67,8 +67,11 @@ export const Api = {
       headers['X-CSRF-Token'] = this.getCsrfToken();
     }
 
+    const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
+    const resolvedEndpoint = (basePath && endpoint.startsWith('/api/')) ? `${basePath}${endpoint}` : endpoint;
+
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(resolvedEndpoint, {
         ...options,
         method,
         headers,

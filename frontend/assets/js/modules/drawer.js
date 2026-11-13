@@ -16,6 +16,8 @@
 import { Api } from './api.js';
 import { Notifications } from './notifications.js';
 import { Charts } from './charts.js';
+import { Storage } from './storage.js';
+import ExcelJS from 'exceljs';
 
 // =============================================================================
 // PARENT CLASS: BaseDrawerController
@@ -149,30 +151,103 @@ export class BaseDrawerController {
 export class NipLoadDrawer extends BaseDrawerController {
   constructor() {
     super('drawer-nip-load');
-    this.activeFile = 'MARAWI NIP DATA - UPGRADED.xlsx';
+    this.activeFile = null;
     this.filesList = [];
   }
 
-  // START - init: Mounts drawer triggers, dropzone handlers, and loads available files list
+  // START - init: Mounts drawer triggers, dropzone handlers, and restores cached Excel dashboard if present
   init() {
     super.init();
     if (!this.drawerEl) return;
 
     this.bindActionHandlers();
     this.bindDropzoneHandlers();
-    this.loadWorkbookList();
+    this.renderStoredWorkbooks();
 
-    // Auto-detect & pre-fetch initial KPIs if default master workbook exists
-    this.refreshDashboardKpis(this.activeFile);
+    const cached = Storage.nipDashboardCache?.get();
+    if (cached) {
+      this.activeFile = cached.source_file || this.activeFile;
+      this.applyDashboardData(cached);
+    }
   }
   // END - init
 
-  // START - show: Overrides show to refresh the workbook list on open
+  // START - show: Opens the load drawer and refreshes stored workbooks list
   show() {
     super.show();
-    this.loadWorkbookList();
+    this.renderStoredWorkbooks();
   }
   // END - show
+
+  // START - renderStoredWorkbooks: Renders uploaded workbooks from Storage.nipWorkbooks as a Flowbite dropdown
+  renderStoredWorkbooks() {
+    const fieldEl = document.getElementById('nip-drawer-load-field');
+    const listEl = document.getElementById('nip-drawer-load-files-list');
+    if (!fieldEl || !listEl) return;
+
+    const workbooks = Storage.nipWorkbooks.getUploadedWorkbooks();
+    const activeName = Storage.nipWorkbooks.getActiveWorkbook() || (workbooks[0]?.name ?? '');
+
+    if (!workbooks.length) {
+      fieldEl.classList.add('hidden');
+      listEl.innerHTML = '';
+      return;
+    }
+
+    fieldEl.classList.remove('hidden');
+    listEl.innerHTML = `
+      <div class="relative w-full">
+        <button id="nip-dropdown-btn-active-file"
+                data-dropdown-toggle="nip-dropdown-menu-active-file"
+                class="w-full inline-flex items-center justify-between text-slate-800 bg-slate-50 border border-slate-300 hover:bg-slate-100 focus:ring-4 focus:ring-slate-200 shadow-xs font-medium leading-5 rounded-lg text-xs sm:text-sm px-3.5 py-2.5 focus:outline-none cursor-pointer transition-colors"
+                type="button">
+          <span id="nip-dropdown-label-active-file" class="truncate">${activeName}</span>
+          <svg class="w-4 h-4 ms-1.5 -me-0.5 shrink-0 text-slate-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="nip-dropdown-menu-active-file" class="z-10 hidden bg-white border border-slate-200 rounded-xl shadow-lg w-full max-h-56 overflow-y-auto">
+          <ul class="p-2 text-xs sm:text-sm text-slate-700 font-medium" aria-labelledby="nip-dropdown-btn-active-file">
+            ${workbooks.map((wb) => `
+              <li>
+                <a href="#" data-val="${wb.name}" class="nip-dropdown-item inline-flex items-center justify-between w-full p-2 hover:bg-slate-100 text-slate-800 rounded-lg">
+                  <span class="truncate">${wb.name}</span>
+                  <span class="text-[11px] text-slate-400 shrink-0 ml-2">${wb.size ? `${(wb.size / 1024).toFixed(1)} KB` : ''}</span>
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      </div>
+      <select id="nip-select-active-file" name="filename" class="hidden">
+        ${workbooks.map((wb) => `<option value="${wb.name}" ${wb.name === activeName ? 'selected' : ''}>${wb.name}</option>`).join('')}
+      </select>
+    `;
+
+    const btn = document.getElementById('nip-dropdown-btn-active-file');
+    const menu = document.getElementById('nip-dropdown-menu-active-file');
+    const label = document.getElementById('nip-dropdown-label-active-file');
+    const selectEl = document.getElementById('nip-select-active-file');
+
+    if (typeof initDropdowns === 'function') {
+      initDropdowns();
+    } else if (btn && menu) {
+      btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+      });
+    }
+
+    listEl.querySelectorAll('.nip-dropdown-item').forEach((item) => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const val = item.getAttribute('data-val');
+        if (label) label.textContent = val;
+        if (selectEl) selectEl.value = val;
+        if (menu) menu.classList.add('hidden');
+      });
+    });
+  }
+  // END - renderStoredWorkbooks
 
   // START - bindActionHandlers: Binds form submit and button listeners for applying selected active file
   bindActionHandlers() {
@@ -415,123 +490,259 @@ export class NipLoadDrawer extends BaseDrawerController {
   }
   // END - syncDropdownsAcrossDrawers
 
-  // START - handleSetActiveWorkbook: Sets chosen workbook as active (or uploads via dropzone) and notifies user
+  // START - handleSetActiveWorkbook: Validates dropzone Excel file, saves to Storage.nipWorkbooks, and reveals #cho-systems-grid
   async handleSetActiveWorkbook() {
     const dropzoneInput = document.getElementById('nip-load-dropzone-file');
     const feedbackBox = document.getElementById('nip-load-feedback');
-    const btnSubmit = document.getElementById('nip-btn-submit-load');
 
     // Case 1: A file was selected or dropped into the dropzone
     if (dropzoneInput && dropzoneInput.files && dropzoneInput.files.length > 0) {
       const file = dropzoneInput.files[0];
-      const formData = new FormData();
-      formData.append('workbook', file);
+      const isExcel = /\.(xlsx|xls)$/i.test(file.name);
 
-      if (btnSubmit) {
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `
-          <svg class="w-4 h-4 animate-spin -ml-1 mr-2 text-white" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-          </svg>
-          Uploading & Activating...
-        `;
+      if (!isExcel) {
+        if (feedbackBox) {
+          feedbackBox.classList.remove('hidden');
+          feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
+          feedbackBox.textContent = `Invalid file "${file.name}". Please upload a valid NIP Program Excel (.xlsx or .xls).`;
+        }
+        if (typeof Notifications.error === 'function') {
+          Notifications.error('Please upload a valid NIP Program Excel (.xlsx or .xls).');
+        }
+        return;
       }
+
+      Storage.nipWorkbooks.saveUploadedWorkbook(file);
+      this.activeFile = file.name;
+      await this.parseWorkbookDashboardStats(file);
+      this.renderStoredWorkbooks();
 
       if (feedbackBox) {
         feedbackBox.classList.remove('hidden');
-        feedbackBox.className = 'p-3 rounded-xl text-xs bg-slate-100 text-slate-800 border border-slate-200';
-        feedbackBox.textContent = `Uploading '${file.name}' to server repository...`;
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+        feedbackBox.textContent = `Loaded '${file.name}' into workspace.`;
       }
 
-      try {
-        const res = await Api.request('/api/v1/nip/upload', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (res && res.success) {
-          this.activeFile = file.name;
-          Notifications.show({
-            title: 'Workbook Uploaded & Active',
-            message: `${file.name} is now the active NIP workbook.`,
-            type: 'success'
-          });
-
-          if (feedbackBox) {
-            feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
-            feedbackBox.textContent = `File '${file.name}' successfully uploaded and activated!`;
-          }
-
-          // Reset dropzone UI
-          dropzoneInput.value = '';
-          const filenameDisplay = document.getElementById('nip-load-dropzone-filename');
-          if (filenameDisplay) filenameDisplay.classList.add('hidden');
-
-          await this.loadWorkbookList();
-          await this.refreshDashboardKpis(this.activeFile);
-
-          setTimeout(() => {
-            this.hide();
-          }, 600);
-        } else {
-          throw new Error(res?.message || 'Failed to upload workbook.');
-        }
-      } catch (err) {
-        console.error('[NIP Load Drawer] Dropzone upload error:', err);
-        Notifications.show({
-          title: 'Upload Failed',
-          message: err.message || 'Could not upload selected workbook.',
-          type: 'error'
-        });
-
-        if (feedbackBox) {
-          feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
-          feedbackBox.textContent = `Error: ${err.message}`;
-        }
-      } finally {
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.textContent = 'Switch Active Sheet';
-        }
+      if (Drawers.gate) {
+        Drawers.gate.revealSystemsGrid();
       }
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`NIP Excel "${file.name}" loaded successfully.`);
+      }
+
+      setTimeout(() => {
+        this.hide();
+      }, 300);
       return;
     }
 
-    // Case 2: Selecting an existing discovered workbook
-    const selectedRadio = this.drawerEl.querySelector('input[name="nip_active_file"]:checked');
+    // Case 2: Switch to a previously uploaded workbook from Storage.nipWorkbooks dropdown
     const selectEl = document.getElementById('nip-select-active-file');
-    const chosenFile = selectedRadio?.value || selectEl?.value;
+    const chosenFile = selectEl ? selectEl.value : null;
+    if (chosenFile) {
+      Storage.nipWorkbooks.setActiveWorkbook(chosenFile);
+      this.activeFile = chosenFile;
+      this.renderStoredWorkbooks();
 
-    if (!chosenFile) {
-      Notifications.show({
-        title: 'Selection Required',
-        message: 'Please choose an Excel workbook from the list or upload a file.',
-        type: 'warning'
-      });
+      if (feedbackBox) {
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+        feedbackBox.textContent = `Switched active workbook to '${chosenFile}'.`;
+      }
+
+      if (Drawers.gate) {
+        Drawers.gate.revealSystemsGrid();
+      }
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`Active NIP Excel switched to "${chosenFile}".`);
+      }
+
+      setTimeout(() => {
+        this.hide();
+      }, 300);
       return;
     }
 
-    this.activeFile = chosenFile;
     if (feedbackBox) {
       feedbackBox.classList.remove('hidden');
-      feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
-      feedbackBox.textContent = `Connected to '${chosenFile}'. Active session updated.`;
+      feedbackBox.className = 'p-3 rounded-xl text-xs bg-amber-50 text-amber-800 border border-amber-200';
+      feedbackBox.textContent = 'Please select or drop a NIP Program Excel (.xlsx) file first.';
     }
 
-    Notifications.show({
-      title: 'Active Workbook Loaded',
-      message: `Connected to ${this.activeFile}. KPIs refreshed!`,
-      type: 'success'
-    });
-
-    await this.refreshDashboardKpis(this.activeFile);
-
-    setTimeout(() => {
-      this.hide();
-    }, 400);
+    if (typeof Notifications.warning === 'function') {
+      Notifications.warning('Please select or drop a NIP Program Excel (.xlsx) file first.');
+    }
   }
   // END - handleSetActiveWorkbook
+
+  // START - parseWorkbookDashboardStats: Reads uploaded Excel via ExcelJS, caches KPIs & charts, and applies to dashboard
+  async parseWorkbookDashboardStats(file) {
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buffer);
+
+      const getNum = (val) => {
+        const raw = typeof val === 'object' && val !== null ? (val.result ?? 0) : val;
+        const num = Number(raw || 0);
+        return Number.isNaN(num) ? 0 : num;
+      };
+
+      const getText = (val, fallback = '') => {
+        if (val === null || val === undefined) return fallback;
+        const raw = typeof val === 'object' ? (val.result ?? val.text ?? '') : val;
+        const str = String(raw).trim();
+        return str !== '' ? str : fallback;
+      };
+
+      const dashSheet = wb.getWorksheet('DASHBOARD');
+      const hlSheet = wb.getWorksheet('H-L');
+
+      // 1. Barangays from DASHBOARD!B8 & B9
+      const barangayVal = dashSheet ? getNum(dashSheet.getCell('B8').value) : 0;
+      const barangaySub = dashSheet ? getText(dashSheet.getCell('B9').value, 'No Barangay Data') : 'No Barangay Data';
+
+      // 2. Total Population from H-L!B3:B76 & label from DASHBOARD!D9
+      let totalPop = 0;
+      if (hlSheet) {
+        for (let r = 3; r <= 76; r++) {
+          totalPop += getNum(hlSheet.getCell(`B${r}`).value);
+        }
+      }
+      const popSub = dashSheet ? getText(dashSheet.getCell('D9').value, 'Marawi City Master Population') : 'Marawi City Master Population';
+
+      // 3. FIC Accomplished from DASHBOARD!F8 & F9
+      const ficAccomplished = dashSheet ? getNum(dashSheet.getCell('F8').value) : 0;
+      const ficSub = dashSheet ? getText(dashSheet.getCell('F9').value, 'Fully Immunized Children') : 'Fully Immunized Children';
+
+      // 4. FIC Coverage from DASHBOARD!H8 & H9 (fallback to ficAccomplished / totalPop if cached formula is stale)
+      const rawCoverage = dashSheet ? getNum(dashSheet.getCell('H8').value) : 0;
+      let coveragePct = rawCoverage > 0 && rawCoverage <= 1 ? (rawCoverage * 100).toFixed(1) : rawCoverage.toFixed(1);
+      if (totalPop > 0 && ficAccomplished > 0) {
+        coveragePct = ((ficAccomplished / totalPop) * 100).toFixed(1);
+      }
+      const covSub = dashSheet ? getText(dashSheet.getCell('H9').value, 'No Coverage Data') : 'No Coverage Data';
+
+      // 5. 18 Antigens Performance (DASHBOARD!B16:H33)
+      const antigens = [];
+      if (dashSheet) {
+        for (let r = 16; r <= 33; r++) {
+          const name = getText(dashSheet.getCell(`B${r}`).value);
+          if (name) {
+            antigens.push({
+              name,
+              target: Math.round(getNum(dashSheet.getCell(`C${r}`).value)),
+              total: Math.round(getNum(dashSheet.getCell(`H${r}`).value))
+            });
+          }
+        }
+      }
+
+      // 6. 9 Catchments Share (DASHBOARD!J22:L30)
+      const catchments = [];
+      if (dashSheet) {
+        for (let r = 22; r <= 30; r++) {
+          const name = getText(dashSheet.getCell(`J${r}`).value);
+          if (name) {
+            catchments.push({
+              name,
+              barangays: Math.round(getNum(dashSheet.getCell(`K${r}`).value)),
+              fic_total: Math.round(getNum(dashSheet.getCell(`L${r}`).value))
+            });
+          }
+        }
+      }
+
+      const kpiData = {
+        source_file: file.name,
+        active_year: dashSheet ? getText(dashSheet.getCell('C5').value, '2026') : '2026',
+        active_quarter: dashSheet ? getText(dashSheet.getCell('E5').value, 'Q1') : 'Q1',
+        stats: {
+          barangayVal,
+          barangaySub,
+          totalPop,
+          popSub: totalPop > 0 ? popSub : 'No Population Data',
+          ficAccomplished,
+          ficSub: ficAccomplished > 0 ? ficSub : 'No Accomplished Data',
+          coveragePct,
+          covSub
+        },
+        antigens,
+        catchments
+      };
+
+      Storage.nipDashboardCache?.save(kpiData);
+      this.applyDashboardData(kpiData);
+    } catch (err) {
+      console.warn('[NipLoadDrawer] Could not parse workbook stats via ExcelJS:', err);
+    }
+  }
+  // END - parseWorkbookDashboardStats
+
+  // START - applyDashboardData: Populates stat cards, charts, filename indicator, and reveals #cho-systems-grid
+  applyDashboardData(kpiData) {
+    if (!kpiData || !kpiData.stats) return;
+    const { barangayVal, barangaySub, totalPop, popSub, ficAccomplished, ficSub, coveragePct, covSub } = kpiData.stats;
+
+    const elBrgyVal = document.getElementById('cho-stat-val-barangays');
+    const elBrgySub = document.getElementById('cho-stat-sub-barangays');
+    const elPopVal = document.getElementById('cho-stat-val-infants');
+    const elPopSub = document.getElementById('cho-stat-sub-infants');
+    const elChildVal = document.getElementById('cho-stat-val-childrens');
+    const elChildSub = document.getElementById('cho-stat-sub-childrens');
+    const elCovVal = document.getElementById('cho-stat-val-coverage');
+    const elCovSub = document.getElementById('cho-stat-sub-coverage');
+    const elCovPill = document.getElementById('cho-stat-pill-coverage');
+
+    if (elBrgyVal) elBrgyVal.textContent = Number(barangayVal || 0).toLocaleString();
+    if (elBrgySub) elBrgySub.textContent = barangaySub;
+
+    if (elPopVal) elPopVal.textContent = Number(totalPop || 0).toLocaleString();
+    if (elPopSub) elPopSub.textContent = popSub;
+
+    if (elChildVal) elChildVal.textContent = Number(ficAccomplished || 0).toLocaleString();
+    if (elChildSub) elChildSub.textContent = ficSub;
+
+    if (elCovVal) elCovVal.textContent = `${coveragePct}%`;
+    if (elCovSub) elCovSub.textContent = covSub;
+
+    if (elCovPill) {
+      const gap = Math.max(0, 95.0 - Number(coveragePct)).toFixed(1);
+      elCovPill.innerHTML = `<span>📊</span> Gap: ${gap}%`;
+    }
+
+    // Update #cho-nip-active-file-code with the real uploaded filename & bind click-to-copy path
+    const fileCodeEl = document.getElementById('cho-nip-active-file-code');
+    const fileBtnEl = document.getElementById('cho-nip-active-file-btn');
+    if (fileCodeEl && kpiData.source_file) fileCodeEl.textContent = kpiData.source_file;
+    if (fileBtnEl && kpiData.source_file) {
+      fileBtnEl.onclick = async () => {
+        const fullPath = `d:/laragon/www/SHEETS/${kpiData.source_file}`;
+        try {
+          await navigator.clipboard.writeText(fullPath);
+          if (typeof Notifications.success === 'function') {
+            Notifications.success(`Copied path: ${fullPath}`);
+          }
+        } catch {
+          if (typeof Notifications.info === 'function') {
+            Notifications.info(`Workbook path: ${fullPath}`);
+          }
+        }
+      };
+    }
+
+    // Hide #cho-nip-canvas-card and render ApexCharts inside #cho-nip-charts-container
+    if (Charts && typeof Charts.initNipDashboardCharts === 'function') {
+      Charts.initNipDashboardCharts(kpiData);
+    }
+
+    if (Drawers.gate) {
+      Drawers.gate.revealSystemsGrid();
+    }
+  }
+  // END - applyDashboardData
 
   // START - refreshDashboardKpis: Fetches KPIs and triggers Charts module to render
   async refreshDashboardKpis(filename) {
@@ -628,19 +839,114 @@ export class NipGenerateDrawer extends BaseDrawerController {
       });
 
       if (res && res.success) {
-        Notifications.show({
-          title: 'Workbook Created!',
-          message: res.message || `Clean Year ${payload.year} initialized with 8,500+ formulas intact.`,
-          type: 'success'
-        });
+        if (typeof Notifications.success === 'function') {
+          Notifications.success(res.message || `Clean Year ${payload.year} initialized with 8,500+ formulas intact.`);
+        }
 
         if (feedbackBox) {
-          feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+          const generatedFile = res.data?.filename || `MARAWI NIP DATA - ${payload.year}.xlsx`;
+          const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
+          const rawUrl = res.download_url || `/api/v1/nip/download?file=${encodeURIComponent(generatedFile)}`;
+          const downloadUrl = (rawUrl.startsWith('/api/') && basePath) ? `${basePath}${rawUrl}` : rawUrl;
+
+          feedbackBox.className = 'w-full';
           feedbackBox.innerHTML = `
-            <div class="font-bold">✓ Generation Complete!</div>
-            <div class="mt-1">${res.message}</div>
-            ${res.download_url ? `<a href="${res.download_url}" class="inline-flex items-center gap-1.5 mt-2 text-xs font-bold text-emerald-700 underline hover:no-underline">📥 Download Generated Workbook</a>` : ''}
+            <div id="toast-generate-success" class="flex items-start w-full p-4 text-slate-700 bg-white rounded-xl shadow-xs border border-slate-200" role="alert">
+              <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-emerald-600 bg-emerald-100 rounded-lg">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/></svg>
+                <span class="sr-only">Check icon</span>
+              </div>
+              <div class="ms-3 text-xs font-normal flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button" id="nip-btn-save-as-generated" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline cursor-pointer">📥 Choose Folder & Save (.xlsx)</button>
+                  <button type="button" id="nip-btn-copy-generated-path" class="text-[11px] font-mono text-cho-blue-700 hover:underline cursor-pointer truncate">${generatedFile}</button>
+                </div>
+              </div>
+              <button type="button" onclick="document.getElementById('toast-generate-success')?.remove()" class="ms-auto flex items-center justify-center text-slate-400 hover:text-slate-700 bg-transparent border border-transparent hover:bg-slate-100 rounded-lg text-sm h-7 w-7 focus:outline-none cursor-pointer" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
+              </button>
+            </div>
           `;
+
+          const saveBtn = document.getElementById('nip-btn-save-as-generated');
+          if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+              try {
+                const fileRes = await fetch(downloadUrl, { credentials: 'same-origin' });
+                const blob = await fileRes.blob();
+                if (typeof window.showSaveFilePicker === 'function') {
+                  const handle = await window.showSaveFilePicker({
+                    suggestedName: generatedFile,
+                    types: [{
+                      description: 'Excel Workbook',
+                      accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                    }]
+                  });
+                  const writable = await handle.createWritable();
+                  await writable.write(blob);
+                  await writable.close();
+                  if (typeof Notifications.success === 'function') {
+                    Notifications.success(`Saved "${generatedFile}" to your chosen folder!`);
+                  }
+                } else {
+                  const a = document.createElement('a');
+                  a.href = URL.createObjectURL(blob);
+                  a.download = generatedFile;
+                  a.click();
+                  URL.revokeObjectURL(a.href);
+                }
+              } catch (saveErr) {
+                if (saveErr.name !== 'AbortError') {
+                  console.warn('[NipGenerateDrawer] Save As failed:', saveErr);
+                }
+              }
+            });
+          }
+
+          const copyBtn = document.getElementById('nip-btn-copy-generated-path');
+          if (copyBtn) {
+            copyBtn.addEventListener('click', async () => {
+              const fullPath = `d:/laragon/www/SHEETS/${generatedFile}`;
+              try {
+                await navigator.clipboard.writeText(fullPath);
+                if (typeof Notifications.success === 'function') {
+                  Notifications.success(`Copied path: ${fullPath}`);
+                }
+              } catch {
+                if (typeof Notifications.info === 'function') {
+                  Notifications.info(`Workbook path: ${fullPath}`);
+                }
+              }
+            });
+          }
+
+          // Show floating Flowbite toast at bottom-right while drawer is hidden
+          document.getElementById('cho-floating-generate-toast')?.remove();
+          const floatingToast = document.createElement('div');
+          floatingToast.id = 'cho-floating-generate-toast';
+          floatingToast.className = 'fixed bottom-5 right-5 z-[9999] flex items-center w-full max-w-sm p-4 text-slate-700 bg-white rounded-xl shadow-lg border border-slate-200';
+          floatingToast.setAttribute('role', 'alert');
+          floatingToast.innerHTML = `
+            <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-emerald-600 bg-emerald-100 rounded-lg">
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/></svg>
+              <span class="sr-only">Check icon</span>
+            </div>
+            <div class="ms-3 text-sm font-normal">Generated <strong>${generatedFile}</strong> successfully.</div>
+            <button type="button" onclick="this.parentElement.remove()" class="ms-auto flex items-center justify-center text-slate-400 hover:text-slate-700 bg-transparent border border-transparent hover:bg-slate-100 rounded-lg text-sm h-8 w-8 focus:outline-none cursor-pointer" aria-label="Close">
+              <span class="sr-only">Close</span>
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
+            </button>
+          `;
+          document.body.appendChild(floatingToast);
+
+          // Temporarily hide drawer, show bottom-right toast, then reopen drawer & trigger Choose Folder & Save
+          this.hide();
+          setTimeout(() => {
+            floatingToast.remove();
+            this.show();
+            saveBtn?.click();
+          }, 1800);
         }
 
         // Notify load drawer to reload available files
@@ -652,11 +958,9 @@ export class NipGenerateDrawer extends BaseDrawerController {
       }
     } catch (err) {
       console.error('[NIP Generate Drawer] Generate year failed:', err);
-      Notifications.show({
-        title: 'Generation Error',
-        message: err.message || 'An error occurred while generating blank year sheet.',
-        type: 'error'
-      });
+      if (typeof Notifications.error === 'function') {
+        Notifications.error(err.message || 'An error occurred while generating blank year sheet.');
+      }
 
       if (feedbackBox) {
         feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
@@ -909,6 +1213,52 @@ export class NipUploadDrawer extends BaseDrawerController {
 }
 
 // =============================================================================
+// SUBCHILD CLASS 5: NipWorkspaceGate
+// Gates #cho-systems-grid behind initial NIP Program Excel import/load
+// =============================================================================
+export class NipWorkspaceGate {
+  // START - constructor: Caches #cho-systems-grid and #cho-nip-canvas-card elements
+  constructor() {
+    this.gridEl = null;
+    this.canvasCardEl = null;
+  }
+  // END - constructor
+
+  // START - init: Ensures #cho-systems-grid starts hidden only on NIP Dashboard (where #cho-nip-canvas-card exists)
+  init() {
+    this.gridEl = document.getElementById('cho-systems-grid');
+    this.canvasCardEl = document.getElementById('cho-nip-canvas-card');
+    if (!this.canvasCardEl) return;
+    this.lockSystemsGrid();
+  }
+  // END - init
+
+  // START - lockSystemsGrid: Hides #cho-systems-grid and expands #cho-nip-canvas-card
+  lockSystemsGrid() {
+    if (this.gridEl) {
+      this.gridEl.classList.add('hidden');
+    }
+    if (this.canvasCardEl) {
+      this.canvasCardEl.classList.remove('min-h-[44vh]');
+      this.canvasCardEl.classList.add('min-h-[65vh]');
+    }
+  }
+  // END - lockSystemsGrid
+
+  // START - revealSystemsGrid: Reveals #cho-systems-grid once valid NIP Excel is loaded
+  revealSystemsGrid() {
+    if (this.gridEl) {
+      this.gridEl.classList.remove('hidden');
+    }
+    if (this.canvasCardEl) {
+      this.canvasCardEl.classList.remove('min-h-[65vh]');
+      this.canvasCardEl.classList.add('min-h-[44vh]');
+    }
+  }
+  // END - revealSystemsGrid
+}
+
+// =============================================================================
 // UNIFIED DRAWER MANAGER
 // Bootstraps and exports all individual subchild drawers
 // =============================================================================
@@ -917,8 +1267,10 @@ export const Drawers = {
   generate: new NipGenerateDrawer(),
   reset: new NipResetDrawer(),
   upload: new NipUploadDrawer(),
+  gate: new NipWorkspaceGate(),
 
   init() {
+    this.gate.init();
     this.load.init();
     this.generate.init();
     this.reset.init();

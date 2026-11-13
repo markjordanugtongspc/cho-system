@@ -175,3 +175,47 @@ For users on other PCs who also want a **local folder structure automatically cr
 3. **Add Folder/File Manipulation APIs in `NipController.php`:** Add Create Folder, Rename File/Folder, Move to Backup, and Download endpoints.
 4. **Integrate into `/frontend/pages/NIP/dashboard/`:** Connect the UI controls so users can manage workbooks, folders, and KPIs seamlessly from any PC on the network.
 
+
+
+---
+
+## 8. Pure JavaScript (`exceljs`) Skills & Knowledge Base (Zero-Python Reference)
+
+`exceljs` (`^4.4.0`) is installed in `package.json` and runs in **both** Node.js (CLI / server scripts) and the Browser (Vite ES modules).
+
+### A. Reading an `.xlsx` File in Browser (Dropzone / `<input type="file">`)
+```javascript
+import ExcelJS from 'exceljs';
+
+const buffer = await file.arrayBuffer();
+const wb = new ExcelJS.Workbook();
+await wb.xlsx.load(buffer);
+
+const hlSheet = wb.getWorksheet('H-L');
+let totalPop = 0;
+for (let r = 3; r <= 76; r++) {
+  const val = hlSheet.getCell(`B${r}`).value;
+  const num = typeof val === 'object' && val !== null ? (val.result ?? 0) : Number(val || 0);
+  totalPop += Number.isNaN(num) ? 0 : num;
+}
+```
+
+### B. Modifying Formulas & Values in Node.js (Preserving Styles & Formulas)
+```javascript
+import ExcelJS from 'exceljs';
+
+const wb = new ExcelJS.Workbook();
+await wb.xlsx.readFile('d:/laragon/www/SHEETS/MARAWI NIP DATA - UPGRADED.xlsx');
+
+const ws = wb.getWorksheet('DASHBOARD');
+ws.getCell('D7').value = 'TOTAL POPULATION';
+ws.getCell('D8').value = { formula: "SUM('H-L'!B3:B76)", result: 168828 };
+ws.getCell('D9').value = 'Total Population (H-L!B3:B76)';
+
+await wb.xlsx.writeFile('d:/laragon/www/SHEETS/MARAWI NIP DATA - UPGRADED.xlsx');
+```
+
+### C. Key Rules for `exceljs`
+1. **Formula Cells:** Always read `typeof val === 'object' && val !== null ? (val.result ?? 0) : Number(val || 0)` so formula cells return their cached numeric result.
+2. **Writing Formulas:** Assign `{ formula: "...", result: cachedValue }` without a leading `=`.
+3. **File Locks (`EBUSY`):** Close the `.xlsx` file in Microsoft Excel before running a Node.js `writeFile()` script.

@@ -277,6 +277,63 @@ export const Storage = {
       if (stored === null) return defaultState;
       return stored === true || stored === '1';
     }
-  }
+  },
   // END - UserPreferenceCookies
+
+  // START - NipWorkbookStorage: Remembers uploaded/imported NIP Excel workbooks in localStorage
+  nipWorkbooks: {
+    LIST_KEY: 'cho_nip_uploaded_workbooks',
+    ACTIVE_KEY: 'cho_nip_active_workbook',
+
+    getUploadedWorkbooks() {
+      return Storage.local.get(this.LIST_KEY, []);
+    },
+
+    saveUploadedWorkbook(fileMeta) {
+      if (!fileMeta || !fileMeta.name) return [];
+      const list = this.getUploadedWorkbooks().filter((item) => item.name !== fileMeta.name);
+      list.unshift({
+        name: fileMeta.name,
+        size: fileMeta.size || 0,
+        lastModified: fileMeta.lastModified || Date.now(),
+        uploadedAt: new Date().toISOString()
+      });
+      Storage.local.set(this.LIST_KEY, list);
+      this.setActiveWorkbook(fileMeta.name);
+      return list;
+    },
+
+    getActiveWorkbook() {
+      return Storage.local.get(this.ACTIVE_KEY, null);
+    },
+
+    setActiveWorkbook(filename) {
+      Storage.local.set(this.ACTIVE_KEY, filename || null);
+    },
+
+    clearWorkbooks() {
+      Storage.local.remove(this.LIST_KEY);
+      Storage.local.remove(this.ACTIVE_KEY);
+    }
+  },
+  // END - NipWorkbookStorage
+
+  // START - NipDashboardCache: Persists parsed Excel stats & chart data across reloads until logout or new upload
+  nipDashboardCache: {
+    CACHE_KEY: 'cho_nip_dashboard_cache',
+
+    save(kpiData) {
+      if (!kpiData) return;
+      Storage.local.set(this.CACHE_KEY, kpiData);
+    },
+
+    get() {
+      return Storage.local.get(this.CACHE_KEY, null);
+    },
+
+    clear() {
+      Storage.local.remove(this.CACHE_KEY);
+    }
+  }
+  // END - NipDashboardCache
 };
