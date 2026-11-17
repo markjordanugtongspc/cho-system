@@ -334,6 +334,48 @@ export const Storage = {
     clear() {
       Storage.local.remove(this.CACHE_KEY);
     }
-  }
+  },
   // END - NipDashboardCache
+
+  // START - NipPopulationCache: Persists parsed MARAWI POP 2024 rows & summary until logout or new upload
+  nipPopulationCache: {
+    CACHE_KEY: 'cho_nip_population_cache',
+
+    save(popData) {
+      if (!popData) return;
+      Storage.local.set(this.CACHE_KEY, popData);
+    },
+
+    get() {
+      return Storage.local.get(this.CACHE_KEY, null);
+    },
+
+    clear() {
+      Storage.local.remove(this.CACHE_KEY);
+    }
+  },
+  // END - NipPopulationCache
+
+  // START - NipResyncState: Tracks whether an Excel edit/add is pending user Resync & Refresh
+  nipResyncState: {
+    STATE_KEY: 'cho_nip_pending_resync',
+
+    setPending(sourceFile) {
+      Storage.local.set(this.STATE_KEY, {
+        pending: true,
+        source_file: sourceFile || 'MARAWI NIP DATA - UPGRADED.xlsx',
+        updatedAt: new Date().toISOString()
+      });
+    },
+
+    getPending() {
+      const state = Storage.local.get(this.STATE_KEY, null);
+      return state && state.pending ? state : null;
+    },
+
+    clear() {
+      Storage.local.remove(this.STATE_KEY);
+    }
+  }
+  // END - NipResyncState
 };

@@ -213,6 +213,8 @@ export const Auth = {
       if (typeof Storage !== 'undefined') {
         if (Storage.nipWorkbooks) Storage.nipWorkbooks.clearWorkbooks();
         if (Storage.nipDashboardCache) Storage.nipDashboardCache.clear();
+        if (Storage.nipPopulationCache) Storage.nipPopulationCache.clear();
+        if (Storage.nipResyncState) Storage.nipResyncState.clear();
       }
 
       try {

@@ -24,6 +24,7 @@ class NavigationHighlighter {
 
     const path = this.currentPath.replace(/\/$/, '');
     const isNipDashboard = path.includes('/nip/dashboard');
+    const isNipPopulation = path.includes('/nip/population');
     const isMainHome = (path.includes('/dashboard') && !path.includes('/nip')) || 
                        path.endsWith('/cho-system') || 
                        path.endsWith('/cho-system/');
@@ -32,6 +33,8 @@ class NavigationHighlighter {
     const homeIcon = document.getElementById('cho-sidebar-icon-dashboard');
     const nipLink = document.getElementById('cho-sidebar-link-nip-dash');
     const nipIcon = document.getElementById('cho-sidebar-icon-nip-dash');
+    const nipPopLink = document.getElementById('cho-sidebar-link-nip-population');
+    const nipPopIcon = document.getElementById('cho-sidebar-icon-nip-population');
 
     if (isNipDashboard && nipLink) {
       // START - Active State Styling for NIP Dashboard Subitem
@@ -50,6 +53,23 @@ class NavigationHighlighter {
 
       nipLink.setAttribute('aria-current', 'page');
       // END - Active State Styling for NIP Dashboard Subitem
+    } else if (isNipPopulation && nipPopLink) {
+      // START - Active State Styling for Marawi Population Subitem
+      nipPopLink.classList.remove('text-body', 'hover:bg-neutral-tertiary', 'hover:text-fg-brand');
+      nipPopLink.classList.add(
+        'bg-neutral-tertiary',
+        'text-fg-brand',
+        'font-bold',
+        'shadow-xs'
+      );
+
+      if (nipPopIcon) {
+        nipPopIcon.classList.remove('text-slate-400', 'group-hover:text-fg-brand');
+        nipPopIcon.classList.add('text-fg-brand');
+      }
+
+      nipPopLink.setAttribute('aria-current', 'page');
+      // END - Active State Styling for Marawi Population Subitem
     } else if (isMainHome && homeLink) {
       // START - Active State Styling for Main Homepage Route
       homeLink.classList.remove('text-body', 'hover:bg-neutral-tertiary', 'hover:text-fg-brand');

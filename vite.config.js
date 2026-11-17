@@ -54,10 +54,36 @@ function hotFilePlugin() {
   };
 }
 
+/**
+ * Plugin that copies static asset directories (icons, images, sounds) from
+ * frontend/assets/ into dist/assets/ during production builds (`npm run build`).
+ */
+function copyStaticAssetsPlugin() {
+  return {
+    name: 'cho-copy-static-assets',
+    closeBundle() {
+      const rootDir = import.meta.dirname;
+      const outAssetsDir = path.resolve(rootDir, 'dist', 'assets');
+      const folders = ['icons', 'images', 'sounds'];
+
+      for (const folder of folders) {
+        const src = path.resolve(rootDir, 'frontend', 'assets', folder);
+        const dest = path.resolve(outAssetsDir, folder);
+        if (fs.existsSync(src)) {
+          fs.mkdirSync(path.dirname(dest), { recursive: true });
+          fs.cpSync(src, dest, { recursive: true });
+          console.log(`  [CHO Build] Copied frontend/assets/${folder} -> dist/assets/${folder}`);
+        }
+      }
+    }
+  };
+}
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    hotFilePlugin()
+    hotFilePlugin(),
+    copyStaticAssetsPlugin()
   ],
   server: {
     host: true, // enables --host mode so it binds to 0.0.0.0/network

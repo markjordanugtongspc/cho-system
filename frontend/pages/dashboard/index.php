@@ -181,16 +181,19 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
             </a>
 
-            <!-- Card 2: CHO Marawi Finance -->
-            <a href="#" id="cho-system-card-finance" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 2: CHO Marawi Finance (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-finance" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-finance" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-finance" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-finance" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-finance" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-finance" class="text-sm sm:text-base font-bold text-slate-700">
                             CHO Marawi Finance
                         </h3>
                         <p id="cho-system-desc-finance" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -199,21 +202,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-finance" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-finance" src="<?= asset('images/systems/finance-preview.svg') ?>" alt="Finance System Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-finance" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-finance" src="<?= asset('images/systems/finance-preview.svg') ?>" alt="Finance System Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 3: Maternal, Child Health & Nutrition (MCHN) -->
-            <a href="#" id="cho-system-card-maternal" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 3: Maternal, Child Health & Nutrition (MCHN) (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-maternal" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-maternal" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-maternal" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-maternal" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-maternal" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-maternal" class="text-sm sm:text-base font-bold text-slate-700">
                             Maternal & Child Health
                         </h3>
                         <p id="cho-system-desc-maternal" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -222,21 +228,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-maternal" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-maternal" src="<?= asset('images/systems/maternal-preview.svg') ?>" alt="Maternal Health Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-maternal" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-maternal" src="<?= asset('images/systems/maternal-preview.svg') ?>" alt="Maternal Health Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 4: Clinical Consultations & Outpatient Services -->
-            <a href="#" id="cho-system-card-clinical" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 4: Clinical Consultations & Outpatient Services (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-clinical" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-clinical" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-clinical" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-clinical" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-clinical" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-clinical" class="text-sm sm:text-base font-bold text-slate-700">
                             Clinical & Outpatient EHR
                         </h3>
                         <p id="cho-system-desc-clinical" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -245,21 +254,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-clinical" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-clinical" src="<?= asset('images/systems/clinical-preview.svg') ?>" alt="Clinical Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-clinical" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-clinical" src="<?= asset('images/systems/clinical-preview.svg') ?>" alt="Clinical Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 5: Disease Surveillance & Outbreak Response -->
-            <a href="#" id="cho-system-card-surveillance" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 5: Disease Surveillance & Outbreak Response (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-surveillance" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-surveillance" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-surveillance" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-surveillance" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-surveillance" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-surveillance" class="text-sm sm:text-base font-bold text-slate-700">
                             Epidemiology & Surveillance
                         </h3>
                         <p id="cho-system-desc-surveillance" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -268,21 +280,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-surveillance" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-surveillance" src="<?= asset('images/systems/surveillance-preview.svg') ?>" alt="Surveillance Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-surveillance" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-surveillance" src="<?= asset('images/systems/surveillance-preview.svg') ?>" alt="Surveillance Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 6: TB-DOTS & Infectious Diseases -->
-            <a href="#" id="cho-system-card-tb" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 6: TB-DOTS & Infectious Diseases (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-tb" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-tb" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-tb" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-tb" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-tb" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-tb" class="text-sm sm:text-base font-bold text-slate-700">
                             TB-DOTS & Treatment Center
                         </h3>
                         <p id="cho-system-desc-tb" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -291,21 +306,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-tb" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-tb" src="<?= asset('images/systems/tb-preview.svg') ?>" alt="TB DOTS Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-tb" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-tb" src="<?= asset('images/systems/tb-preview.svg') ?>" alt="TB DOTS Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 7: Environmental Health & Sanitation -->
-            <a href="#" id="cho-system-card-sanitation" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 7: Environmental Health & Sanitation (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-sanitation" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-sanitation" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-sanitation" class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-sanitation" class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-sanitation" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-sanitation" class="text-sm sm:text-base font-bold text-slate-700">
                             Environmental Sanitation
                         </h3>
                         <p id="cho-system-desc-sanitation" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -314,21 +332,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-sanitation" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-sanitation" src="<?= asset('images/systems/sanitation-preview.svg') ?>" alt="Sanitation Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-sanitation" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-sanitation" src="<?= asset('images/systems/sanitation-preview.svg') ?>" alt="Sanitation Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 8: Animal Bite Treatment Center (ABTC) -->
-            <a href="#" id="cho-system-card-abtc" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 8: Animal Bite Treatment Center (ABTC) (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-abtc" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-abtc" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-abtc" class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-abtc" class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-abtc" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-abtc" class="text-sm sm:text-base font-bold text-slate-700">
                             Animal Bite Center (ABTC)
                         </h3>
                         <p id="cho-system-desc-abtc" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -337,21 +358,24 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-abtc" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-abtc" src="<?= asset('images/systems/abtc-preview.svg') ?>" alt="ABTC Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-abtc" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-abtc" src="<?= asset('images/systems/abtc-preview.svg') ?>" alt="ABTC Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
-            <!-- Card 9: Dental Health & Oral Services -->
-            <a href="#" id="cho-system-card-dental" class="group relative flex items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/80 border border-slate-200/90 hover:border-slate-300 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200">
+            <!-- Card 9: Dental Health & Oral Services (Disabled State) -->
+            <button type="button" disabled aria-disabled="true" id="cho-system-card-dental" title="Disabled: Insufficient Role Access" class="relative flex items-center justify-between p-4 sm:p-5 bg-slate-50/90 border border-slate-200/80 rounded-2xl text-left w-full opacity-60 grayscale-[35%] cursor-not-allowed select-none">
                 <div id="cho-system-left-dental" class="flex-1 pr-3 space-y-2">
-                    <div id="cho-system-icon-dental" class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <div class="flex items-center gap-2">
+                        <div id="cho-system-icon-dental" class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-200/80 rounded-md">Disabled</span>
                     </div>
                     <div>
-                        <h3 id="cho-system-title-dental" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors">
+                        <h3 id="cho-system-title-dental" class="text-sm sm:text-base font-bold text-slate-700">
                             Dental Health Services
                         </h3>
                         <p id="cho-system-desc-dental" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
@@ -360,10 +384,10 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic/Dashboard Preview -->
-                <div id="cho-system-img-wrap-dental" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
-                    <img id="cho-system-img-dental" src="<?= asset('images/systems/dental-preview.svg') ?>" alt="Dental Services Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div id="cho-system-img-wrap-dental" class="shrink-0 w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden border border-slate-200/70 bg-slate-100 flex items-center justify-center">
+                    <img id="cho-system-img-dental" src="<?= asset('images/systems/dental-preview.svg') ?>" alt="Dental Services Preview" class="w-full h-full object-cover" />
                 </div>
-            </a>
+            </button>
 
         </div>
 

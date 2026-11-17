@@ -243,13 +243,10 @@ export const Charts = {
     if (!kpiData) return;
 
     const canvasPlaceholder = document.getElementById('cho-nip-canvas-card');
+    const chartsSkeleton = document.getElementById('cho-nip-charts-skeleton');
     const chartsContainer = document.getElementById('cho-nip-charts-container');
     const activeFilenameEl = document.getElementById('cho-nip-active-filename');
     const activeMetaEl = document.getElementById('cho-nip-active-sheet-meta');
-
-    // Reveal charts container and hide empty placeholder canvas
-    if (canvasPlaceholder) canvasPlaceholder.classList.add('hidden');
-    if (chartsContainer) chartsContainer.classList.remove('hidden');
 
     if (activeFilenameEl && kpiData.source_file) {
       activeFilenameEl.textContent = kpiData.source_file;
@@ -258,11 +255,27 @@ export const Charts = {
       activeMetaEl.textContent = `Year ${kpiData.active_year || 2026} • Quarter ${kpiData.active_quarter || 'Q1'} • ${kpiData.antigens?.length || 18} Antigens Monitored • 74 Master Barangays`;
     }
 
-    // Render Antigen Performance Column Chart
-    this.renderNipAntigenChart(kpiData.antigens || []);
+    // Show Flowbite bar & donut chart skeleton briefly, then reveal live ApexCharts
+    if (canvasPlaceholder) canvasPlaceholder.classList.add('hidden');
+    if (chartsSkeleton && chartsContainer) {
+      chartsContainer.classList.add('hidden');
+      chartsSkeleton.classList.remove('hidden');
+      setTimeout(() => {
+        chartsSkeleton.classList.add('hidden');
+        chartsContainer.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          this.renderNipAntigenChart(kpiData.antigens || []);
+          this.renderNipCatchmentChart(kpiData.catchments || [], kpiData.stats?.ficAccomplished || 0);
+        });
+      }, 240);
+      return;
+    }
 
-    // Render Catchment Distribution Donut Chart
-    this.renderNipCatchmentChart(kpiData.catchments || []);
+    if (chartsContainer) chartsContainer.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      this.renderNipAntigenChart(kpiData.antigens || []);
+      this.renderNipCatchmentChart(kpiData.catchments || [], kpiData.stats?.ficAccomplished || 0);
+    });
   },
   // END - initNipDashboardCharts
 
@@ -293,7 +306,10 @@ export const Charts = {
       ],
       chart: {
         type: 'bar',
-        height: 340,
+        width: '100%',
+        height: 360,
+        redrawOnParentResize: true,
+        redrawOnWindowResize: true,
         fontFamily: 'Poppins, Averta, sans-serif',
         toolbar: { show: false },
         background: 'transparent'
@@ -337,6 +353,7 @@ export const Charts = {
         }
       },
       legend: {
+        show: true,
         position: 'top',
         horizontalAlign: 'right',
         labels: {
@@ -354,12 +371,27 @@ export const Charts = {
     }
     this.instances.nipAntigens = new ApexCharts(el, options);
     this.instances.nipAntigens.render();
+
+    // Ensure chart stays responsive to container width changes
+    if (typeof ResizeObserver !== 'undefined') {
+      if (el._choResizeObserver) el._choResizeObserver.disconnect();
+      let lastWidth = el.clientWidth;
+      el._choResizeObserver = new ResizeObserver((entries) => {
+        const w = Math.round(entries[0]?.contentRect?.width || 0);
+        if (w > 0 && w !== lastWidth && this.instances.nipAntigens) {
+          lastWidth = w;
+          this.instances.nipAntigens.updateOptions({ chart: { width: '100%' } }, false, false);
+        }
+      });
+      el._choResizeObserver.observe(el);
+    }
   },
   // END - renderNipAntigenChart
 
   // START - renderNipCatchmentChart: Renders FIC quota and share per Catchment
-  renderNipCatchmentChart(catchments) {
+  renderNipCatchmentChart(catchments, totalFicAccomplished = 0) {
     const el = document.getElementById('cho-nip-catchments-chart');
+    const legendEl = document.getElementById('cho-nip-catchments-legend');
     const summaryEl = document.getElementById('cho-nip-catchments-summary');
     if (!el || typeof ApexCharts === 'undefined') return;
 
@@ -367,15 +399,16 @@ export const Charts = {
     const valid = catchments.filter(c => c.fic_total > 0 || c.barangays > 0);
     const labels = valid.map(c => c.name);
     const series = valid.map(c => c.fic_total);
+    const palette = ['#005bf8', '#e66a00', '#007a64', '#c00030', '#6366f1', '#06b6d4', '#f59e0b', '#10b981'];
 
     const isDark = this.isDark();
     const options = {
       series: series.length > 0 ? series : [1],
       labels: labels.length > 0 ? labels : ['No Data'],
-      colors: ['#005bf8', '#e66a00', '#007a64', '#c00030', '#6366f1', '#06b6d4', '#f59e0b', '#10b981'],
+      colors: palette,
       chart: {
         type: 'donut',
-        height: 280,
+        height: 220,
         fontFamily: 'Poppins, Averta, sans-serif',
         background: 'transparent'
       },
@@ -402,12 +435,7 @@ export const Charts = {
         }
       },
       dataLabels: { enabled: false },
-      legend: {
-        position: 'bottom',
-        labels: {
-          colors: isDark ? '#cbd5e1' : '#334155'
-        }
-      },
+      legend: { show: false },
       tooltip: {
         theme: isDark ? 'dark' : 'light',
         y: {
@@ -422,14 +450,36 @@ export const Charts = {
     this.instances.nipCatchments = new ApexCharts(el, options);
     this.instances.nipCatchments.render();
 
+    // Render 2-column (4 left / 4 right) Tailwind legend
+    if (legendEl) {
+      const displayLabels = labels.length > 0 ? labels : ['No Data'];
+      legendEl.innerHTML = displayLabels.map((label, idx) => {
+        const color = palette[idx % palette.length];
+        const isRightCol = idx % 2 === 1;
+        return `
+          <div class="flex items-center gap-2 min-w-0 ${isRightCol ? 'justify-end' : ''}">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color};"></span>
+            <span class="truncate text-slate-700 font-medium">${label}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
     // Render Catchment summary table rows
     if (summaryEl && valid.length > 0) {
-      summaryEl.innerHTML = valid.slice(0, 4).map(c => `
+      summaryEl.innerHTML = valid.slice(0, 4).map(c => {
+        const sharePct = c.share_pct ?? (
+          totalFicAccomplished > 0
+            ? ((Number(c.fic_total) / totalFicAccomplished) * 100).toFixed(1)
+            : '0.0'
+        );
+        return `
         <div class="flex items-center justify-between text-slate-600">
-          <span class="font-medium">${c.name} (${c.barangays} Brgys)</span>
-          <span class="font-bold text-slate-800">${Number(c.fic_total).toLocaleString()} FIC <span class="text-slate-400 font-normal">(${c.share_pct}%)</span></span>
+          <span class="font-medium text-slate-800">${c.name} <span class="text-rose-600">(${c.barangays} Brgys)</span></span>
+          <span class="font-bold text-emerald-600">${Number(c.fic_total).toLocaleString()} FIC <span class="text-slate-400 font-normal">(${sharePct}%)</span></span>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
   },
   // END - renderNipCatchmentChart

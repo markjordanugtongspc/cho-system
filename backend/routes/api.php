@@ -29,6 +29,8 @@ $router->get('v1/nip/kpis',          [NipController::class, 'kpis']);
 $router->post('v1/nip/generate-year',[NipController::class, 'generateYear']);
 $router->post('v1/nip/reset-quarter',[NipController::class, 'resetQuarter']);
 $router->get('v1/nip/download',      [NipController::class, 'download']);
+$router->post('v1/nip/population/add',    [NipController::class, 'addPopulationRow']);
+$router->post('v1/nip/population/update', [NipController::class, 'updatePopulationRow']);
 
 // Future modules go here, e.g.:
 // $router->get('v1/patients',        [PatientController::class, 'index'], ['auth']);

@@ -22,6 +22,7 @@ import { Charts } from './modules/charts.js';
 import { Components } from './modules/components.js';
 import { AppAnimations } from './modules/animations.js';
 import { Drawers, Drawer } from './modules/drawer.js';
+import { Tables } from './modules/tables.js';
 
 // 3) Expose global namespace for PHP inline helpers or console debugging
 window.CHO = {
@@ -35,6 +36,7 @@ window.CHO = {
   Components,
   Drawer,
   Drawers,
+  Tables,
   Animations: AppAnimations,
   version: '1.0.0'
 };
@@ -55,6 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize ApexCharts if chart containers exist on the page
   Charts.init();
+
+  // Initialize Flowbite + ExcelJS Data Tables
+  Tables.init();
+
+  // Initialize UI micro-interactions & hover animations
+  AppAnimations.init();
 
   console.log('[CHO Marawi Portal] Client application successfully mounted.');
 });

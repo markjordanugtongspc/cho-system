@@ -14,7 +14,7 @@ use App\Core\Response;
 class NipController
 {
     private static string $engineScript = 'd:\\laragon\\www\\SHEETS\\nip_workbook_engine.py';
-    private static string $sheetsDir = 'd:\\laragon\\www\\SHEETS';
+    private static string $sheetsDir = 'd:\\laragon\\www\\CHO-System\\SHEETS';
 
     /**
      * List all available Excel workbooks (.xlsx / .xlsm) in the SHEETS workspace
@@ -232,10 +232,71 @@ class NipController
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $file . '"');
         header('Expires: 0');
-        header('Cache-Control: must-revalidate');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: public');
         header('Content-Length: ' . filesize($filePath));
         readfile($filePath);
         exit;
+    }
+
+    /**
+     * Add a new Barangay row to MARAWI POP 2024 in the selected workbook
+     */
+    public static function addPopulationRow(): void
+    {
+        self::mutatePopulationSheet('add');
+    }
+
+    /**
+     * Update an existing Barangay row in MARAWI POP 2024 in the selected workbook
+     */
+    public static function updatePopulationRow(): void
+    {
+        self::mutatePopulationSheet('update');
+    }
+
+    /**
+     * Shared helper invoking openpyxl mutator script for MARAWI POP 2024
+     */
+    private static function mutatePopulationSheet(string $action): void
+    {
+        $sourceFile = basename((string)(Request::input('source_file') ?? 'MARAWI NIP DATA - UPGRADED.xlsx'));
+        $payload = [
+            'excel_row' => (int)(Request::input('excel_row') ?? 0),
+            'nip_row' => Request::input('nip_row') ? (int)Request::input('nip_row') : null,
+            'psgc10' => trim((string)(Request::input('psgc10') ?? '')),
+            'barangay' => trim((string)(Request::input('barangay') ?? '')),
+            'total_pop' => (int)(Request::input('total_pop') ?? 0),
+            'household_pop' => (int)(Request::input('household_pop') ?? 0),
+            'households' => (int)(Request::input('households') ?? 0),
+            'nip_pop' => (int)(Request::input('nip_pop') ?? 0),
+        ];
+
+        $scriptPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'nip_population_mutator.py';
+        $payloadB64 = base64_encode((string)json_encode($payload, JSON_UNESCAPED_UNICODE));
+
+        $cmd = sprintf(
+            'python %s --action %s --file %s --payload-b64 %s 2>&1',
+            escapeshellarg($scriptPath),
+            escapeshellarg($action),
+            escapeshellarg($sourceFile),
+            escapeshellarg($payloadB64)
+        );
+
+        $output = (string)shell_exec($cmd);
+        $start = strpos($output, '{');
+        $end = strrpos($output, '}');
+        $res = null;
+        if ($start !== false && $end !== false) {
+            $res = json_decode(substr($output, $start, $end - $start + 1), true);
+        }
+
+        if (is_array($res) && ($res['status'] ?? '') === 'success') {
+            Response::success($res);
+            return;
+        }
+
+        $errMsg = is_array($res) && !empty($res['message']) ? $res['message'] : ($output ?: 'Failed to mutate Excel workbook.');
+        Response::error($errMsg, 422);
     }
 }

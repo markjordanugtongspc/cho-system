@@ -17,6 +17,7 @@ import { Api } from './api.js';
 import { Notifications } from './notifications.js';
 import { Charts } from './charts.js';
 import { Storage } from './storage.js';
+import { AppAnimations } from './animations.js';
 import ExcelJS from 'exceljs';
 
 // =============================================================================
@@ -112,6 +113,10 @@ export class BaseDrawerController {
 
     this.isOpen = true;
     document.body.classList.add('overflow-hidden');
+
+    // Temporarily hide the top-center resync banner while any drawer is open
+    const resyncBanner = document.getElementById('cho-nip-resync-toast');
+    if (resyncBanner) resyncBanner.classList.add('hidden');
   }
   // END - show
 
@@ -140,6 +145,12 @@ export class BaseDrawerController {
 
     // Clean up any stray Flowbite-generated or unmanaged backdrops
     document.querySelectorAll('[drawer-backdrop]').forEach((el) => el.remove());
+
+    // Restore the top-center resync banner if a resync is still pending
+    const resyncBanner = document.getElementById('cho-nip-resync-toast');
+    if (resyncBanner && Storage.nipResyncState?.getPending?.()) {
+      resyncBanner.classList.remove('hidden');
+    }
   }
   // END - hide
 }
@@ -325,7 +336,10 @@ export class NipLoadDrawer extends BaseDrawerController {
       filenameDisplay.classList.remove('hidden');
     }
 
-    if (btnSubmit && file) {
+    const btnText = document.getElementById('nip-btn-submit-load-text');
+    if (btnText && file) {
+      btnText.textContent = 'Upload & Switch Active Sheet';
+    } else if (btnSubmit && file) {
       btnSubmit.textContent = 'Upload & Switch Active Sheet';
     }
   }
@@ -340,12 +354,11 @@ export class NipLoadDrawer extends BaseDrawerController {
     try {
       if (container) {
         container.innerHTML = `
-          <div id="nip-drawer-load-loading" class="flex items-center justify-center p-4 text-xs text-slate-500">
-            <svg class="w-4 h-4 animate-spin mr-2 text-slate-600" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            Scanning server storage (d:/laragon/www/SHEETS)...
+          <div id="nip-drawer-load-loading" role="status" class="p-3 space-y-3 animate-pulse">
+            <div class="flex items-center justify-between"><div class="h-3 bg-slate-200 rounded-full w-40"></div><div class="h-3 bg-slate-200 rounded-full w-12"></div></div>
+            <div class="flex items-center justify-between"><div class="h-3 bg-slate-200 rounded-full w-36"></div><div class="h-3 bg-slate-200 rounded-full w-10"></div></div>
+            <div class="flex items-center justify-between"><div class="h-3 bg-slate-200 rounded-full w-44"></div><div class="h-3 bg-slate-200 rounded-full w-12"></div></div>
+            <span class="sr-only">Scanning server storage...</span>
           </div>
         `;
       }
@@ -494,6 +507,26 @@ export class NipLoadDrawer extends BaseDrawerController {
   async handleSetActiveWorkbook() {
     const dropzoneInput = document.getElementById('nip-load-dropzone-file');
     const feedbackBox = document.getElementById('nip-load-feedback');
+    const btnSubmit = document.getElementById('nip-btn-submit-load');
+    const btnSpinner = document.getElementById('nip-btn-submit-load-spinner');
+    const btnText = document.getElementById('nip-btn-submit-load-text');
+
+    const setSubmitLoading = (isLoading, label = 'Processing Workbook...') => {
+      if (!btnSubmit) return;
+      btnSubmit.disabled = isLoading;
+      if (btnSpinner) {
+        btnSpinner.classList.toggle('hidden', !isLoading);
+      }
+      if (btnText) {
+        if (isLoading) {
+          btnText.dataset.prevText = btnText.textContent;
+          btnText.textContent = label;
+        } else if (btnText.dataset.prevText) {
+          btnText.textContent = btnText.dataset.prevText;
+          delete btnText.dataset.prevText;
+        }
+      }
+    };
 
     // Case 1: A file was selected or dropped into the dropzone
     if (dropzoneInput && dropzoneInput.files && dropzoneInput.files.length > 0) {
@@ -512,28 +545,36 @@ export class NipLoadDrawer extends BaseDrawerController {
         return;
       }
 
-      Storage.nipWorkbooks.saveUploadedWorkbook(file);
-      this.activeFile = file.name;
-      await this.parseWorkbookDashboardStats(file);
-      this.renderStoredWorkbooks();
+      setSubmitLoading(true, 'Processing Workbook...');
+      try {
+        // Yield a frame so the Flowbite spinner renders before heavy ExcelJS parsing
+        await new Promise((resolve) => setTimeout(resolve, 450));
 
-      if (feedbackBox) {
-        feedbackBox.classList.remove('hidden');
-        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
-        feedbackBox.textContent = `Loaded '${file.name}' into workspace.`;
+        Storage.nipWorkbooks.saveUploadedWorkbook(file);
+        this.activeFile = file.name;
+        await this.parseWorkbookDashboardStats(file);
+        this.renderStoredWorkbooks();
+
+        if (feedbackBox) {
+          feedbackBox.classList.remove('hidden');
+          feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+          feedbackBox.textContent = `Loaded '${file.name}' into workspace.`;
+        }
+
+        if (Drawers.gate) {
+          Drawers.gate.revealSystemsGrid();
+        }
+
+        if (typeof Notifications.success === 'function') {
+          Notifications.success(`NIP Excel "${file.name}" loaded successfully.`);
+        }
+
+        setTimeout(() => {
+          this.hide();
+        }, 300);
+      } finally {
+        setSubmitLoading(false);
       }
-
-      if (Drawers.gate) {
-        Drawers.gate.revealSystemsGrid();
-      }
-
-      if (typeof Notifications.success === 'function') {
-        Notifications.success(`NIP Excel "${file.name}" loaded successfully.`);
-      }
-
-      setTimeout(() => {
-        this.hide();
-      }, 300);
       return;
     }
 
@@ -541,27 +582,34 @@ export class NipLoadDrawer extends BaseDrawerController {
     const selectEl = document.getElementById('nip-select-active-file');
     const chosenFile = selectEl ? selectEl.value : null;
     if (chosenFile) {
-      Storage.nipWorkbooks.setActiveWorkbook(chosenFile);
-      this.activeFile = chosenFile;
-      this.renderStoredWorkbooks();
+      setSubmitLoading(true, 'Switching Active Sheet...');
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 450));
 
-      if (feedbackBox) {
-        feedbackBox.classList.remove('hidden');
-        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
-        feedbackBox.textContent = `Switched active workbook to '${chosenFile}'.`;
+        Storage.nipWorkbooks.setActiveWorkbook(chosenFile);
+        this.activeFile = chosenFile;
+        this.renderStoredWorkbooks();
+
+        if (feedbackBox) {
+          feedbackBox.classList.remove('hidden');
+          feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+          feedbackBox.textContent = `Switched active workbook to '${chosenFile}'.`;
+        }
+
+        if (Drawers.gate) {
+          Drawers.gate.revealSystemsGrid();
+        }
+
+        if (typeof Notifications.success === 'function') {
+          Notifications.success(`Active NIP Excel switched to "${chosenFile}".`);
+        }
+
+        setTimeout(() => {
+          this.hide();
+        }, 300);
+      } finally {
+        setSubmitLoading(false);
       }
-
-      if (Drawers.gate) {
-        Drawers.gate.revealSystemsGrid();
-      }
-
-      if (typeof Notifications.success === 'function') {
-        Notifications.success(`Active NIP Excel switched to "${chosenFile}".`);
-      }
-
-      setTimeout(() => {
-        this.hide();
-      }, 300);
       return;
     }
 
@@ -640,16 +688,23 @@ export class NipLoadDrawer extends BaseDrawerController {
         }
       }
 
-      // 6. 9 Catchments Share (DASHBOARD!J22:L30)
+      // 6. 9 Catchments Share (DASHBOARD!J22:M30)
       const catchments = [];
       if (dashSheet) {
         for (let r = 22; r <= 30; r++) {
           const name = getText(dashSheet.getCell(`J${r}`).value);
           if (name) {
+            const ficTotal = Math.round(getNum(dashSheet.getCell(`L${r}`).value));
+            const rawShare = getNum(dashSheet.getCell(`M${r}`).value);
+            let sharePct = rawShare > 0 && rawShare <= 1 ? (rawShare * 100).toFixed(1) : rawShare.toFixed(1);
+            if (ficAccomplished > 0) {
+              sharePct = ((ficTotal / ficAccomplished) * 100).toFixed(1);
+            }
             catchments.push({
               name,
               barangays: Math.round(getNum(dashSheet.getCell(`K${r}`).value)),
-              fic_total: Math.round(getNum(dashSheet.getCell(`L${r}`).value))
+              fic_total: ficTotal,
+              share_pct: sharePct
             });
           }
         }
@@ -675,6 +730,55 @@ export class NipLoadDrawer extends BaseDrawerController {
 
       Storage.nipDashboardCache?.save(kpiData);
       this.applyDashboardData(kpiData);
+
+      // 7. Parse MARAWI POP 2024 worksheet and persist to Storage.nipPopulationCache
+      const popSheet = wb.getWorksheet('MARAWI POP 2024');
+      if (popSheet) {
+        const cityTotalPop = Math.round(getNum(popSheet.getCell('C4').value));
+        const cityHouseholdPop = Math.round(getNum(popSheet.getCell('D4').value));
+        const cityHouseholds = Math.round(getNum(popSheet.getCell('E4').value));
+
+        const nipMap = new Map();
+        for (let r = 5; r <= popSheet.rowCount; r++) {
+          const nipName = getText(popSheet.getCell(`G${r}`).value);
+          if (!nipName) continue;
+          const nipPop = Math.round(getNum(popSheet.getCell(`H${r}`).value));
+          const rawTarget = getNum(popSheet.getCell(`I${r}`).value);
+          const nipTarget = rawTarget > 0 ? Number(rawTarget.toFixed(1)) : Number((nipPop * 0.02056).toFixed(1));
+          nipMap.set(nipName.toLowerCase(), { nipPop, nipTarget, nipRow: r });
+        }
+
+        const popRows = [];
+        for (let r = 5; r <= popSheet.rowCount; r++) {
+          const psgc10 = getText(popSheet.getCell(`A${r}`).value);
+          const barangay = getText(popSheet.getCell(`B${r}`).value);
+          if (!psgc10 && !barangay) continue;
+
+          const totalPop = Math.round(getNum(popSheet.getCell(`C${r}`).value));
+          const householdPop = Math.round(getNum(popSheet.getCell(`D${r}`).value));
+          const households = Math.round(getNum(popSheet.getCell(`E${r}`).value));
+          const nipEntry = nipMap.get(barangay.toLowerCase()) || { nipPop: 0, nipTarget: 0, nipRow: null };
+
+          popRows.push({
+            row_index: popRows.length + 1,
+            excel_row: r,
+            nip_row: nipEntry.nipRow,
+            psgc10: psgc10 || '-',
+            barangay,
+            total_pop: totalPop,
+            household_pop: householdPop,
+            households,
+            nip_pop: nipEntry.nipPop,
+            nip_target: nipEntry.nipTarget
+          });
+        }
+
+        Storage.nipPopulationCache?.save({
+          source_file: file.name,
+          citySummary: { totalPop: cityTotalPop, householdPop: cityHouseholdPop, households: cityHouseholds },
+          rows: popRows
+        });
+      }
     } catch (err) {
       console.warn('[NipLoadDrawer] Could not parse workbook stats via ExcelJS:', err);
     }
@@ -696,16 +800,16 @@ export class NipLoadDrawer extends BaseDrawerController {
     const elCovSub = document.getElementById('cho-stat-sub-coverage');
     const elCovPill = document.getElementById('cho-stat-pill-coverage');
 
-    if (elBrgyVal) elBrgyVal.textContent = Number(barangayVal || 0).toLocaleString();
+    if (elBrgyVal) AppAnimations.counter.rollTo(elBrgyVal, Number(barangayVal || 0), { duration: 700 });
     if (elBrgySub) elBrgySub.textContent = barangaySub;
 
-    if (elPopVal) elPopVal.textContent = Number(totalPop || 0).toLocaleString();
+    if (elPopVal) AppAnimations.counter.rollTo(elPopVal, Number(totalPop || 0), { duration: 850 });
     if (elPopSub) elPopSub.textContent = popSub;
 
-    if (elChildVal) elChildVal.textContent = Number(ficAccomplished || 0).toLocaleString();
+    if (elChildVal) AppAnimations.counter.rollTo(elChildVal, Number(ficAccomplished || 0), { duration: 800 });
     if (elChildSub) elChildSub.textContent = ficSub;
 
-    if (elCovVal) elCovVal.textContent = `${coveragePct}%`;
+    if (elCovVal) AppAnimations.counter.rollTo(elCovVal, Number(coveragePct || 0), { duration: 750, decimals: 1, suffix: '%' });
     if (elCovSub) elCovSub.textContent = covSub;
 
     if (elCovPill) {
@@ -717,6 +821,16 @@ export class NipLoadDrawer extends BaseDrawerController {
     const fileCodeEl = document.getElementById('cho-nip-active-file-code');
     const fileBtnEl = document.getElementById('cho-nip-active-file-btn');
     if (fileCodeEl && kpiData.source_file) fileCodeEl.textContent = kpiData.source_file;
+    const downloadCard = document.getElementById('cho-nip-action-download-card');
+    if (downloadCard) {
+      const targetFile = kpiData.source_file || 'MARAWI NIP DATA - UPGRADED.xlsx';
+      const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
+      downloadCard.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(targetFile)}&_t=${Date.now()}`);
+      downloadCard.onclick = () => {
+        const activeFile = Storage.nipWorkbooks?.getActiveWorkbook?.() || targetFile;
+        downloadCard.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(activeFile)}&_t=${Date.now()}`);
+      };
+    }
     if (fileBtnEl && kpiData.source_file) {
       fileBtnEl.onclick = async () => {
         const fullPath = `d:/laragon/www/SHEETS/${kpiData.source_file}`;
@@ -733,13 +847,14 @@ export class NipLoadDrawer extends BaseDrawerController {
       };
     }
 
+    // Reveal systems grid before measuring & rendering ApexCharts so container widths are settled
+    if (Drawers.gate) {
+      Drawers.gate.revealSystemsGrid();
+    }
+
     // Hide #cho-nip-canvas-card and render ApexCharts inside #cho-nip-charts-container
     if (Charts && typeof Charts.initNipDashboardCharts === 'function') {
       Charts.initNipDashboardCharts(kpiData);
-    }
-
-    if (Drawers.gate) {
-      Drawers.gate.revealSystemsGrid();
     }
   }
   // END - applyDashboardData
@@ -1259,6 +1374,259 @@ export class NipWorkspaceGate {
 }
 
 // =============================================================================
+// SUBCHILD CLASS 6: NipPopAddDrawer
+// Handles adding a new Barangay row to MARAWI POP 2024 (#drawer-nip-pop-add)
+// =============================================================================
+export class NipPopAddDrawer extends BaseDrawerController {
+  // START - constructor
+  constructor() {
+    super('drawer-nip-pop-add');
+  }
+  // END - constructor
+
+  // START - init: Binds add form submission
+  init() {
+    super.init();
+    const form = document.getElementById('nip-pop-add-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAdd();
+      });
+    }
+  }
+  // END - init
+
+  // START - handleAdd: Sends new row to backend openpyxl mutator and updates Storage + Table
+  async handleAdd() {
+    const cachedPop = Storage.nipPopulationCache?.get?.();
+    const sourceFile = cachedPop?.source_file || Storage.nipWorkbooks?.getActiveWorkbook?.() || 'MARAWI NIP DATA - UPGRADED.xlsx';
+    const feedbackBox = document.getElementById('nip-pop-add-feedback');
+    const btnSubmit = document.getElementById('nip-btn-submit-pop-add');
+    const btnSpinner = document.getElementById('nip-btn-submit-pop-add-spinner');
+    const btnText = document.getElementById('nip-btn-submit-pop-add-text');
+
+    const payload = {
+      source_file: sourceFile,
+      psgc10: document.getElementById('nip-pop-add-psgc10')?.value.trim() || '',
+      barangay: document.getElementById('nip-pop-add-barangay')?.value.trim() || '',
+      total_pop: Number(document.getElementById('nip-pop-add-total-pop')?.value || 0),
+      household_pop: Number(document.getElementById('nip-pop-add-household-pop')?.value || 0),
+      households: Number(document.getElementById('nip-pop-add-households')?.value || 0),
+      nip_pop: Number(document.getElementById('nip-pop-add-nip-pop')?.value || 0)
+    };
+
+    if (btnSubmit) btnSubmit.disabled = true;
+    if (btnSpinner) btnSpinner.classList.remove('hidden');
+    if (btnText) btnText.textContent = 'Saving...';
+
+    try {
+      const res = await Api.post('/api/v1/nip/population/add', payload);
+      if (!res || !res.success) {
+        throw new Error(res?.message || 'Failed to add row to Excel.');
+      }
+
+      const data = res.data || {};
+      const current = Storage.nipPopulationCache?.get?.() || {
+        source_file: sourceFile,
+        citySummary: { totalPop: 0, householdPop: 0, households: 0 },
+        rows: []
+      };
+
+      const newRow = {
+        row_index: current.rows.length + 1,
+        excel_row: data.excel_row,
+        nip_row: data.nip_row || null,
+        psgc10: payload.psgc10 || '-',
+        barangay: payload.barangay,
+        total_pop: payload.total_pop,
+        household_pop: payload.household_pop,
+        households: payload.households,
+        nip_pop: payload.nip_pop,
+        nip_target: data.nip_target ?? (payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0)
+      };
+
+      current.rows.push(newRow);
+      Storage.nipPopulationCache?.save(current);
+
+      if (window.CHO?.Tables?.marawiPopulation) {
+        window.CHO.Tables.marawiPopulation.loadFromStorage();
+      }
+
+      if (feedbackBox) {
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+        feedbackBox.textContent = `Added "${payload.barangay}" at Excel Row ${data.excel_row} in ${sourceFile}.`;
+      }
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`Added "${payload.barangay}" to ${sourceFile}.`);
+      }
+
+      document.getElementById('nip-pop-add-form')?.reset();
+      Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.syncDownloadCardState();
+      this.hide();
+      Drawers.showStatusToast(true, 'Entry Saved', `Added "${payload.barangay}" at Excel Row ${data.excel_row}.`);
+      Drawers.showResyncToast(sourceFile);
+    } catch (err) {
+      if (feedbackBox) {
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
+        feedbackBox.textContent = `Error: ${err.message}`;
+      }
+      Drawers.showStatusToast(false, 'Add Failed', err.message || 'Could not add row to Excel.');
+      if (typeof Notifications.error === 'function') {
+        Notifications.error(err.message || 'Could not add row to Excel.');
+      }
+    } finally {
+      if (btnSubmit) btnSubmit.disabled = false;
+      if (btnSpinner) btnSpinner.classList.add('hidden');
+      if (btnText) btnText.textContent = 'Save New Entry to Excel';
+    }
+  }
+  // END - handleAdd
+}
+
+// =============================================================================
+// SUBCHILD CLASS 7: NipPopEditDrawer
+// Cloned from NipPopAddDrawer to edit existing rows in MARAWI POP 2024 (#drawer-nip-pop-edit)
+// =============================================================================
+export class NipPopEditDrawer extends BaseDrawerController {
+  // START - constructor
+  constructor() {
+    super('drawer-nip-pop-edit');
+  }
+  // END - constructor
+
+  // START - init: Binds edit form submission
+  init() {
+    super.init();
+    const form = document.getElementById('nip-pop-edit-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleEdit();
+      });
+    }
+  }
+  // END - init
+
+  // START - openForRow: Populates edit drawer fields from clicked table row and opens drawer
+  openForRow(row) {
+    if (!row) return;
+    const excelRow = row.excel_row || (row.row_index + 4);
+    document.getElementById('nip-pop-edit-excel-row').value = excelRow;
+    document.getElementById('nip-pop-edit-nip-row').value = row.nip_row || '';
+    document.getElementById('nip-pop-edit-row-index').value = row.row_index;
+    document.getElementById('nip-pop-edit-psgc10').value = row.psgc10 === '-' ? '' : row.psgc10;
+    document.getElementById('nip-pop-edit-barangay').value = row.barangay || '';
+    document.getElementById('nip-pop-edit-total-pop').value = row.total_pop ?? 0;
+    document.getElementById('nip-pop-edit-household-pop').value = row.household_pop ?? 0;
+    document.getElementById('nip-pop-edit-households').value = row.households ?? 0;
+    document.getElementById('nip-pop-edit-nip-pop').value = row.nip_pop ?? 0;
+
+    const rowBadge = document.getElementById('nip-pop-edit-row-badge');
+    if (rowBadge) rowBadge.textContent = `Row ${excelRow}`;
+
+    const feedbackBox = document.getElementById('nip-pop-edit-feedback');
+    if (feedbackBox) feedbackBox.classList.add('hidden');
+
+    this.show();
+  }
+  // END - openForRow
+
+  // START - handleEdit: Sends updated cell values to backend openpyxl mutator and updates Storage + Table
+  async handleEdit() {
+    const cachedPop = Storage.nipPopulationCache?.get?.();
+    const sourceFile = cachedPop?.source_file || Storage.nipWorkbooks?.getActiveWorkbook?.() || 'MARAWI NIP DATA - UPGRADED.xlsx';
+    const feedbackBox = document.getElementById('nip-pop-edit-feedback');
+    const btnSubmit = document.getElementById('nip-btn-submit-pop-edit');
+    const btnSpinner = document.getElementById('nip-btn-submit-pop-edit-spinner');
+    const btnText = document.getElementById('nip-btn-submit-pop-edit-text');
+
+    const rowIndex = Number(document.getElementById('nip-pop-edit-row-index')?.value || 0);
+    const excelRow = Number(document.getElementById('nip-pop-edit-excel-row')?.value || 0);
+    const nipRowVal = document.getElementById('nip-pop-edit-nip-row')?.value;
+
+    const payload = {
+      source_file: sourceFile,
+      excel_row: excelRow,
+      nip_row: nipRowVal ? Number(nipRowVal) : null,
+      psgc10: document.getElementById('nip-pop-edit-psgc10')?.value.trim() || '',
+      barangay: document.getElementById('nip-pop-edit-barangay')?.value.trim() || '',
+      total_pop: Number(document.getElementById('nip-pop-edit-total-pop')?.value || 0),
+      household_pop: Number(document.getElementById('nip-pop-edit-household-pop')?.value || 0),
+      households: Number(document.getElementById('nip-pop-edit-households')?.value || 0),
+      nip_pop: Number(document.getElementById('nip-pop-edit-nip-pop')?.value || 0)
+    };
+
+    if (btnSubmit) btnSubmit.disabled = true;
+    if (btnSpinner) btnSpinner.classList.remove('hidden');
+    if (btnText) btnText.textContent = 'Saving...';
+
+    try {
+      const res = await Api.post('/api/v1/nip/population/update', payload);
+      if (!res || !res.success) {
+        throw new Error(res?.message || 'Failed to update Excel cells.');
+      }
+
+      const data = res.data || {};
+      if (cachedPop && Array.isArray(cachedPop.rows)) {
+        const target = cachedPop.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
+        if (target) {
+          target.excel_row = data.excel_row || excelRow;
+          target.nip_row = data.nip_row || target.nip_row;
+          target.psgc10 = payload.psgc10 || '-';
+          target.barangay = payload.barangay;
+          target.total_pop = payload.total_pop;
+          target.household_pop = payload.household_pop;
+          target.households = payload.households;
+          target.nip_pop = payload.nip_pop;
+          target.nip_target = data.nip_target ?? (payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0);
+        }
+        Storage.nipPopulationCache?.save(cachedPop);
+      }
+
+      if (window.CHO?.Tables?.marawiPopulation) {
+        window.CHO.Tables.marawiPopulation.loadFromStorage();
+      }
+
+      if (feedbackBox) {
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
+        feedbackBox.textContent = `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`;
+      }
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`Updated "${payload.barangay}" in ${sourceFile}.`);
+      }
+
+      Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.syncDownloadCardState();
+      this.hide();
+      Drawers.showStatusToast(true, 'Excel Updated', `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`);
+      Drawers.showResyncToast(sourceFile);
+    } catch (err) {
+      if (feedbackBox) {
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
+        feedbackBox.textContent = `Error: ${err.message}`;
+      }
+      Drawers.showStatusToast(false, 'Update Failed', err.message || 'Could not update Excel cells.');
+      if (typeof Notifications.error === 'function') {
+        Notifications.error(err.message || 'Could not update Excel cells.');
+      }
+    } finally {
+      if (btnSubmit) btnSubmit.disabled = false;
+      if (btnSpinner) btnSpinner.classList.add('hidden');
+      if (btnText) btnText.textContent = 'Update Excel Cells';
+    }
+  }
+  // END - handleEdit
+}
+
+// =============================================================================
 // UNIFIED DRAWER MANAGER
 // Bootstraps and exports all individual subchild drawers
 // =============================================================================
@@ -1267,6 +1635,8 @@ export const Drawers = {
   generate: new NipGenerateDrawer(),
   reset: new NipResetDrawer(),
   upload: new NipUploadDrawer(),
+  popAdd: new NipPopAddDrawer(),
+  popEdit: new NipPopEditDrawer(),
   gate: new NipWorkspaceGate(),
 
   init() {
@@ -1275,7 +1645,184 @@ export const Drawers = {
     this.generate.init();
     this.reset.init();
     this.upload.init();
+    this.popAdd.init();
+    this.popEdit.init();
+
+    // Show global NIP resync banner & enforce download card disabled-state if resync is pending
+    const isNipPage = window.location.pathname.toLowerCase().includes('/nip/');
+    const pendingResync = Storage.nipResyncState?.getPending?.();
+    if (isNipPage && pendingResync) {
+      this.showResyncToast(pendingResync.source_file);
+    }
+    this.syncDownloadCardState();
+  },
+
+  // START - syncDownloadCardState: Disables #cho-nip-action-download-card while a resync is pending
+  syncDownloadCardState() {
+    const downloadCard = document.getElementById('cho-nip-action-download-card');
+    if (!downloadCard) return;
+
+    const pending = Storage.nipResyncState?.getPending?.();
+    if (pending) {
+      downloadCard.setAttribute('aria-disabled', 'true');
+      downloadCard.setAttribute('title', 'Please click Resync & Refresh in the top banner first.');
+      downloadCard.classList.add('opacity-50', 'grayscale-[35%]', 'cursor-not-allowed', 'pointer-events-none');
+    } else {
+      downloadCard.removeAttribute('aria-disabled');
+      downloadCard.removeAttribute('title');
+      downloadCard.classList.remove('opacity-50', 'grayscale-[35%]', 'cursor-not-allowed', 'pointer-events-none');
+    }
+  },
+  // END - syncDownloadCardState
+
+  // START - showStatusToast: Bottom-right auto-hiding Flowbite toast (if success -> emerald, else -> rose error)
+  showStatusToast(isSuccess, title, message) {
+    const existing = document.getElementById('cho-nip-status-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'cho-nip-status-toast';
+    toast.setAttribute('role', 'alert');
+
+    if (isSuccess) {
+      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-sm p-4 text-slate-700 bg-white border border-emerald-200 rounded-xl shadow-lg transition-all';
+      toast.innerHTML = `
+        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-emerald-600 bg-emerald-50 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="ms-3 text-xs flex-1 min-w-0">
+          <p class="font-bold text-slate-900">${title}</p>
+          <p class="text-slate-600 mt-0.5">${message}</p>
+        </div>
+        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        </button>
+      `;
+    } else {
+      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-sm p-4 text-slate-700 bg-white border border-rose-200 rounded-xl shadow-lg transition-all';
+      toast.innerHTML = `
+        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-rose-600 bg-rose-50 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <div class="ms-3 text-xs flex-1 min-w-0">
+          <p class="font-bold text-rose-700">${title}</p>
+          <p class="text-slate-600 mt-0.5 break-words">${message}</p>
+        </div>
+        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        </button>
+      `;
+    }
+
+    document.body.appendChild(toast);
+    document.getElementById('cho-nip-status-toast-close')?.addEventListener('click', () => toast.remove());
+
+    setTimeout(() => {
+      if (toast.isConnected) toast.remove();
+    }, isSuccess ? 4000 : 6000);
+  },
+  // END - showStatusToast
+
+  // START - showResyncToast: Wided top-center news banner globally on NIP pages with Resync & Refresh + emerald Save .xlsx buttons
+  showResyncToast(sourceFile) {
+    if (!window.location.pathname.toLowerCase().includes('/nip/')) return;
+    const existing = document.getElementById('cho-nip-resync-toast');
+    if (existing) existing.remove();
+
+    const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
+    const toast = document.createElement('div');
+    toast.id = 'cho-nip-resync-toast';
+    toast.setAttribute('role', 'banner');
+    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl px-4 py-3 text-slate-700 bg-white border border-slate-200 rounded-xl shadow-xl transition-all';
+    toast.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="inline-flex items-center justify-center shrink-0 w-9 h-9 text-cho-blue-900 bg-blue-50 rounded-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-900">Excel Data Updated</p>
+            <p class="text-[11px] text-slate-500 truncate">
+              Changes saved to <span class="font-semibold text-slate-700">${sourceFile}</span>. Click Resync to refresh your view &amp; cache.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="cho-nip-toast-resync-btn"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 rounded-lg transition-colors cursor-pointer">
+            Resync &amp; Refresh
+          </button>
+          <a id="cho-nip-toast-save-btn"
+             href="${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}"
+             class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
+            Save .xlsx
+          </a>
+          <button type="button" id="cho-nip-toast-close-btn" aria-label="Close"
+                  class="text-slate-400 hover:text-slate-700 rounded-lg p-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    document.getElementById('cho-nip-toast-close-btn')?.addEventListener('click', () => {
+      toast.remove();
+    });
+
+    document.getElementById('cho-nip-toast-save-btn')?.addEventListener('click', async (e) => {
+      const link = e.currentTarget;
+      link.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`);
+      Storage.nipResyncState?.clear();
+      Drawers.syncDownloadCardState();
+      try {
+        const res = await fetch(`${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const freshFile = new File([blob], sourceFile, { type: blob.type });
+          await Drawers.load.parseWorkbookDashboardStats(freshFile);
+        }
+      } catch (err) {
+        console.warn('[ResyncToast] Save .xlsx resync error:', err);
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 400);
+    });
+
+    document.getElementById('cho-nip-toast-resync-btn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Resyncing...';
+      try {
+        const res = await fetch(`${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const freshFile = new File([blob], sourceFile, { type: blob.type });
+          await Drawers.load.parseWorkbookDashboardStats(freshFile);
+        }
+        Storage.nipResyncState?.clear();
+        Drawers.syncDownloadCardState();
+      } catch (err) {
+        console.warn('[ResyncToast] Failed to re-fetch workbook:', err);
+      }
+      window.location.reload();
+    });
   }
+  // END - showResyncToast
 };
 
 export const Drawer = Drawers;

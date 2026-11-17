@@ -75,9 +75,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </span>
                 </div>
 
-                <!-- Big Value with Money Font -->
+                <!-- Big Value with Money Font (Flowbite Skeleton while awaiting data) -->
                 <div id="cho-stat-val-barangays" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    --
+                    <div role="status" class="animate-pulse py-1.5">
+                        <div class="h-8 bg-white/30 rounded-md w-28"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -123,9 +126,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </span>
                 </div>
 
-                <!-- Big Value with Money Font -->
+                <!-- Big Value with Money Font (Flowbite Skeleton while awaiting data) -->
                 <div id="cho-stat-val-infants" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    --
+                    <div role="status" class="animate-pulse py-1.5">
+                        <div class="h-8 bg-white/30 rounded-md w-28"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -171,9 +177,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </span>
                 </div>
 
-                <!-- Big Value with Money Font -->
+                <!-- Big Value with Money Font (Flowbite Skeleton while awaiting data) -->
                 <div id="cho-stat-val-childrens" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    --
+                    <div role="status" class="animate-pulse py-1.5">
+                        <div class="h-8 bg-white/30 rounded-md w-28"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -219,9 +228,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </span>
                 </div>
 
-                <!-- Big Value with Money Font -->
+                <!-- Big Value with Money Font (Flowbite Skeleton while awaiting data) -->
                 <div id="cho-stat-val-coverage" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                    --
+                    <div role="status" class="animate-pulse py-1.5">
+                        <div class="h-8 bg-white/30 rounded-md w-24"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
 
                 <!-- Horizontal Divider Line -->
@@ -283,7 +295,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-load" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-1.5">
+                <div id="cho-nip-action-img-wrap-load" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-1.5">
                     <img id="cho-nip-action-img-load" src="<?= asset('images/systems/nip-preview.svg') ?>" alt="Load Excel Sheet" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                 </div>
             </button>
@@ -311,7 +323,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-generate" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                <div id="cho-nip-action-img-wrap-generate" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-2">
                     <img id="cho-nip-action-img-generate" src="<?= asset('images/icons/generate.svg') ?>" alt="Generate Sheet" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                 </div>
             </button>
@@ -339,7 +351,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-reset" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                <div id="cho-nip-action-img-wrap-reset" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-2">
                     <img id="cho-nip-action-img-reset" src="<?= asset('images/icons/reset.svg') ?>" alt="Reset Quarter" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                 </div>
             </button>
@@ -356,15 +368,15 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                     <div id="cho-nip-action-text-download" class="min-w-0">
                         <h3 id="cho-nip-action-title-download" class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cho-blue-700 transition-colors truncate">
-                            Export Master Workbook
+                            Save Workbook (.xlsx)
                         </h3>
                         <p id="cho-nip-action-desc-download" class="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-1">
-                            Direct download formula-intact .xlsx file
+                            Save updated formula-intact Excel file
                         </p>
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-download" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                <div id="cho-nip-action-img-wrap-download" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-2">
                     <img id="cho-nip-action-img-download" src="<?= asset('images/icons/export.svg') ?>" alt="Export Master" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                 </div>
             </a>
@@ -392,7 +404,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-upload" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                <div id="cho-nip-action-img-wrap-upload" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-2">
                     <img id="cho-nip-action-img-upload" src="<?= asset('images/icons/upload.svg') ?>" alt="Upload Workbook" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                 </div>
             </button>
@@ -416,7 +428,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     </div>
                 </div>
                 <!-- Right Side Graphic / Preview Thumbnail (Decreased Height) -->
-                <div id="cho-nip-action-img-wrap-census" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2">
+                <div id="cho-nip-action-img-wrap-census" class="shrink-0 w-24 h-16 sm:w-28 sm:h-18 bg-transparent flex items-center justify-center p-2">
                     <img id="cho-nip-action-img-census" src="<?= asset('images/icons/census.svg') ?>" alt="Barangay Master" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                 </div>
             </div>
@@ -454,13 +466,55 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
         </button>
     </div>
 
+    <!-- Flowbite Charts Skeleton (Shown briefly while charts initialize) -->
+    <div id="cho-nip-charts-skeleton" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Bar Chart Widget Placeholder Skeleton -->
+        <div role="status" class="lg:col-span-8 bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs animate-pulse">
+            <div class="h-3 bg-slate-200 rounded-full w-56 mb-2.5"></div>
+            <div class="h-2.5 bg-slate-200 rounded-full w-40 mb-6"></div>
+            <div class="flex items-baseline mt-4 gap-3 sm:gap-4 h-72 pt-6">
+                <div class="w-full bg-slate-200 rounded-t-lg h-56"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-44"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-64"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-48"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-60"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-52"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-64"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-40"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-56"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-36"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-48"></div>
+                <div class="w-full bg-slate-200 rounded-t-lg h-60"></div>
+            </div>
+            <span class="sr-only">Loading bar chart...</span>
+        </div>
+
+        <!-- Donut Chart Widget Placeholder Skeleton -->
+        <div role="status" class="lg:col-span-4 bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs animate-pulse flex flex-col justify-between">
+            <div>
+                <div class="h-3 bg-slate-200 rounded-full w-40 mb-2.5"></div>
+                <div class="h-2.5 bg-slate-200 rounded-full w-32 mb-6"></div>
+                <div class="flex items-center justify-center py-4">
+                    <div class="w-40 h-40 rounded-full border-[18px] border-slate-200"></div>
+                </div>
+            </div>
+            <div class="space-y-2.5 pt-4 border-t border-slate-100">
+                <div class="flex justify-between"><div class="h-2.5 bg-slate-200 rounded-full w-24"></div><div class="h-2.5 bg-slate-200 rounded-full w-16"></div></div>
+                <div class="flex justify-between"><div class="h-2.5 bg-slate-200 rounded-full w-24"></div><div class="h-2.5 bg-slate-200 rounded-full w-16"></div></div>
+                <div class="flex justify-between"><div class="h-2.5 bg-slate-200 rounded-full w-24"></div><div class="h-2.5 bg-slate-200 rounded-full w-16"></div></div>
+                <div class="flex justify-between"><div class="h-2.5 bg-slate-200 rounded-full w-28"></div><div class="h-2.5 bg-slate-200 rounded-full w-16"></div></div>
+            </div>
+            <span class="sr-only">Loading donut chart...</span>
+        </div>
+    </div>
+
     <!-- Hidden Charts Container (Revealed dynamically by charts.js when workbook data is scanned & loaded) -->
     <div id="cho-nip-charts-container" class="hidden space-y-4">
 
         <!-- 2-Column Responsive Charts Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <!-- Chart 1: 18 Antigens Coverage Performance (Bar/Column Chart) -->
-            <div class="lg:col-span-8 bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3">
+            <div class="lg:col-span-8 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                     <div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-800">
@@ -474,11 +528,11 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         Coverage Benchmark: 95%
                     </span>
                 </div>
-                <div id="cho-nip-antigens-chart" class="w-full min-h-[340px]"></div>
+                <div id="cho-nip-antigens-chart" class="w-full min-w-0 min-h-[580px]"></div>
             </div>
 
             <!-- Chart 2: Catchment Area Quotas / FIC Contribution (Donut Chart) -->
-            <div class="lg:col-span-4 bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3 flex flex-col justify-between">
+            <div class="lg:col-span-4 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <div>
@@ -490,7 +544,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                             </p>
                         </div>
                     </div>
-                    <div id="cho-nip-catchments-chart" class="w-full min-h-[280px] flex items-center justify-center"></div>
+                    <div id="cho-nip-catchments-chart" class="w-full min-h-[220px] flex items-center justify-center"></div>
+                    <div id="cho-nip-catchments-legend" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 text-xs"></div>
                 </div>
 
                 <!-- Quick Catchment Quota Summary Table -->
@@ -585,8 +640,15 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
             <!-- Submit Button (Medium Size with cho-nip-dashboard-title text color bg-cho-blue-900) -->
             <button type="submit" 
                     id="nip-btn-submit-load" 
-                    class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 active:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer">
-                Switch Active Sheet
+                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 active:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
+                <div id="nip-btn-submit-load-spinner" role="status" class="hidden text-center">
+                    <svg aria-hidden="true" class="inline w-5 h-5 text-cho-blue-200/40 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                    </svg>
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <span id="nip-btn-submit-load-text">Switch Active Sheet</span>
             </button>
         </form>
     </div>
