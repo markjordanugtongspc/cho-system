@@ -172,14 +172,25 @@ export class MarawiPopulationTable extends BaseExcelTable {
       });
     }
 
-    // Delegated click listener for row Edit pencil action button
+    // Delegated click listener for row Edit pencil & Delete trashbin action buttons
     this.tbodyEl.addEventListener('click', (e) => {
       const editBtn = e.target.closest('[data-pop-edit-index]');
-      if (!editBtn) return;
-      const idx = Number(editBtn.dataset.popEditIndex);
-      const row = this.rows.find((r) => r.row_index === idx);
-      if (row && window.CHO?.Drawers?.popEdit) {
-        window.CHO.Drawers.popEdit.openForRow(row);
+      if (editBtn) {
+        const idx = Number(editBtn.dataset.popEditIndex);
+        const row = this.rows.find((r) => r.row_index === idx);
+        if (row && window.CHO?.Drawers?.popEdit) {
+          window.CHO.Drawers.popEdit.openForRow(row);
+        }
+        return;
+      }
+
+      const deleteBtn = e.target.closest('[data-pop-delete-index]');
+      if (deleteBtn) {
+        const idx = Number(deleteBtn.dataset.popDeleteIndex);
+        const row = this.rows.find((r) => r.row_index === idx);
+        if (row && window.CHO?.Drawers?.popDelete) {
+          window.CHO.Drawers.popDelete.openForRow(row);
+        }
       }
     });
 
@@ -333,15 +344,28 @@ export class MarawiPopulationTable extends BaseExcelTable {
           <td class="px-4 py-3 text-right font-money font-medium ${hasNip ? 'text-emerald-600' : 'text-slate-400'} whitespace-nowrap" ${hasNip ? rollAttr(row.nip_pop) : ''}>${hasNip ? (isInitialBatch ? '0' : row.nip_pop.toLocaleString()) : '—'}</td>
           <td class="px-4 py-3 text-right font-money font-bold ${hasNip ? 'text-cho-blue-900' : 'text-slate-400'} whitespace-nowrap bg-slate-50/80" ${hasNip ? rollAttr(row.nip_target, 1) : ''}>${hasNip ? (isInitialBatch ? '0' : row.nip_target.toLocaleString()) : '—'}</td>
           <td class="px-4 py-3 text-center whitespace-nowrap">
-            <button type="button"
-                    data-pop-edit-index="${row.row_index}"
-                    title="Edit ${this.escapeHtml(row.barangay)} in Excel"
-                    aria-label="Edit ${this.escapeHtml(row.barangay)}"
-                    class="inline-flex items-center justify-center p-1.5 text-cho-blue-900 hover:text-white hover:bg-cho-blue-900 rounded-lg transition-colors cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-              </svg>
-            </button>
+            <div class="inline-flex items-center justify-center gap-1">
+              <button type="button"
+                      id="cho-nip-pop-edit-btn-${row.row_index}"
+                      data-pop-edit-index="${row.row_index}"
+                      title="Edit ${this.escapeHtml(row.barangay)} in Excel"
+                      aria-label="Edit ${this.escapeHtml(row.barangay)}"
+                      class="inline-flex items-center justify-center p-1.5 text-cho-blue-900 hover:text-white hover:bg-cho-blue-900 rounded-lg transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+              </button>
+              <button type="button"
+                      id="cho-nip-pop-delete-btn-${row.row_index}"
+                      data-pop-delete-index="${row.row_index}"
+                      title="Delete ${this.escapeHtml(row.barangay)} data from Excel"
+                      aria-label="Delete ${this.escapeHtml(row.barangay)}"
+                      class="inline-flex items-center justify-center p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 rounded-lg transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
           </td>
         </tr>
       `;

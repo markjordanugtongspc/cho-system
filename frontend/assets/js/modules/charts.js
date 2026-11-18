@@ -279,91 +279,157 @@ export const Charts = {
   },
   // END - initNipDashboardCharts
 
-  // START - renderNipAntigenChart: Renders 18 antigens target vs accomplished vs coverage
+  // START - renderNipAntigenChart: Renders 18 antigens dumbbell / lollipop chart (ANNUAL!A11:F28)
   renderNipAntigenChart(antigens) {
     const el = document.getElementById('cho-nip-antigens-chart');
     if (!el || typeof ApexCharts === 'undefined') return;
 
-    // Filter valid antigens
-    const validAntigens = antigens.filter(a => a.name && a.name.trim() !== '');
-    const categories = validAntigens.map(a => a.name.replace(/^\d+\.\s*/, ''));
-    const targetData = validAntigens.map(a => a.target || 4965);
-    const accomplishedData = validAntigens.map(a => a.total || 0);
+    const validAntigens = antigens.filter((a) => a.name && a.name.trim() !== '');
+    const seriesData = validAntigens.map((a) => {
+      const label = a.name
+        .replace(/\u00a0/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/^\d+\.\s*/, '')
+        .replace(/\s*-\s*Total$/i, '')
+        .trim();
+      const target = Number(a.target || 0);
+      const accomplished = Number(a.total || 0);
+      return {
+        x: label,
+        y: [accomplished, target],
+        meta: {
+          name: label,
+          target,
+          accomplished,
+          male: Number(a.male || 0),
+          female: Number(a.female || 0)
+        }
+      };
+    });
 
     const isDark = this.isDark();
     const options = {
       series: [
         {
-          name: 'Annual Target',
-          data: targetData,
-          color: '#94a3b8'
-        },
-        {
-          name: 'Immunized Accomplished',
-          data: accomplishedData,
-          color: '#005bf8'
+          name: 'Accomplished vs Target',
+          data: seriesData
         }
       ],
       chart: {
-        type: 'bar',
+        type: 'rangeBar',
         width: '100%',
-        height: 360,
+        height: 560,
         redrawOnParentResize: true,
         redrawOnWindowResize: true,
         fontFamily: 'Poppins, Averta, sans-serif',
         toolbar: { show: false },
+        zoom: { enabled: false },
         background: 'transparent'
       },
       plotOptions: {
         bar: {
-          horizontal: false,
-          columnWidth: '55%',
-          borderRadius: 4
+          isDumbbell: true,
+          horizontal: true,
+          columnWidth: 4,
+          dumbbellColors: [['#005bf8', '#94a3b8']]
         }
       },
+      colors: ['#cbd5e1'],
+      fill: {
+        type: 'solid',
+        opacity: 0.75
+      },
       dataLabels: { enabled: false },
-      stroke: { show: true, width: 2, colors: ['transparent'] },
       xaxis: {
-        categories: categories,
+        type: 'numeric',
         labels: {
-          rotate: -45,
-          rotateAlways: true,
+          formatter: (val) => Math.round(Number(val)).toLocaleString(),
           style: {
             colors: isDark ? '#94a3b8' : '#64748b',
             fontSize: '11px',
             fontWeight: 500
           }
-        }
+        },
+        axisBorder: { show: false },
+        axisTicks: { show: false }
       },
       yaxis: {
-        title: {
-          text: 'Infants / Cohort',
-          style: { color: isDark ? '#94a3b8' : '#64748b' }
-        },
         labels: {
-          formatter: (val) => Number(val).toLocaleString(),
-          style: { colors: isDark ? '#94a3b8' : '#64748b' }
-        }
-      },
-      fill: { opacity: 1 },
-      tooltip: {
-        theme: isDark ? 'dark' : 'light',
-        y: {
-          formatter: (val) => `${Number(val).toLocaleString()} infants`
-        }
-      },
-      legend: {
-        show: true,
-        position: 'top',
-        horizontalAlign: 'right',
-        labels: {
-          colors: isDark ? '#cbd5e1' : '#334155'
+          maxWidth: 165,
+          style: {
+            colors: isDark ? '#cbd5e1' : '#334155',
+            fontSize: '11px',
+            fontWeight: 600
+          }
         }
       },
       grid: {
         borderColor: isDark ? '#334155' : '#f1f5f9',
-        strokeDashArray: 4
-      }
+        strokeDashArray: 4,
+        xaxis: { lines: { show: true } },
+        yaxis: { lines: { show: false } }
+      },
+      legend: {
+        show: true,
+        showForSingleSeries: true,
+        position: 'top',
+        horizontalAlign: 'right',
+        customLegendItems: ['Immunized Accomplished', 'Eligible Target'],
+        markers: {
+          fillColors: ['#005bf8', '#94a3b8']
+        },
+        labels: {
+          colors: isDark ? '#cbd5e1' : '#334155'
+        }
+      },
+      tooltip: {
+        theme: isDark ? 'dark' : 'light',
+        custom: ({ seriesIndex, dataPointIndex, w }) => {
+          const point = w.config.series[seriesIndex]?.data[dataPointIndex];
+          if (!point || !point.meta) return '';
+          const { name, target, accomplished, male, female } = point.meta;
+          const pct = target > 0 ? ((accomplished / target) * 100).toFixed(1) : '0.0';
+          const genderRow = (male > 0 || female > 0)
+            ? `<div class="text-[11px] text-slate-500 mt-1">Male: <strong>${male.toLocaleString()}</strong> &bull; Female: <strong>${female.toLocaleString()}</strong></div>`
+            : '';
+          return `
+            <div class="px-3 py-2 text-xs bg-white text-slate-800 border border-slate-200 rounded-lg shadow-md">
+              <div class="font-bold text-slate-900 mb-1">${name}</div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#005bf8]"></span>Accomplished</span>
+                <strong class="font-mono text-[#005bf8]">${accomplished.toLocaleString()}</strong>
+              </div>
+              <div class="flex items-center justify-between gap-4 mt-0.5">
+                <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#94a3b8]"></span>Target</span>
+                <strong class="font-mono text-slate-700">${target.toLocaleString()}</strong>
+              </div>
+              <div class="flex items-center justify-between gap-4 mt-1 pt-1 border-t border-slate-100">
+                <span class="text-slate-500">Coverage</span>
+                <strong class="font-mono text-emerald-600">${pct}%</strong>
+              </div>
+              ${genderRow}
+            </div>
+          `;
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 640,
+          options: {
+            chart: { height: 500 },
+            yaxis: {
+              labels: {
+                maxWidth: 110,
+                style: { fontSize: '10px' }
+              }
+            },
+            legend: {
+              position: 'bottom',
+              horizontalAlign: 'center'
+            }
+          }
+        }
+      ]
     };
 
     if (this.instances.nipAntigens) {
@@ -408,7 +474,7 @@ export const Charts = {
       colors: palette,
       chart: {
         type: 'donut',
-        height: 220,
+        height: 300,
         fontFamily: 'Poppins, Averta, sans-serif',
         background: 'transparent'
       },
@@ -416,13 +482,21 @@ export const Charts = {
       plotOptions: {
         pie: {
           donut: {
-            size: '70%',
+            size: '68%',
             labels: {
               show: true,
+              name: {
+                fontSize: '13px',
+                fontWeight: 600
+              },
+              value: {
+                fontSize: '24px',
+                fontWeight: 800
+              },
               total: {
                 show: true,
                 label: 'Total FIC',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontWeight: 600,
                 color: isDark ? '#94a3b8' : '#64748b',
                 formatter: (w) => {
@@ -450,14 +524,13 @@ export const Charts = {
     this.instances.nipCatchments = new ApexCharts(el, options);
     this.instances.nipCatchments.render();
 
-    // Render 2-column (4 left / 4 right) Tailwind legend
+    // Render 2-column Tailwind legend
     if (legendEl) {
       const displayLabels = labels.length > 0 ? labels : ['No Data'];
       legendEl.innerHTML = displayLabels.map((label, idx) => {
         const color = palette[idx % palette.length];
-        const isRightCol = idx % 2 === 1;
         return `
-          <div class="flex items-center gap-2 min-w-0 ${isRightCol ? 'justify-end' : ''}">
+          <div class="flex items-center gap-2 min-w-0">
             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color};"></span>
             <span class="truncate text-slate-700 font-medium">${label}</span>
           </div>
@@ -465,18 +538,18 @@ export const Charts = {
       }).join('');
     }
 
-    // Render Catchment summary table rows
+    // Render all Catchment summary rows to occupy full card height cleanly
     if (summaryEl && valid.length > 0) {
-      summaryEl.innerHTML = valid.slice(0, 4).map(c => {
+      summaryEl.innerHTML = valid.map(c => {
         const sharePct = c.share_pct ?? (
           totalFicAccomplished > 0
             ? ((Number(c.fic_total) / totalFicAccomplished) * 100).toFixed(1)
             : '0.0'
         );
         return `
-        <div class="flex items-center justify-between text-slate-600">
-          <span class="font-medium text-slate-800">${c.name} <span class="text-rose-600">(${c.barangays} Brgys)</span></span>
-          <span class="font-bold text-emerald-600">${Number(c.fic_total).toLocaleString()} FIC <span class="text-slate-400 font-normal">(${sharePct}%)</span></span>
+        <div class="flex items-center justify-between gap-2 py-1 text-slate-600">
+          <span class="font-medium text-slate-800 truncate">${c.name} <span class="text-rose-600">(${c.barangays} Brgys)</span></span>
+          <span class="font-bold text-emerald-600 whitespace-nowrap">${Number(c.fic_total).toLocaleString()} FIC <span class="text-slate-400 font-normal">(${sharePct}%)</span></span>
         </div>
       `;
       }).join('');

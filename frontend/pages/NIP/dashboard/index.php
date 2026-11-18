@@ -119,7 +119,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Top Row: Label & Index -->
                 <div id="cho-stat-header-infants" class="flex items-center justify-between">
                     <span id="cho-stat-label-infants" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                        Total Population
+                        Eligible Population
                     </span>
                     <span id="cho-stat-idx-infants" class="text-xs font-black tracking-widest text-white/60">
                         02
@@ -143,7 +143,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-infants" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                        <span>👥</span> Master Pop
+                        <span>👥</span> Eligible Pop
                     </span>
                 </div>
             </div>
@@ -513,43 +513,43 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- 2-Column Responsive Charts Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <!-- Chart 1: 18 Antigens Coverage Performance (Bar/Column Chart) -->
-            <div class="lg:col-span-8 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <!-- Chart 1: 18 Antigens Coverage Performance (Dumbbell / Lollipop Chart from ANNUAL!A11:F28) -->
+            <div class="lg:col-span-8 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-100">
                     <div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-800">
                             18 Antigens Routine Immunization Performance
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5">
-                            Target vs Accomplished vs Coverage % by Vaccine Type
+                            Dumbbell / Lollipop Comparison (ANNUAL A11:F28 &bull; Target vs Accomplished)
                         </p>
                     </div>
-                    <span class="text-xs font-semibold px-2 py-1 bg-slate-100 text-slate-700 rounded-lg">
+                    <span class="self-start sm:self-auto text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg whitespace-nowrap">
                         Coverage Benchmark: 95%
                     </span>
                 </div>
-                <div id="cho-nip-antigens-chart" class="w-full min-w-0 min-h-[580px]"></div>
+                <div id="cho-nip-antigens-chart" class="w-full min-w-0 min-h-[500px] sm:min-h-[560px]"></div>
             </div>
 
             <!-- Chart 2: Catchment Area Quotas / FIC Contribution (Donut Chart) -->
-            <div class="lg:col-span-4 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3 flex flex-col justify-between">
-                <div>
+            <div class="lg:col-span-4 min-w-0 overflow-hidden bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3">
+                <div class="space-y-3">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <div>
                             <h3 class="text-sm sm:text-base font-bold text-slate-800">
                                 CHO Catchment Shares
                             </h3>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                FIC distribution across 4 City Catchments
+                                FIC distribution across City Catchments
                             </p>
                         </div>
                     </div>
-                    <div id="cho-nip-catchments-chart" class="w-full min-h-[220px] flex items-center justify-center"></div>
-                    <div id="cho-nip-catchments-legend" class="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 text-xs"></div>
+                    <div id="cho-nip-catchments-chart" class="w-full min-h-[290px] sm:min-h-[300px] flex items-center justify-center"></div>
+                    <div id="cho-nip-catchments-legend" class="grid grid-cols-2 gap-x-4 gap-y-2 p-2.5 bg-slate-50/80 border border-slate-100 rounded-xl text-xs"></div>
                 </div>
 
                 <!-- Quick Catchment Quota Summary Table -->
-                <div id="cho-nip-catchments-summary" class="border-t border-slate-100 pt-3 text-xs space-y-1.5">
+                <div id="cho-nip-catchments-summary" class="border-t border-slate-100 pt-2.5 text-xs divide-y divide-slate-100/80">
                     <!-- Populated dynamically by charts.js -->
                 </div>
             </div>

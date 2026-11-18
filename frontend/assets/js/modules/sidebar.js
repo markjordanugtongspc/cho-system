@@ -25,9 +25,9 @@ class NavigationHighlighter {
     const path = this.currentPath.replace(/\/$/, '');
     const isNipDashboard = path.includes('/nip/dashboard');
     const isNipPopulation = path.includes('/nip/population');
-    const isMainHome = (path.includes('/dashboard') && !path.includes('/nip')) || 
-                       path.endsWith('/cho-system') || 
-                       path.endsWith('/cho-system/');
+    const isMainHome = (path.includes('/dashboard') && !path.includes('/nip')) ||
+      path.endsWith('/cho-system') ||
+      path.endsWith('/cho-system/');
 
     const homeLink = document.getElementById('cho-sidebar-link-dashboard');
     const homeIcon = document.getElementById('cho-sidebar-icon-dashboard');
@@ -38,51 +38,51 @@ class NavigationHighlighter {
 
     if (isNipDashboard && nipLink) {
       // START - Active State Styling for NIP Dashboard Subitem
-      nipLink.classList.remove('text-body', 'hover:bg-neutral-tertiary', 'hover:text-fg-brand');
+      nipLink.classList.remove('text-white/80', 'text-white/90', 'hover:bg-white/10', 'hover:text-white');
       nipLink.classList.add(
-        'bg-neutral-tertiary',
-        'text-fg-brand',
+        'bg-white',
+        'text-cho-blue-900',
         'font-bold',
         'shadow-xs'
       );
 
       if (nipIcon) {
-        nipIcon.classList.remove('text-slate-400', 'group-hover:text-fg-brand');
-        nipIcon.classList.add('text-fg-brand');
+        nipIcon.classList.remove('text-white/75', 'text-white/85', 'group-hover:text-white');
+        nipIcon.classList.add('text-cho-blue-900');
       }
 
       nipLink.setAttribute('aria-current', 'page');
       // END - Active State Styling for NIP Dashboard Subitem
     } else if (isNipPopulation && nipPopLink) {
       // START - Active State Styling for Marawi Population Subitem
-      nipPopLink.classList.remove('text-body', 'hover:bg-neutral-tertiary', 'hover:text-fg-brand');
+      nipPopLink.classList.remove('text-white/80', 'text-white/90', 'hover:bg-white/10', 'hover:text-white');
       nipPopLink.classList.add(
-        'bg-neutral-tertiary',
-        'text-fg-brand',
+        'bg-white',
+        'text-cho-blue-900',
         'font-bold',
         'shadow-xs'
       );
 
       if (nipPopIcon) {
-        nipPopIcon.classList.remove('text-slate-400', 'group-hover:text-fg-brand');
-        nipPopIcon.classList.add('text-fg-brand');
+        nipPopIcon.classList.remove('text-white/75', 'text-white/85', 'group-hover:text-white');
+        nipPopIcon.classList.add('text-cho-blue-900');
       }
 
       nipPopLink.setAttribute('aria-current', 'page');
       // END - Active State Styling for Marawi Population Subitem
     } else if (isMainHome && homeLink) {
       // START - Active State Styling for Main Homepage Route
-      homeLink.classList.remove('text-body', 'hover:bg-neutral-tertiary', 'hover:text-fg-brand');
+      homeLink.classList.remove('text-white/85', 'text-white/95', 'hover:bg-white/10', 'hover:text-white');
       homeLink.classList.add(
-        'bg-neutral-tertiary',
-        'text-fg-brand',
+        'bg-white',
+        'text-cho-blue-900',
         'font-bold',
         'shadow-xs'
       );
 
       if (homeIcon) {
-        homeIcon.classList.remove('group-hover:text-fg-brand');
-        homeIcon.classList.add('text-fg-brand');
+        homeIcon.classList.remove('text-white/80', 'text-white/90', 'group-hover:text-white');
+        homeIcon.classList.add('text-cho-blue-900');
       }
 
       homeLink.setAttribute('aria-current', 'page');
@@ -95,12 +95,11 @@ class NavigationHighlighter {
    */
   clearActive() {
     document.querySelectorAll('#cho-sidebar-nav-list a').forEach((link) => {
-      link.classList.remove('bg-neutral-tertiary', 'text-fg-brand', 'font-bold', 'shadow-xs');
-      link.classList.add('text-body');
+      link.classList.remove('bg-white', 'text-cho-blue-900', 'font-bold', 'shadow-xs');
       link.removeAttribute('aria-current');
       const icon = link.querySelector('svg');
       if (icon) {
-        icon.classList.remove('text-fg-brand');
+        icon.classList.remove('text-cho-blue-900');
       }
     });
   }
@@ -340,18 +339,117 @@ class DropdownManager {
 }
 // END - DropdownManager
 
-// START - Sidebar: Main export unifying navigation highlights, drawer control, and dropdowns
+// START - BackgroundSlideshow: Flowbite/TailwindCSS 15s crossfade slideshow for sidebar background images
+class BackgroundSlideshow {
+  constructor() {
+    this.intervalMs = 15000;
+    this.maxErrors = 3;
+    this.errorCount = 0;
+    this.isPaused = false;
+    this.showingSecond = false;
+    this.timerId = null;
+    this.slide1 = null;
+    this.slide2 = null;
+    this.slide2Failed = false;
+  }
+
+  /**
+   * Initializes the 15-second sidebar background slideshow with bounded error handling
+   */
+  init() {
+    this.slide1 = document.getElementById('cho-sidebar-bg-slide-1');
+    this.slide2 = document.getElementById('cho-sidebar-bg-slide-2');
+    if (!this.slide1 || !this.slide2) return;
+
+    this.slide2.addEventListener('error', () => {
+      this.slide2Failed = true;
+      this.handleImageError(this.slide2?.getAttribute('src') || 'CHO-Building2.png');
+    });
+
+    this.slide2.addEventListener('load', () => {
+      if (this.slide2.naturalWidth > 0) {
+        this.slide2Failed = false;
+      }
+    });
+
+    this.timerId = window.setInterval(() => this.swapSlide(), this.intervalMs);
+  }
+
+  /**
+   * Crossfades between CHO-Building.png and CHO-Building2.png; falls back to CHO-Building.png on missing image
+   */
+  swapSlide() {
+    if (this.isPaused || !this.slide1 || !this.slide2) return;
+
+    if (!this.showingSecond) {
+      const isSlide2Ready = !this.slide2Failed && this.slide2.complete && this.slide2.naturalWidth > 0;
+      if (!isSlide2Ready) {
+        this.stayOnPrimary();
+        this.handleImageError(this.slide2.getAttribute('src') || 'CHO-Building2.png');
+        return;
+      }
+
+      this.slide1.classList.remove('opacity-100');
+      this.slide1.classList.add('opacity-0');
+      this.slide2.classList.remove('opacity-0');
+      this.slide2.classList.add('opacity-100');
+      this.showingSecond = true;
+    } else {
+      this.stayOnPrimary();
+      this.showingSecond = false;
+    }
+  }
+
+  /**
+   * Keeps CHO-Building.png visible as the safe fallback background
+   */
+  stayOnPrimary() {
+    if (!this.slide1 || !this.slide2) return;
+    this.slide2.classList.remove('opacity-100');
+    this.slide2.classList.add('opacity-0');
+    this.slide1.classList.remove('opacity-0');
+    this.slide1.classList.add('opacity-100');
+    this.showingSecond = false;
+  }
+
+  /**
+   * Logs up to 3 errors to console, then pauses slideshow until page refresh
+   * @param {string} imageSrc
+   */
+  handleImageError(imageSrc) {
+    if (this.isPaused) return;
+    this.errorCount += 1;
+
+    console.error(
+      `[Sidebar Slideshow] Image not detected (${this.errorCount}/${this.maxErrors}): ${imageSrc}. Staying on CHO-Building.png.`
+    );
+
+    if (this.errorCount >= this.maxErrors) {
+      this.isPaused = true;
+      if (this.timerId !== null) {
+        window.clearInterval(this.timerId);
+        this.timerId = null;
+      }
+      console.warn('[Sidebar Slideshow] Paused after 3 image errors. Refresh the page to retry.');
+    }
+  }
+}
+// END - BackgroundSlideshow
+
+// START - Sidebar: Main export unifying navigation highlights, drawer control, dropdowns, and background slideshow
 export const Sidebar = {
   highlighter: new NavigationHighlighter(),
   routeDetector: ActiveRouteDetector,
   drawer: new DrawerManager(),
   dropdown: new DropdownManager(),
+  slideshow: new BackgroundSlideshow(),
 
   init() {
     this.drawer.initEvents();
     this.highlighter.highlightActive();
     ActiveRouteDetector.applyDynamicActiveState();
     this.dropdown.initDropdownPersistence();
+    this.slideshow.init();
   }
 };
 // END - Sidebar

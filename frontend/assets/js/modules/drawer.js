@@ -646,90 +646,146 @@ export class NipLoadDrawer extends BaseDrawerController {
       };
 
       const dashSheet = wb.getWorksheet('DASHBOARD');
+      const annualSheet = wb.getWorksheet('ANNUAL');
       const hlSheet = wb.getWorksheet('H-L');
+      const existingDash = Storage.nipDashboardCache?.get?.();
+      const b8Val = dashSheet ? dashSheet.getCell('B8').value : null;
+      const hasMissingCachedFormula = Boolean(
+        b8Val && typeof b8Val === 'object' && b8Val.formula && (b8Val.result === undefined || b8Val.result === null)
+      );
 
-      // 1. Barangays from DASHBOARD!B8 & B9
-      const barangayVal = dashSheet ? getNum(dashSheet.getCell('B8').value) : 0;
-      const barangaySub = dashSheet ? getText(dashSheet.getCell('B9').value, 'No Barangay Data') : 'No Barangay Data';
+      if (hasMissingCachedFormula && existingDash && existingDash.source_file === file.name && existingDash.stats?.barangayVal > 0 && !annualSheet) {
+        this.applyDashboardData(existingDash);
+      } else {
+        // 1. Total Population / Barangays Card (#cho-stat-val-barangays) from ANNUAL!F5 (fallback DASHBOARD!B8)
+        const barangayVal = annualSheet
+          ? Math.round(getNum(annualSheet.getCell('F5').value))
+          : (dashSheet ? Math.round(getNum(dashSheet.getCell('B8').value)) : 0);
+        const barangaySub = dashSheet ? getText(dashSheet.getCell('B9').value, 'Marawi City Census') : 'Marawi City Census';
 
-      // 2. Total Population from H-L!B3:B76 & label from DASHBOARD!D9
-      let totalPop = 0;
-      if (hlSheet) {
-        for (let r = 3; r <= 76; r++) {
-          totalPop += getNum(hlSheet.getCell(`B${r}`).value);
+        // 2. Eligible Population Card (#cho-stat-card-infants / #cho-stat-val-infants) from ANNUAL!C27
+        let totalPop = annualSheet ? Math.round(getNum(annualSheet.getCell('C27').value)) : 0;
+        if (!annualSheet && hlSheet) {
+          for (let r = 3; r <= 76; r++) {
+            totalPop += getNum(hlSheet.getCell(`B${r}`).value);
+          }
         }
-      }
-      const popSub = dashSheet ? getText(dashSheet.getCell('D9').value, 'Marawi City Master Population') : 'Marawi City Master Population';
+        const popSub = annualSheet ? 'Eligible Population (ANNUAL)' : (dashSheet ? getText(dashSheet.getCell('D9').value, 'Marawi City Eligible Population') : 'Marawi City Eligible Population');
 
-      // 3. FIC Accomplished from DASHBOARD!F8 & F9
-      const ficAccomplished = dashSheet ? getNum(dashSheet.getCell('F8').value) : 0;
-      const ficSub = dashSheet ? getText(dashSheet.getCell('F9').value, 'Fully Immunized Children') : 'Fully Immunized Children';
+        // 3. FIC Accomplished Card (#cho-stat-val-childrens) from ANNUAL!F27 (=SUM(D27:E27))
+        let ficAccomplished = annualSheet ? Math.round(getNum(annualSheet.getCell('F27').value)) : 0;
+        if (annualSheet && ficAccomplished === 0) {
+          const d27 = getNum(annualSheet.getCell('D27').value);
+          const e27 = getNum(annualSheet.getCell('E27').value);
+          if (d27 > 0 || e27 > 0) {
+            ficAccomplished = Math.round(d27 + e27);
+          }
+        } else if (!annualSheet && dashSheet) {
+          ficAccomplished = Math.round(getNum(dashSheet.getCell('F8').value));
+        }
+        const ficSub = dashSheet ? getText(dashSheet.getCell('F9').value, 'Fully Immunized Children') : 'Fully Immunized Children';
 
-      // 4. FIC Coverage from DASHBOARD!H8 & H9 (fallback to ficAccomplished / totalPop if cached formula is stale)
-      const rawCoverage = dashSheet ? getNum(dashSheet.getCell('H8').value) : 0;
-      let coveragePct = rawCoverage > 0 && rawCoverage <= 1 ? (rawCoverage * 100).toFixed(1) : rawCoverage.toFixed(1);
-      if (totalPop > 0 && ficAccomplished > 0) {
-        coveragePct = ((ficAccomplished / totalPop) * 100).toFixed(1);
-      }
-      const covSub = dashSheet ? getText(dashSheet.getCell('H9').value, 'No Coverage Data') : 'No Coverage Data';
+        // 4. FIC Coverage Card (#cho-stat-val-coverage) from ANNUAL!G27 (=F27/C27)
+        const rawCoverage = annualSheet
+          ? getNum(annualSheet.getCell('G27').value)
+          : (dashSheet ? getNum(dashSheet.getCell('H8').value) : 0);
+        let coveragePct = rawCoverage > 0 && rawCoverage <= 1 ? (rawCoverage * 100).toFixed(1) : rawCoverage.toFixed(1);
+        if (rawCoverage === 0 && totalPop > 0 && ficAccomplished > 0) {
+          coveragePct = ((ficAccomplished / totalPop) * 100).toFixed(1);
+        }
+        const covSub = dashSheet ? getText(dashSheet.getCell('H9').value, 'Annual Coverage Rate') : 'Annual Coverage Rate';
 
-      // 5. 18 Antigens Performance (DASHBOARD!B16:H33)
-      const antigens = [];
-      if (dashSheet) {
-        for (let r = 16; r <= 33; r++) {
-          const name = getText(dashSheet.getCell(`B${r}`).value);
-          if (name) {
+        // 5. 18 Antigens Performance (ANNUAL!A11:F28, with Q1..Q4 & DASHBOARD fallback)
+        const antigens = [];
+        if (annualSheet) {
+          const qSheets = ['Q1', 'Q2', 'Q3', 'Q4'].map((qName) => wb.getWorksheet(qName)).filter(Boolean);
+          const sharedTarget = Math.round(getNum(annualSheet.getCell('C27').value));
+
+          for (let r = 11; r <= 28; r++) {
+            const rawName = getText(annualSheet.getCell(`A${r}`).value);
+            const name = rawName.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+            if (!name) continue;
+
+            const rowTarget = Math.round(getNum(annualSheet.getCell(`C${r}`).value)) || sharedTarget;
+            let male = Math.round(getNum(annualSheet.getCell(`D${r}`).value));
+            let female = Math.round(getNum(annualSheet.getCell(`E${r}`).value));
+            let total = Math.round(getNum(annualSheet.getCell(`F${r}`).value));
+
+            if (male === 0 && female === 0 && total === 0 && qSheets.length > 0) {
+              const qRow = 103 + (r - 11);
+              for (const qs of qSheets) {
+                male += Math.round(getNum(qs.getCell(`D${qRow}`).value));
+                female += Math.round(getNum(qs.getCell(`E${qRow}`).value));
+              }
+            }
+            if (total === 0 && (male > 0 || female > 0)) {
+              total = male + female;
+            }
+
             antigens.push({
               name,
-              target: Math.round(getNum(dashSheet.getCell(`C${r}`).value)),
-              total: Math.round(getNum(dashSheet.getCell(`H${r}`).value))
+              target: rowTarget,
+              male,
+              female,
+              total
             });
           }
-        }
-      }
-
-      // 6. 9 Catchments Share (DASHBOARD!J22:M30)
-      const catchments = [];
-      if (dashSheet) {
-        for (let r = 22; r <= 30; r++) {
-          const name = getText(dashSheet.getCell(`J${r}`).value);
-          if (name) {
-            const ficTotal = Math.round(getNum(dashSheet.getCell(`L${r}`).value));
-            const rawShare = getNum(dashSheet.getCell(`M${r}`).value);
-            let sharePct = rawShare > 0 && rawShare <= 1 ? (rawShare * 100).toFixed(1) : rawShare.toFixed(1);
-            if (ficAccomplished > 0) {
-              sharePct = ((ficTotal / ficAccomplished) * 100).toFixed(1);
+        } else if (dashSheet) {
+          for (let r = 16; r <= 33; r++) {
+            const name = getText(dashSheet.getCell(`B${r}`).value);
+            if (name) {
+              antigens.push({
+                name,
+                target: Math.round(getNum(dashSheet.getCell(`C${r}`).value)),
+                total: Math.round(getNum(dashSheet.getCell(`H${r}`).value))
+              });
             }
-            catchments.push({
-              name,
-              barangays: Math.round(getNum(dashSheet.getCell(`K${r}`).value)),
-              fic_total: ficTotal,
-              share_pct: sharePct
-            });
           }
         }
+
+        // 6. 9 Catchments Share (DASHBOARD!J22:M30)
+        const catchments = [];
+        if (dashSheet) {
+          for (let r = 22; r <= 30; r++) {
+            const name = getText(dashSheet.getCell(`J${r}`).value);
+            if (name) {
+              const ficTotal = Math.round(getNum(dashSheet.getCell(`L${r}`).value));
+              const rawShare = getNum(dashSheet.getCell(`M${r}`).value);
+              let sharePct = rawShare > 0 && rawShare <= 1 ? (rawShare * 100).toFixed(1) : rawShare.toFixed(1);
+              if (ficAccomplished > 0) {
+                sharePct = ((ficTotal / ficAccomplished) * 100).toFixed(1);
+              }
+              catchments.push({
+                name,
+                barangays: Math.round(getNum(dashSheet.getCell(`K${r}`).value)),
+                fic_total: ficTotal,
+                share_pct: sharePct
+              });
+            }
+          }
+        }
+
+        const kpiData = {
+          source_file: file.name,
+          active_year: dashSheet ? getText(dashSheet.getCell('C5').value, '2026') : '2026',
+          active_quarter: dashSheet ? getText(dashSheet.getCell('E5').value, 'Q1') : 'Q1',
+          stats: {
+            barangayVal,
+            barangaySub,
+            totalPop,
+            popSub: totalPop > 0 ? popSub : 'No Population Data',
+            ficAccomplished,
+            ficSub: ficAccomplished > 0 ? ficSub : 'No Accomplished Data',
+            coveragePct,
+            covSub
+          },
+          antigens,
+          catchments
+        };
+
+        Storage.nipDashboardCache?.save(kpiData);
+        this.applyDashboardData(kpiData);
       }
-
-      const kpiData = {
-        source_file: file.name,
-        active_year: dashSheet ? getText(dashSheet.getCell('C5').value, '2026') : '2026',
-        active_quarter: dashSheet ? getText(dashSheet.getCell('E5').value, 'Q1') : 'Q1',
-        stats: {
-          barangayVal,
-          barangaySub,
-          totalPop,
-          popSub: totalPop > 0 ? popSub : 'No Population Data',
-          ficAccomplished,
-          ficSub: ficAccomplished > 0 ? ficSub : 'No Accomplished Data',
-          coveragePct,
-          covSub
-        },
-        antigens,
-        catchments
-      };
-
-      Storage.nipDashboardCache?.save(kpiData);
-      this.applyDashboardData(kpiData);
 
       // 7. Parse MARAWI POP 2024 worksheet and persist to Storage.nipPopulationCache
       const popSheet = wb.getWorksheet('MARAWI POP 2024');
@@ -1447,6 +1503,11 @@ export class NipPopAddDrawer extends BaseDrawerController {
       };
 
       current.rows.push(newRow);
+      if (current.citySummary) {
+        current.citySummary.totalPop = (current.citySummary.totalPop || 0) + payload.total_pop;
+        current.citySummary.householdPop = (current.citySummary.householdPop || 0) + payload.household_pop;
+        current.citySummary.households = (current.citySummary.households || 0) + payload.households;
+      }
       Storage.nipPopulationCache?.save(current);
 
       if (window.CHO?.Tables?.marawiPopulation) {
@@ -1627,6 +1688,142 @@ export class NipPopEditDrawer extends BaseDrawerController {
 }
 
 // =============================================================================
+// SUBCHILD CLASS 8: NipPopDeleteModal
+// Handles deleting a Barangay row's raw data in MARAWI POP 2024 (#modal-nip-pop-delete)
+// while preserving any detected Excel formulas
+// =============================================================================
+export class NipPopDeleteModal {
+  constructor() {
+    this.modalId = 'modal-nip-pop-delete';
+    this.modalEl = null;
+    this.activeRow = null;
+  }
+
+  // START - init: Binds modal close, cancel, backdrop click, and confirm delete button
+  init() {
+    this.modalEl = document.getElementById(this.modalId);
+    if (!this.modalEl) return;
+
+    document.getElementById('nip-pop-delete-close-btn')?.addEventListener('click', () => this.hide());
+    document.getElementById('nip-pop-delete-cancel-btn')?.addEventListener('click', () => this.hide());
+    document.getElementById('nip-btn-submit-pop-delete')?.addEventListener('click', () => this.handleDelete());
+
+    this.modalEl.addEventListener('click', (e) => {
+      if (e.target === this.modalEl) this.hide();
+    });
+  }
+  // END - init
+
+  // START - openForRow: Populates delete confirmation modal with target row details
+  openForRow(row) {
+    if (!row || !this.modalEl) return;
+    this.activeRow = row;
+    const excelRow = row.excel_row || (row.row_index + 4);
+
+    document.getElementById('nip-pop-delete-row-index').value = row.row_index;
+    document.getElementById('nip-pop-delete-excel-row').value = excelRow;
+    document.getElementById('nip-pop-delete-nip-row').value = row.nip_row || '';
+
+    const nameEl = document.getElementById('nip-pop-delete-barangay-name');
+    if (nameEl) nameEl.textContent = row.barangay || 'this barangay';
+
+    const badgeEl = document.getElementById('nip-pop-delete-row-badge');
+    if (badgeEl) badgeEl.textContent = `Row ${excelRow}`;
+
+    const feedbackBox = document.getElementById('nip-pop-delete-feedback');
+    if (feedbackBox) feedbackBox.classList.add('hidden');
+
+    this.modalEl.classList.remove('hidden');
+    this.modalEl.setAttribute('aria-hidden', 'false');
+  }
+  // END - openForRow
+
+  // START - hide: Closes the delete confirmation modal
+  hide() {
+    if (!this.modalEl) return;
+    this.modalEl.classList.add('hidden');
+    this.modalEl.setAttribute('aria-hidden', 'true');
+  }
+  // END - hide
+
+  // START - handleDelete: Instantly removes row from table & updates cache, then persists Excel deletion in background before showing toasts
+  async handleDelete() {
+    const cachedPop = Storage.nipPopulationCache?.get?.();
+    const sourceFile = cachedPop?.source_file || Storage.nipWorkbooks?.getActiveWorkbook?.() || 'MARAWI NIP DATA - UPGRADED.xlsx';
+
+    const rowIndex = Number(document.getElementById('nip-pop-delete-row-index')?.value || 0);
+    const excelRow = Number(document.getElementById('nip-pop-delete-excel-row')?.value || 0);
+    const nipRowVal = document.getElementById('nip-pop-delete-nip-row')?.value;
+    const barangayName = this.activeRow?.barangay || 'Barangay';
+
+    const payload = {
+      source_file: sourceFile,
+      excel_row: excelRow,
+      nip_row: nipRowVal ? Number(nipRowVal) : null,
+      barangay: barangayName
+    };
+
+    // Snapshot cache for rollback if background Excel mutation fails
+    const previousCacheSnapshot = cachedPop ? JSON.parse(JSON.stringify(cachedPop)) : null;
+
+    // 1. Instant UI update: close modal, remove row from table & cache immediately
+    this.hide();
+
+    if (cachedPop && Array.isArray(cachedPop.rows)) {
+      const deletedRow = cachedPop.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
+      cachedPop.rows = cachedPop.rows.filter((r) => r.row_index !== rowIndex && r.excel_row !== excelRow);
+      cachedPop.rows.forEach((r, idx) => {
+        r.row_index = idx + 1;
+      });
+
+      if (deletedRow && cachedPop.citySummary) {
+        cachedPop.citySummary.totalPop = Math.max(0, (cachedPop.citySummary.totalPop || 0) - (deletedRow.total_pop || 0));
+        cachedPop.citySummary.householdPop = Math.max(0, (cachedPop.citySummary.householdPop || 0) - (deletedRow.household_pop || 0));
+        cachedPop.citySummary.households = Math.max(0, (cachedPop.citySummary.households || 0) - (deletedRow.households || 0));
+      }
+      Storage.nipPopulationCache?.save(cachedPop);
+    }
+
+    if (window.CHO?.Tables?.marawiPopulation) {
+      window.CHO.Tables.marawiPopulation.loadFromStorage();
+    }
+
+    // 2. Run Excel mutation in background; only show success & resync toasts once saved
+    try {
+      const res = await Api.post('/api/v1/nip/population/delete', payload);
+      if (!res || !res.success) {
+        throw new Error(res?.message || 'Failed to delete row data from Excel.');
+      }
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`Deleted "${barangayName}" data from ${sourceFile}.`);
+      }
+
+      Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.syncDownloadCardState();
+
+      const preservedCount = res.data?.preserved_formulas ?? 0;
+      const formulaNote = preservedCount > 0 ? ` (${preservedCount} formula${preservedCount > 1 ? 's' : ''} preserved)` : '';
+      Drawers.showStatusToast(true, 'Data Deleted', `Removed "${barangayName}" (Row ${excelRow})${formulaNote}.`);
+      Drawers.showResyncToast(sourceFile);
+    } catch (err) {
+      // Rollback optimistic removal on failure
+      if (previousCacheSnapshot) {
+        Storage.nipPopulationCache?.save(previousCacheSnapshot);
+        if (window.CHO?.Tables?.marawiPopulation) {
+          window.CHO.Tables.marawiPopulation.loadFromStorage();
+        }
+      }
+      Drawers.showStatusToast(false, 'Delete Failed', err.message || 'Could not delete row data from Excel.');
+      if (typeof Notifications.error === 'function') {
+        Notifications.error(err.message || 'Could not delete row data from Excel.');
+      }
+    }
+  }
+  // END - handleDelete
+}
+
+// =============================================================================
 // UNIFIED DRAWER MANAGER
 // Bootstraps and exports all individual subchild drawers
 // =============================================================================
@@ -1637,6 +1834,7 @@ export const Drawers = {
   upload: new NipUploadDrawer(),
   popAdd: new NipPopAddDrawer(),
   popEdit: new NipPopEditDrawer(),
+  popDelete: new NipPopDeleteModal(),
   gate: new NipWorkspaceGate(),
 
   init() {
@@ -1647,6 +1845,7 @@ export const Drawers = {
     this.upload.init();
     this.popAdd.init();
     this.popEdit.init();
+    this.popDelete.init();
 
     // Show global NIP resync banner & enforce download card disabled-state if resync is pending
     const isNipPage = window.location.pathname.toLowerCase().includes('/nip/');

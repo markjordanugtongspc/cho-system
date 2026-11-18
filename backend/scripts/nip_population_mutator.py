@@ -9,7 +9,84 @@ import base64
 import json
 import os
 import sys
+import xml.etree.ElementTree as ET
+import zipfile
 import openpyxl
+
+SHEET_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+OOXML_NAMESPACES = {
+    "": SHEET_NS,
+    "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+    "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006",
+    "x14ac": "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac",
+    "xr": "http://schemas.microsoft.com/office/spreadsheetml/2014/revision",
+    "xr2": "http://schemas.microsoft.com/office/spreadsheetml/2015/revision2",
+    "xr3": "http://schemas.microsoft.com/office/spreadsheetml/2016/revision3",
+}
+
+
+def extract_cached_formula_values(xlsx_path: str) -> dict:
+    """Capture existing <v> cached results for formula cells before openpyxl strips them on save."""
+    cached = {}
+    with zipfile.ZipFile(xlsx_path, "r") as zf:
+        for name in zf.namelist():
+            if not (name.startswith("xl/worksheets/sheet") and name.endswith(".xml")):
+                continue
+            root = ET.fromstring(zf.read(name))
+            f_tag = f"{{{SHEET_NS}}}f"
+            v_tag = f"{{{SHEET_NS}}}v"
+            for c in root.iter(f"{{{SHEET_NS}}}c"):
+                ref = c.attrib.get("r")
+                if not ref:
+                    continue
+                f_el = c.find(f_tag)
+                v_el = c.find(v_tag)
+                if f_el is not None and v_el is not None and v_el.text is not None:
+                    cached[(name, ref)] = (v_el.text, c.attrib.get("t"))
+    return cached
+
+
+def restore_cached_formula_values(xlsx_path: str, cached: dict) -> None:
+    """Re-inject preserved <v> cached formula results into worksheet XMLs after openpyxl save."""
+    if not cached:
+        return
+
+    for prefix, uri in OOXML_NAMESPACES.items():
+        ET.register_namespace(prefix, uri)
+
+    tmp_path = f"{xlsx_path}.tmp"
+    f_tag = f"{{{SHEET_NS}}}f"
+    v_tag = f"{{{SHEET_NS}}}v"
+    c_tag = f"{{{SHEET_NS}}}c"
+
+    with zipfile.ZipFile(xlsx_path, "r") as zin, zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if item.filename.startswith("xl/worksheets/sheet") and item.filename.endswith(".xml"):
+                root = ET.fromstring(data)
+                modified = False
+                for c in root.iter(c_tag):
+                    ref = c.attrib.get("r")
+                    if not ref:
+                        continue
+                    key = (item.filename, ref)
+                    if key not in cached:
+                        continue
+                    if c.find(f_tag) is not None:
+                        v_el = c.find(v_tag)
+                        if v_el is None:
+                            v_el = ET.SubElement(c, v_tag)
+                        if v_el.text is None or v_el.text == "":
+                            v_text, orig_t = cached[key]
+                            v_el.text = v_text
+                            if orig_t and orig_t != "s":
+                                c.attrib["t"] = orig_t
+                            modified = True
+                if modified:
+                    data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            zout.writestr(item, data)
+
+    os.replace(tmp_path, xlsx_path)
 
 
 def resolve_workbook_path(filename: str) -> str:
@@ -118,9 +195,71 @@ def handle_add(sheet, payload: dict) -> dict:
     }
 
 
+def is_formula_cell(cell) -> bool:
+    val = cell.value
+    if val is None:
+        return False
+    if isinstance(val, str) and val.lstrip().startswith("="):
+        return True
+    if hasattr(val, "text") and isinstance(getattr(val, "text", None), str) and val.text.lstrip().startswith("="):
+        return True
+    return False
+
+
+def clear_cell_if_not_formula(cell) -> str:
+    if is_formula_cell(cell):
+        return "formula"
+    if cell.value is not None:
+        cell.value = None
+        return "cleared"
+    return "empty"
+
+
+def handle_delete(sheet, payload: dict) -> dict:
+    excel_row = int(payload.get("excel_row") or 0)
+    if excel_row < 5:
+        raise ValueError("Invalid excel_row for delete (must be >= 5).")
+
+    old_barangay = str(sheet.cell(excel_row, 2).value or "").strip()
+    target_barangay = str(payload.get("barangay") or "").strip() or old_barangay
+
+    nip_row = payload.get("nip_row")
+    if nip_row:
+        nip_row = int(nip_row)
+    else:
+        nip_row = find_nip_row(sheet, old_barangay) or find_nip_row(sheet, target_barangay)
+
+    cleared_cells = 0
+    preserved_formulas = 0
+
+    # Clear MARAWI POP 2024 main table cells (Cols A-E), preserving any detected formulas
+    for col in range(1, 6):
+        status = clear_cell_if_not_formula(sheet.cell(excel_row, col))
+        if status == "cleared":
+            cleared_cells += 1
+        elif status == "formula":
+            preserved_formulas += 1
+
+    # Clear corresponding NIP 73-Brgy cells (Cols G-I), preserving any detected formulas (e.g. Col I target formula)
+    if nip_row and nip_row >= 5:
+        for col in range(7, 10):
+            status = clear_cell_if_not_formula(sheet.cell(nip_row, col))
+            if status == "cleared":
+                cleared_cells += 1
+            elif status == "formula":
+                preserved_formulas += 1
+
+    return {
+        "excel_row": excel_row,
+        "nip_row": nip_row,
+        "cleared_cells": cleared_cells,
+        "preserved_formulas": preserved_formulas,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", required=True, choices=["add", "update"])
+    parser.add_argument("--action", required=True, choices=["add", "update", "delete"])
     parser.add_argument("--file", required=True)
     parser.add_argument("--payload-b64", required=True)
     args = parser.parse_args()
@@ -129,6 +268,7 @@ def main():
         payload_bytes = base64.b64decode(args.payload_b64)
         payload = json.loads(payload_bytes.decode("utf-8"))
         file_path = resolve_workbook_path(args.file)
+        cached_formulas = extract_cached_formula_values(file_path)
 
         wb = openpyxl.load_workbook(file_path)
         if "MARAWI POP 2024" not in wb.sheetnames:
@@ -137,10 +277,13 @@ def main():
 
         if args.action == "update":
             result = handle_update(sheet, payload)
+        elif args.action == "delete":
+            result = handle_delete(sheet, payload)
         else:
             result = handle_add(sheet, payload)
 
         wb.save(file_path)
+        restore_cached_formula_values(file_path, cached_formulas)
         print(json.dumps({
             "status": "success",
             "action": args.action,

@@ -256,6 +256,14 @@ class NipController
     }
 
     /**
+     * Delete a Barangay row's raw data in MARAWI POP 2024 while preserving formulas
+     */
+    public static function deletePopulationRow(): void
+    {
+        self::mutatePopulationSheet('delete');
+    }
+
+    /**
      * Shared helper invoking openpyxl mutator script for MARAWI POP 2024
      */
     private static function mutatePopulationSheet(string $action): void
