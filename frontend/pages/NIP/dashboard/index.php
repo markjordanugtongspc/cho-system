@@ -468,25 +468,134 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
     <!-- Flowbite Charts Skeleton (Shown briefly while charts initialize) -->
     <div id="cho-nip-charts-skeleton" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Bar Chart Widget Placeholder Skeleton -->
-        <div role="status" class="lg:col-span-8 bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs animate-pulse">
-            <div class="h-3 bg-slate-200 rounded-full w-56 mb-2.5"></div>
-            <div class="h-2.5 bg-slate-200 rounded-full w-40 mb-6"></div>
-            <div class="flex items-baseline mt-4 gap-3 sm:gap-4 h-72 pt-6">
-                <div class="w-full bg-slate-200 rounded-t-lg h-56"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-44"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-64"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-48"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-60"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-52"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-64"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-40"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-56"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-36"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-48"></div>
-                <div class="w-full bg-slate-200 rounded-t-lg h-60"></div>
+        <!-- Dumbbell Chart Widget Placeholder Skeleton -->
+        <div role="status" class="lg:col-span-8 bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 shadow-xs animate-pulse flex flex-col justify-between">
+            <div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100">
+                    <div>
+                        <div class="h-3.5 bg-slate-200 rounded-full w-64 mb-2"></div>
+                        <div class="h-2.5 bg-slate-200 rounded-full w-48"></div>
+                    </div>
+                    <div class="h-6 bg-slate-200 rounded-lg w-36"></div>
+                </div>
+                <div class="flex justify-end gap-4 mt-4 mb-5">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+                        <div class="h-2.5 bg-slate-200 rounded-full w-24"></div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20"></div>
+                    </div>
+                </div>
+                <div class="space-y-4 py-1">
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-24 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-16 sm:pl-24">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-12 sm:pl-20">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-8 sm:pl-14">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-24 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-24 sm:pl-36">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-24 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-24 sm:pl-36">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-16 sm:pl-28">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-14 sm:pl-24">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-4 sm:pl-8">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-4 sm:pl-6">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-20 sm:pl-32">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-20 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-20 sm:pl-32">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-2.5 bg-slate-200 rounded-full w-16 sm:w-28 shrink-0"></div>
+                        <div class="flex-1 flex items-center pl-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                            <div class="h-0.5 bg-slate-200 flex-1"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <span class="sr-only">Loading bar chart...</span>
+            <div class="flex justify-between pl-28 sm:pl-32 pt-4 mt-2 border-t border-slate-100">
+                <div class="h-2 bg-slate-200 rounded-full w-6"></div>
+                <div class="h-2 bg-slate-200 rounded-full w-8"></div>
+                <div class="h-2 bg-slate-200 rounded-full w-8"></div>
+                <div class="h-2 bg-slate-200 rounded-full w-8"></div>
+                <div class="h-2 bg-slate-200 rounded-full w-8"></div>
+                <div class="h-2 bg-slate-200 rounded-full w-8"></div>
+            </div>
+            <span class="sr-only">Loading dumbbell chart...</span>
         </div>
 
         <!-- Donut Chart Widget Placeholder Skeleton -->
@@ -528,7 +637,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         Coverage Benchmark: 95%
                     </span>
                 </div>
-                <div id="cho-nip-antigens-chart" class="w-full min-w-0 min-h-[500px] sm:min-h-[560px]"></div>
+                <div id="cho-nip-antigens-chart" class="w-full min-w-0 min-h-[560px] sm:min-h-[640px]"></div>
             </div>
 
             <!-- Chart 2: Catchment Area Quotas / FIC Contribution (Donut Chart) -->

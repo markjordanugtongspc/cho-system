@@ -318,7 +318,7 @@ export const Charts = {
       chart: {
         type: 'rangeBar',
         width: '100%',
-        height: 560,
+        height: 640,
         redrawOnParentResize: true,
         redrawOnWindowResize: true,
         fontFamily: 'Poppins, Averta, sans-serif',
