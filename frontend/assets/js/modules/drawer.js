@@ -1824,6 +1824,233 @@ export class NipPopDeleteModal {
 }
 
 // =============================================================================
+// SUBCHILD CLASS 8: TclInfantDrawer
+// Handles Target Client List (0-12 Months) infant inspection drawer & pill tabs
+// =============================================================================
+export class TclInfantDrawer extends BaseDrawerController {
+  constructor() {
+    super('drawer-tcl-infant2');
+  }
+
+  // START - init: Initializes TCL infant drawer, table row click triggers, and pill tabs
+  init() {
+    super.init();
+    if (!this.drawerEl) return;
+
+    this.bindRowClicks();
+    this.bindTabs();
+  }
+  // END - init
+
+  // START - bindRowClicks: Opens #drawer-tcl-infant2 when clicking a table row (excluding action buttons)
+  bindRowClicks() {
+    const tbody = document.getElementById('cho-nip-pop-tbody2');
+    if (!tbody || tbody.dataset.tclRowBound === '1') return;
+
+    tbody.dataset.tclRowBound = '1';
+    tbody.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, select')) return;
+      const row = e.target.closest('tr[data-tcl-record]');
+      if (!row) return;
+
+      try {
+        const record = JSON.parse(row.dataset.tclRecord || '{}');
+        this.openWithRecord(record);
+      } catch (err) {
+        console.warn('[TclInfantDrawer] Failed to parse row record:', err);
+      }
+    });
+  }
+  // END - bindRowClicks
+
+  // START - bindTabs: Attaches pill tab switching logic for Overview, Immunization I, and Immunization II
+  bindTabs() {
+    const tabBtns = this.drawerEl.querySelectorAll('[data-tcl-tab]');
+    tabBtns.forEach((btn) => {
+      if (btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => this.switchTab(btn.dataset.tclTab));
+    });
+  }
+  // END - bindTabs
+
+  // START - switchTab: Activates the selected pill tab and reveals its corresponding panel
+  switchTab(tabKey) {
+    const tabBtns = this.drawerEl.querySelectorAll('[data-tcl-tab]');
+    const panels = {
+      overview: document.getElementById('tcl-tab-panel-overview2'),
+      imm1: document.getElementById('tcl-tab-panel-imm1-2'),
+      imm2: document.getElementById('tcl-tab-panel-imm2-2')
+    };
+
+    tabBtns.forEach((btn) => {
+      const isActive = btn.dataset.tclTab === tabKey;
+      btn.setAttribute('aria-selected', String(isActive));
+      btn.classList.toggle('bg-white', isActive);
+      btn.classList.toggle('text-slate-900', isActive);
+      btn.classList.toggle('font-bold', isActive);
+      btn.classList.toggle('shadow-xs', isActive);
+      btn.classList.toggle('text-slate-500', !isActive);
+      btn.classList.toggle('font-semibold', !isActive);
+    });
+
+    Object.entries(panels).forEach(([key, panel]) => {
+      if (panel) panel.classList.toggle('hidden', key !== tabKey);
+    });
+  }
+  // END - switchTab
+
+  // START - openWithRecord: Hydrates all drawer tabs with infant data and opens the drawer
+  openWithRecord(record) {
+    if (!record) return;
+
+    const nameEl = document.getElementById('tcl-drawer-child-name2');
+    const metaEl = document.getElementById('tcl-drawer-child-meta2');
+    if (nameEl) nameEl.textContent = record.child || '--';
+    if (metaEl) metaEl.textContent = record.barangay || '--';
+
+    this.hydrateOverview(record);
+    this.hydrateImmunization1(record.imm1 || {}, record.imm1_note);
+    this.hydrateImmunization2(record.imm2 || {});
+
+    this.switchTab('overview');
+    this.show();
+  }
+  // END - openWithRecord
+
+  // START - hydrateOverview: Populates the Overview tab demographics and overall dose progress
+  hydrateOverview(record) {
+    const map = {
+      'tcl-overview-age2': record.age_full || record.age || '--',
+      'tcl-overview-reg2': record.reg_date_full || record.reg_date_fmt || '--',
+      'tcl-overview-dob2': record.dob_full || record.dob_fmt || '--'
+    };
+    Object.entries(map).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    });
+
+    const isMale = record.sex === 'MALE';
+    const sexSvg = isMale
+      ? `<svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 14a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M19 5l-5.4 5.4" /><path d="M19 5h-5" /><path d="M19 5v5" /></svg>`
+      : `<svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M12 14v7" /><path d="M9 18h6" /></svg>`;
+
+    const sexIconEl = document.getElementById('tcl-overview-sex-icon2');
+    if (sexIconEl) {
+      sexIconEl.className = `inline-flex items-center ${isMale ? 'text-sky-600' : 'text-pink-500'}`;
+      sexIconEl.innerHTML = sexSvg;
+    }
+
+    const sexEl = document.getElementById('tcl-overview-sex-badge2');
+    if (sexEl) {
+      const cls = isMale
+        ? 'bg-sky-600 text-white border-sky-700'
+        : 'bg-pink-500 text-white border-pink-600';
+      sexEl.className = `inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border shadow-xs ${cls}`;
+      sexEl.innerHTML = `${sexSvg}<span>${record.sex || '--'}</span>`;
+    }
+
+    const allDoses = [
+      record.imm1?.bcg,
+      record.imm1?.hepa,
+      ...(record.imm2?.dpt || []),
+      ...(record.imm2?.opv || []),
+      ...(record.imm2?.pcv || []),
+      ...(record.imm2?.ipv || [])
+    ].filter(Boolean);
+
+    const completed = allDoses.filter((d) => d.status === 'INJECTED').length;
+    const total = allDoses.length || 10;
+    const pct = Math.round((completed / total) * 100);
+
+    const countEl = document.getElementById('tcl-overview-progress-count2');
+    const barEl = document.getElementById('tcl-overview-progress-bar2');
+    const notesEl = document.getElementById('tcl-overview-notes-text2');
+    if (countEl) countEl.textContent = `${completed} / ${total} Doses (${pct}%)`;
+    if (barEl) barEl.style.width = `${pct}%`;
+    this.renderNotesBox(notesEl, record.overview_note);
+  }
+  // END - hydrateOverview
+
+  // START - hydrateImmunization1: Populates the 2x2 BCG & Hepa B-BD grid and notes reader
+  hydrateImmunization1(imm1, noteText = '') {
+    const bcgBadge = document.getElementById('tcl-imm1-bcg-badge2');
+    const bcgDate = document.getElementById('tcl-imm1-bcg-date2');
+    const hepaBadge = document.getElementById('tcl-imm1-hepa-badge2');
+    const hepaDate = document.getElementById('tcl-imm1-hepa-date2');
+    const imm1NotesEl = document.getElementById('tcl-imm1-notes-text2');
+
+    if (bcgBadge) bcgBadge.innerHTML = this.getBadgeMarkup(imm1.bcg?.status);
+    if (bcgDate) bcgDate.textContent = imm1.bcg?.date || '—';
+    if (hepaBadge) hepaBadge.innerHTML = this.getBadgeMarkup(imm1.hepa?.status);
+    if (hepaDate) hepaDate.textContent = imm1.hepa?.date || '—';
+    this.renderNotesBox(imm1NotesEl, noteText);
+  }
+  // END - hydrateImmunization1
+
+  // START - renderNotesBox: Populates a read-only notes container with multi-line text or an empty state
+  renderNotesBox(el, noteText = '') {
+    if (!el) return;
+    const trimmed = (noteText || '').trim();
+    if (trimmed) {
+      el.classList.remove('text-slate-400', 'italic');
+      el.classList.add('text-slate-700');
+      el.textContent = trimmed;
+    } else {
+      el.classList.remove('text-slate-700');
+      el.classList.add('text-slate-400', 'italic');
+      el.textContent = 'No clinical notes recorded for this section yet. Click the Edit action button on the table to add remarks.';
+    }
+  }
+  // END - renderNotesBox
+
+  // START - hydrateImmunization2: Populates the 1x1 vaccine cards (DPT-HiB-HepB, OPV, PCV, IPV)
+  hydrateImmunization2(imm2) {
+    const targets = [
+      { id: 'tcl-imm2-dpt-list2', doses: imm2.dpt || [] },
+      { id: 'tcl-imm2-opv-list2', doses: imm2.opv || [] },
+      { id: 'tcl-imm2-pcv-list2', doses: imm2.pcv || [] },
+      { id: 'tcl-imm2-ipv-list2', doses: imm2.ipv || [] }
+    ];
+
+    targets.forEach(({ id, doses }) => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.innerHTML = doses.map((item) => this.renderDoseRow(item)).join('');
+    });
+  }
+  // END - hydrateImmunization2
+
+  // START - renderDoseRow: Builds a single dose row with dose label, status badge, and date
+  renderDoseRow(item) {
+    const dateText = item.date || '—';
+    return `
+      <div class="flex items-center justify-between gap-3 py-2.5 first:pt-1 last:pb-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="text-xs font-bold text-slate-700">${item.dose}</span>
+          ${this.getBadgeMarkup(item.status)}
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">Date</div>
+          <div class="text-xs font-semibold text-slate-800 mt-0.5">${dateText}</div>
+        </div>
+      </div>
+    `;
+  }
+  // END - renderDoseRow
+
+  // START - getBadgeMarkup: Returns solid emerald (INJECTED) or solid rose (NOT YET) badge HTML
+  getBadgeMarkup(status = 'NOT YET') {
+    const isInjected = status === 'INJECTED';
+    const cls = isInjected
+      ? 'bg-emerald-600 text-white border-emerald-700'
+      : 'bg-rose-600 text-white border-rose-700';
+    return `<span class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-extrabold tracking-wide rounded-full border shadow-xs ${cls}">${isInjected ? 'INJECTED' : 'NOT YET'}</span>`;
+  }
+  // END - getBadgeMarkup
+}
+
+// =============================================================================
 // UNIFIED DRAWER MANAGER
 // Bootstraps and exports all individual subchild drawers
 // =============================================================================
@@ -1835,6 +2062,7 @@ export const Drawers = {
   popAdd: new NipPopAddDrawer(),
   popEdit: new NipPopEditDrawer(),
   popDelete: new NipPopDeleteModal(),
+  tclInfant: new TclInfantDrawer(),
   gate: new NipWorkspaceGate(),
 
   init() {
@@ -1846,6 +2074,7 @@ export const Drawers = {
     this.popAdd.init();
     this.popEdit.init();
     this.popDelete.init();
+    this.tclInfant.init();
 
     // Show global NIP resync banner & enforce download card disabled-state if resync is pending
     const isNipPage = window.location.pathname.toLowerCase().includes('/nip/');

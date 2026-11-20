@@ -113,6 +113,46 @@
             </ul>
          </li>
 
+         <!-- NIP Program System 2 Multi-level Dropdown (Database-Driven) -->
+         <li id="cho-sidebar-item-nip-system2">
+            <button type="button" id="cho-nip-dropdown-btn2" data-collapse-toggle="cho-nip-dropdown-menu2" aria-controls="cho-nip-dropdown-menu2" aria-expanded="false" class="flex items-center justify-between w-full px-3 py-2 text-white/95 rounded-base hover:bg-white/10 hover:text-white group transition-colors cursor-pointer">
+               <div class="flex items-center">
+                  <svg id="cho-sidebar-icon-nip2" class="shrink-0 w-5 h-5 text-white/90 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"/>
+                  </svg>
+                  <span class="ms-3 text-sm font-semibold whitespace-nowrap">NIP Program System 2</span>
+               </div>
+               <svg id="cho-nip-dropdown-chevron2" class="w-4 h-4 transition-transform duration-200 cho-dropdown-chevron group-aria-expanded:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+               </svg>
+            </button>
+
+            <!-- NIP2 Submenu Items -->
+            <ul id="cho-nip-dropdown-menu2" class="hidden py-1 pl-6 space-y-1">
+               <li id="cho-sidebar-subitem-nip-dash2">
+                  <a href="<?= url('/frontend/pages/NIP2/dashboard/') ?>" id="cho-sidebar-link-nip-dash2" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+                     <svg id="cho-sidebar-icon-nip-dash2" class="w-4 h-4 me-2 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/>
+                     </svg>
+                     Dashboard
+                  </a>
+               </li>
+               <li id="cho-sidebar-subitem-nip-population2">
+                  <a href="<?= url('/frontend/pages/NIP2/population/') ?>" id="cho-sidebar-link-nip-population2" title="TARGET CLIENT LIST FOR CHILD HEALTH CARE NEWBORN AND INFANTS AGE 0-12 MONTHS OLD" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+                     <svg id="cho-sidebar-icon-nip-population2" class="w-4 h-4 me-2 shrink-0 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M2 5h2.5l1.632 4.897a6 6 0 0 0 5.693 4.103h2.675a5.5 5.5 0 0 0 0 -11h-.5v6" />
+                        <path d="M6 9h14" />
+                        <path d="M9 17l1 -3" />
+                        <path d="M16 14l1 3" />
+                     </svg>
+                     <span class="truncate">Newborns Baby</span>
+                  </a>
+               </li>
+            </ul>
+         </li>
+
          <li id="cho-sidebar-item-inbox">
             <a href="#" id="cho-sidebar-link-inbox" class="flex items-center px-3 py-2 text-white/95 rounded-base hover:bg-white/10 hover:text-white group transition-colors">
                <svg id="cho-sidebar-icon-inbox" class="shrink-0 w-5 h-5 text-white/90 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 13h3.439a.991.991 0 0 1 .908.6 3.978 3.978 0 0 0 7.306 0 .99.99 0 0 1 .908-.6H20M4 13v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6M4 13l2-9h12l2 9M9 7h6m-7 3h8"/></svg>

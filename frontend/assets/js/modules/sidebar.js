@@ -23,71 +23,36 @@ class NavigationHighlighter {
     this.clearActive();
 
     const path = this.currentPath.replace(/\/$/, '');
+    const isNip2Dashboard = path.includes('/nip2/dashboard');
+    const isNip2Population = path.includes('/nip2/population');
     const isNipDashboard = path.includes('/nip/dashboard');
     const isNipPopulation = path.includes('/nip/population');
-    const isMainHome = (path.includes('/dashboard') && !path.includes('/nip')) ||
+    const isMainHome = (path.includes('/dashboard') && !path.includes('/nip') && !path.includes('/nip2')) ||
       path.endsWith('/cho-system') ||
       path.endsWith('/cho-system/');
 
-    const homeLink = document.getElementById('cho-sidebar-link-dashboard');
-    const homeIcon = document.getElementById('cho-sidebar-icon-dashboard');
-    const nipLink = document.getElementById('cho-sidebar-link-nip-dash');
-    const nipIcon = document.getElementById('cho-sidebar-icon-nip-dash');
-    const nipPopLink = document.getElementById('cho-sidebar-link-nip-population');
-    const nipPopIcon = document.getElementById('cho-sidebar-icon-nip-population');
+    const routeMap = [
+      { match: isNip2Dashboard, linkId: 'cho-sidebar-link-nip-dash2', iconId: 'cho-sidebar-icon-nip-dash2' },
+      { match: isNip2Population, linkId: 'cho-sidebar-link-nip-population2', iconId: 'cho-sidebar-icon-nip-population2' },
+      { match: isNipDashboard, linkId: 'cho-sidebar-link-nip-dash', iconId: 'cho-sidebar-icon-nip-dash' },
+      { match: isNipPopulation, linkId: 'cho-sidebar-link-nip-population', iconId: 'cho-sidebar-icon-nip-population' },
+      { match: isMainHome, linkId: 'cho-sidebar-link-dashboard', iconId: 'cho-sidebar-icon-dashboard' }
+    ];
 
-    if (isNipDashboard && nipLink) {
-      // START - Active State Styling for NIP Dashboard Subitem
-      nipLink.classList.remove('text-white/80', 'text-white/90', 'hover:bg-white/10', 'hover:text-white');
-      nipLink.classList.add(
-        'bg-white',
-        'text-cho-blue-900',
-        'font-bold',
-        'shadow-xs'
-      );
+    const activeRoute = routeMap.find((r) => r.match);
+    if (!activeRoute) return;
 
-      if (nipIcon) {
-        nipIcon.classList.remove('text-white/75', 'text-white/85', 'group-hover:text-white');
-        nipIcon.classList.add('text-cho-blue-900');
-      }
+    const link = document.getElementById(activeRoute.linkId);
+    const icon = document.getElementById(activeRoute.iconId);
+    if (!link) return;
 
-      nipLink.setAttribute('aria-current', 'page');
-      // END - Active State Styling for NIP Dashboard Subitem
-    } else if (isNipPopulation && nipPopLink) {
-      // START - Active State Styling for Marawi Population Subitem
-      nipPopLink.classList.remove('text-white/80', 'text-white/90', 'hover:bg-white/10', 'hover:text-white');
-      nipPopLink.classList.add(
-        'bg-white',
-        'text-cho-blue-900',
-        'font-bold',
-        'shadow-xs'
-      );
-
-      if (nipPopIcon) {
-        nipPopIcon.classList.remove('text-white/75', 'text-white/85', 'group-hover:text-white');
-        nipPopIcon.classList.add('text-cho-blue-900');
-      }
-
-      nipPopLink.setAttribute('aria-current', 'page');
-      // END - Active State Styling for Marawi Population Subitem
-    } else if (isMainHome && homeLink) {
-      // START - Active State Styling for Main Homepage Route
-      homeLink.classList.remove('text-white/85', 'text-white/95', 'hover:bg-white/10', 'hover:text-white');
-      homeLink.classList.add(
-        'bg-white',
-        'text-cho-blue-900',
-        'font-bold',
-        'shadow-xs'
-      );
-
-      if (homeIcon) {
-        homeIcon.classList.remove('text-white/80', 'text-white/90', 'group-hover:text-white');
-        homeIcon.classList.add('text-cho-blue-900');
-      }
-
-      homeLink.setAttribute('aria-current', 'page');
-      // END - Active State Styling for Main Homepage Route
+    link.classList.remove('text-white/80', 'text-white/85', 'text-white/90', 'text-white/95', 'hover:bg-white/10', 'hover:text-white');
+    link.classList.add('bg-white', 'text-cho-blue-900', 'font-bold', 'shadow-xs');
+    if (icon) {
+      icon.classList.remove('text-white/75', 'text-white/80', 'text-white/85', 'text-white/90', 'group-hover:text-white');
+      icon.classList.add('text-cho-blue-900');
     }
+    link.setAttribute('aria-current', 'page');
   }
 
   /**
@@ -266,7 +231,8 @@ class DropdownManager {
    */
   initDropdownPersistence() {
     const currentPath = window.location.pathname.toLowerCase();
-    const isNipRoute = currentPath.includes('/nip/') || currentPath.includes('/nip');
+    const isNipRoute = currentPath.includes('/nip/');
+    const isNip2Route = currentPath.includes('/nip2/');
 
     // Query all dropdown toggle buttons with data-collapse-toggle attribute
     const dropdownTriggers = document.querySelectorAll('[data-collapse-toggle]');
@@ -284,6 +250,8 @@ class DropdownManager {
       // 2. Active route override: if user is on this subroute, ensure it's open & update cookie
       let shouldBeOpen = savedState;
       if (targetId === 'cho-nip-dropdown-menu' && isNipRoute) {
+        shouldBeOpen = true;
+      } else if (targetId === 'cho-nip-dropdown-menu2' && isNip2Route) {
         shouldBeOpen = true;
       }
 
