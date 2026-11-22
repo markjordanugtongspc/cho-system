@@ -16,7 +16,7 @@ final class Vite
 
     private static ?array $manifest = null;
 
-    /** Dev server origin, only honoured in the local environment. */
+    /** Dev server origin, only honoured in the local environment when Vite is actually reachable. */
     public static function devOrigin(): string
     {
         static $origin = null;
@@ -30,7 +30,29 @@ final class Vite
         }
 
         $url = trim((string) file_get_contents($hot));
-        return $origin = preg_match('#^https?://[a-z0-9.\-]+(:\d+)?$#i', $url) ? rtrim($url, '/') : '';
+        if (!preg_match('#^(https?)://([a-z0-9.\-]+)(?::(\d+))?$#i', $url, $m)) {
+            return $origin = '';
+        }
+
+        $scheme  = $m[1];
+        $hotHost = $m[2];
+        $port    = isset($m[3]) ? (int) $m[3] : 5180;
+
+        // Match the browser's current host (e.g. localhost or 127.0.0.1) so HMR works on localhost/
+        $reqHost = explode(':', (string) ($_SERVER['HTTP_HOST'] ?? ''))[0];
+        $host    = $reqHost !== '' ? $reqHost : $hotHost;
+
+        // Verify Vite dev server is actually listening (prevents broken scripts from stale vite.hot)
+        $sock = @fsockopen($host, $port, $errno, $errstr, 0.15);
+        if (!$sock && $host !== '127.0.0.1') {
+            $sock = @fsockopen('127.0.0.1', $port, $errno, $errstr, 0.15);
+        }
+        if (!$sock) {
+            return $origin = '';
+        }
+        fclose($sock);
+
+        return $origin = sprintf('%s://%s:%d', $scheme, $host, $port);
     }
 
     public static function tags(string $entry = self::ENTRY): string

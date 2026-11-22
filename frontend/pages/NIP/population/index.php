@@ -46,7 +46,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 1: Barangay Records (Blue Theme with Integrated Background Photo) -->
         <div id="cho-nip-pop-stat-records" class="group relative overflow-hidden rounded-none p-5 bg-[#005bf8] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <img src="<?= asset('images/nip/nip1.jpeg') ?>"
+            <img loading="lazy" decoding="async" src="<?= asset('images/nip/nip1.webp') ?>"
                  alt="Barangays Population"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
@@ -71,7 +71,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 2: City Total Pop 2024 - C4 (Orange Theme with Integrated Background Photo) -->
         <div id="cho-nip-pop-stat-total" class="group relative overflow-hidden rounded-none p-5 bg-[#e66a00] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <img src="<?= asset('images/nip/nip2.jpeg') ?>"
+            <img loading="lazy" decoding="async" src="<?= asset('images/nip/nip2.webp') ?>"
                  alt="City Total Population"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
@@ -96,7 +96,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 3: Household Population Estimates 2024 - D4 (Emerald Theme with Integrated Background Photo) -->
         <div id="cho-nip-pop-stat-households" class="group relative overflow-hidden rounded-none p-5 bg-[#007a64] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <img src="<?= asset('images/nip/nip3.jpg') ?>"
+            <img loading="lazy" decoding="async" src="<?= asset('images/nip/nip3.webp') ?>"
                  alt="Household Population Estimates"
                  class="absolute inset-0 w-full h-full object-cover object-[center_20%] opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
@@ -121,7 +121,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 4: Number of Households Estimates 2024 - E4 (Crimson Theme with Integrated Background Photo) -->
         <div id="cho-nip-pop-stat-target" class="group relative overflow-hidden rounded-none p-5 bg-[#c00030] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <img src="<?= asset('images/nip/nip4.jpg') ?>"
+            <img loading="lazy" decoding="async" src="<?= asset('images/nip/nip4.webp') ?>"
                  alt="Number of Households Estimates 2024"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
@@ -297,14 +297,14 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
      ============================================================================= -->
 <div id="drawer-nip-pop-add"
      data-cho-nip-drawer
-     class="fixed top-0 right-0 z-50 h-screen p-5 sm:p-6 overflow-y-auto transition-transform translate-x-full bg-white border-l border-slate-200 w-full sm:w-[480px] md:w-[520px] max-w-full shadow-2xl flex flex-col justify-between"
+     class="fixed top-0 right-0 z-50 h-screen p-5 sm:p-6 overflow-y-auto transition-transform translate-x-full bg-white border-l border-slate-200 rounded-l-2xl w-full sm:w-[520px] md:w-[560px] max-w-full shadow-2xl flex flex-col justify-between"
      tabindex="-1"
      aria-labelledby="drawer-nip-pop-add-label"
      aria-hidden="true">
 
     <div class="space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h5 id="drawer-nip-pop-add-label" class="inline-flex items-center gap-2 text-base font-bold text-slate-900">
+            <h5 id="drawer-nip-pop-add-label" class="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-slate-900">
                 <svg class="w-5 h-5 text-cho-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -327,37 +327,37 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <form id="nip-pop-add-form" class="space-y-3.5">
             <div>
-                <label for="nip-pop-add-psgc10" class="block mb-1 text-xs font-semibold text-slate-700">PSGC10 Code</label>
+                <label for="nip-pop-add-psgc10" class="block mb-1.5 text-sm font-semibold text-slate-700">PSGC10 Code</label>
                 <input type="text" id="nip-pop-add-psgc10" placeholder="e.g. 1903617144" required
-                       class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                       class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
             </div>
             <div>
-                <label for="nip-pop-add-barangay" class="block mb-1 text-xs font-semibold text-slate-700">Barangay / Locality</label>
+                <label for="nip-pop-add-barangay" class="block mb-1.5 text-sm font-semibold text-slate-700">Barangay / Locality</label>
                 <input type="text" id="nip-pop-add-barangay" placeholder="e.g. New Barangay Name" required
-                       class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                       class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label for="nip-pop-add-total-pop" class="block mb-1 text-xs font-semibold text-slate-700">Total Pop 2024</label>
+                    <label for="nip-pop-add-total-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">Total Pop 2024</label>
                     <input type="number" min="0" id="nip-pop-add-total-pop" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
                 <div>
-                    <label for="nip-pop-add-household-pop" class="block mb-1 text-xs font-semibold text-slate-700">Household Pop 2024</label>
+                    <label for="nip-pop-add-household-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">Household Pop 2024</label>
                     <input type="number" min="0" id="nip-pop-add-household-pop" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label for="nip-pop-add-households" class="block mb-1 text-xs font-semibold text-slate-700">Households 2024</label>
+                    <label for="nip-pop-add-households" class="block mb-1.5 text-sm font-semibold text-slate-700">Households 2024</label>
                     <input type="number" min="0" id="nip-pop-add-households" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
                 <div>
-                    <label for="nip-pop-add-nip-pop" class="block mb-1 text-xs font-semibold text-slate-700">NIP 73-Brgy Pop (Optional)</label>
+                    <label for="nip-pop-add-nip-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">NIP 73-Brgy Pop (Optional)</label>
                     <input type="number" min="0" id="nip-pop-add-nip-pop" value="0"
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
             </div>
 
@@ -365,7 +365,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
             <button type="submit"
                     id="nip-btn-submit-pop-add"
-                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
+                    class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-base font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
                 <div id="nip-btn-submit-pop-add-spinner" role="status" class="hidden text-center">
                     <svg aria-hidden="true" class="inline w-5 h-5 text-cho-blue-200/40 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -388,14 +388,14 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
      ============================================================================= -->
 <div id="drawer-nip-pop-edit"
      data-cho-nip-drawer
-     class="fixed top-0 right-0 z-50 h-screen p-5 sm:p-6 overflow-y-auto transition-transform translate-x-full bg-white border-l border-slate-200 w-full sm:w-[480px] md:w-[520px] max-w-full shadow-2xl flex flex-col justify-between"
+     class="fixed top-0 right-0 z-50 h-screen p-5 sm:p-6 overflow-y-auto transition-transform translate-x-full bg-white border-l border-slate-200 rounded-l-2xl w-full sm:w-[520px] md:w-[560px] max-w-full shadow-2xl flex flex-col justify-between"
      tabindex="-1"
      aria-labelledby="drawer-nip-pop-edit-label"
      aria-hidden="true">
 
     <div class="space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-            <h5 id="drawer-nip-pop-edit-label" class="inline-flex items-center gap-2 text-base font-bold text-slate-900">
+            <h5 id="drawer-nip-pop-edit-label" class="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-slate-900">
                 <svg class="w-5 h-5 text-cho-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                 </svg>
@@ -422,37 +422,37 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
             <input type="hidden" id="nip-pop-edit-row-index" />
 
             <div>
-                <label for="nip-pop-edit-psgc10" class="block mb-1 text-xs font-semibold text-slate-700">PSGC10 Code</label>
+                <label for="nip-pop-edit-psgc10" class="block mb-1.5 text-sm font-semibold text-slate-700">PSGC10 Code</label>
                 <input type="text" id="nip-pop-edit-psgc10" required
-                       class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                       class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
             </div>
             <div>
-                <label for="nip-pop-edit-barangay" class="block mb-1 text-xs font-semibold text-slate-700">Barangay / Locality</label>
+                <label for="nip-pop-edit-barangay" class="block mb-1.5 text-sm font-semibold text-slate-700">Barangay / Locality</label>
                 <input type="text" id="nip-pop-edit-barangay" required
-                       class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                       class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label for="nip-pop-edit-total-pop" class="block mb-1 text-xs font-semibold text-slate-700">Total Pop 2024</label>
+                    <label for="nip-pop-edit-total-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">Total Pop 2024</label>
                     <input type="number" min="0" id="nip-pop-edit-total-pop" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
                 <div>
-                    <label for="nip-pop-edit-household-pop" class="block mb-1 text-xs font-semibold text-slate-700">Household Pop 2024</label>
+                    <label for="nip-pop-edit-household-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">Household Pop 2024</label>
                     <input type="number" min="0" id="nip-pop-edit-household-pop" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label for="nip-pop-edit-households" class="block mb-1 text-xs font-semibold text-slate-700">Households 2024</label>
+                    <label for="nip-pop-edit-households" class="block mb-1.5 text-sm font-semibold text-slate-700">Households 2024</label>
                     <input type="number" min="0" id="nip-pop-edit-households" required
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
                 <div>
-                    <label for="nip-pop-edit-nip-pop" class="block mb-1 text-xs font-semibold text-slate-700">NIP 73-Brgy Pop</label>
+                    <label for="nip-pop-edit-nip-pop" class="block mb-1.5 text-sm font-semibold text-slate-700">NIP 73-Brgy Pop</label>
                     <input type="number" min="0" id="nip-pop-edit-nip-pop"
-                           class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                           class="bg-slate-50 border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                 </div>
             </div>
 
@@ -460,7 +460,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
             <button type="submit"
                     id="nip-btn-submit-pop-edit"
-                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
+                    class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-base font-bold text-white bg-cho-blue-900 hover:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
                 <div id="nip-btn-submit-pop-edit-spinner" role="status" class="hidden text-center">
                     <svg aria-hidden="true" class="inline w-5 h-5 text-cho-blue-200/40 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>

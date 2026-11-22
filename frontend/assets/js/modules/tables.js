@@ -7,7 +7,7 @@
  * All subchild functions contain strict START and END comments.
  */
 
-import ExcelJS from 'exceljs';
+// ExcelJS is dynamically loaded only when workbook parsing is triggered in drawer.js
 import { Notifications } from './notifications.js';
 import { Storage } from './storage.js';
 import { AppAnimations } from './animations.js';

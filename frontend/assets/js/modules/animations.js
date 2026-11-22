@@ -269,6 +269,36 @@ class MoneyCounterRunner {
 }
 // END - MoneyCounterRunner
 
+// START - BannerAnimator: Smooth enter/exit transitions for offline & notification banners
+class BannerAnimator {
+  // START - fadeIn: Smoothly reveals a banner with opacity + slight upward slide
+  fadeIn(el) {
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.classList.add('opacity-0', 'translate-y-2', 'transition-all', 'duration-300', 'ease-out');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.remove('opacity-0', 'translate-y-2');
+      });
+    });
+  }
+  // END - fadeIn
+
+  // START - dissolveOut: Smoothly animates banner dismissal before callback
+  dissolveOut(el, onDone) {
+    if (!el) {
+      if (typeof onDone === 'function') onDone();
+      return;
+    }
+    el.classList.add('transition-all', 'duration-250', 'ease-in', 'opacity-0', 'translate-y-2', 'scale-95', 'pointer-events-none');
+    window.setTimeout(() => {
+      if (typeof onDone === 'function') onDone();
+    }, 260);
+  }
+  // END - dissolveOut
+}
+// END - BannerAnimator
+
 // START - Animations: Master OOP orchestrator containing subchild functionality
 class Animations {
   constructor() {
@@ -276,6 +306,7 @@ class Animations {
     this.icon = new IconMorpher();
     this.transition = new ElementTransition();
     this.counter = new MoneyCounterRunner();
+    this.banner = new BannerAnimator();
   }
 
   init() {

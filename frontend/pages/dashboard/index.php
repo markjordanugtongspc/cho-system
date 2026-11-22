@@ -22,7 +22,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
     <div id="cho-dashboard-welcome-banner" class="relative overflow-hidden rounded-2xl border border-slate-200/80 shadow-xs">
         <!-- Background Imagery (Restored to previous center view) -->
         <div id="cho-dashboard-banner-bg-wrapper" class="absolute inset-0 w-full h-full">
-            <img id="cho-dashboard-banner-bg-img" src="<?= asset('images/landing/cho.webp') ?>" alt="City Health Office Facility" class="w-full h-full object-cover object-center" />
+            <img loading="lazy" decoding="async" id="cho-dashboard-banner-bg-img" src="<?= asset('images/landing/cho.webp') ?>" loading="lazy" decoding="async" alt="City Health Office Facility" class="w-full h-full object-cover object-center" />
         </div>
 
         <!-- Brand Color Overlays: CHO Navy gradient with soft blur wash for high contrast & elegance -->

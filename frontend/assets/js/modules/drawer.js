@@ -18,7 +18,7 @@ import { Notifications } from './notifications.js';
 import { Charts } from './charts.js';
 import { Storage } from './storage.js';
 import { AppAnimations } from './animations.js';
-import ExcelJS from 'exceljs';
+import { initTooltips } from 'flowbite';
 
 // =============================================================================
 // PARENT CLASS: BaseDrawerController
@@ -68,6 +68,7 @@ export class BaseDrawerController {
     document.querySelectorAll(`[data-cho-drawer-hide="${this.drawerId}"], [data-drawer-hide="${this.drawerId}"]`).forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        Drawers.drafts?.clearDrawerDrafts(this.drawerId);
         this.hide();
       });
     });
@@ -628,6 +629,7 @@ export class NipLoadDrawer extends BaseDrawerController {
   // START - parseWorkbookDashboardStats: Reads uploaded Excel via ExcelJS, caches KPIs & charts, and applies to dashboard
   async parseWorkbookDashboardStats(file) {
     try {
+      const { default: ExcelJS } = await import('exceljs');
       const buffer = await file.arrayBuffer();
       const wb = new ExcelJS.Workbook();
       await wb.xlsx.load(buffer);
@@ -1477,6 +1479,9 @@ export class NipPopAddDrawer extends BaseDrawerController {
     if (btnText) btnText.textContent = 'Saving...';
 
     try {
+      if (!Drawers.offline?.isOnline) {
+        throw new Error('OFFLINE_MODE');
+      }
       const res = await Api.post('/api/v1/nip/population/add', payload);
       if (!res || !res.success) {
         throw new Error(res?.message || 'Failed to add row to Excel.');
@@ -1525,12 +1530,45 @@ export class NipPopAddDrawer extends BaseDrawerController {
       }
 
       document.getElementById('nip-pop-add-form')?.reset();
+      Drawers.drafts?.clearFormDraft('nip-pop-add-form');
       Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
       Drawers.syncDownloadCardState();
       this.hide();
       Drawers.showStatusToast(true, 'Entry Saved', `Added "${payload.barangay}" at Excel Row ${data.excel_row}.`);
       Drawers.showResyncToast(sourceFile);
     } catch (err) {
+      if (Drawers.offline?.isNetworkError(err)) {
+        await Storage.offlineSync.enqueue({
+          endpoint: '/api/v1/nip/population/add',
+          method: 'POST',
+          payload,
+          label: `Add "${payload.barangay}"`
+        });
+        const current = Storage.nipPopulationCache?.get?.() || {
+          source_file: sourceFile,
+          citySummary: { totalPop: 0, householdPop: 0, households: 0 },
+          rows: []
+        };
+        current.rows.push({
+          row_index: current.rows.length + 1,
+          excel_row: current.rows.length + 5,
+          nip_row: null,
+          psgc10: payload.psgc10 || '-',
+          barangay: payload.barangay,
+          total_pop: payload.total_pop,
+          household_pop: payload.household_pop,
+          households: payload.households,
+          nip_pop: payload.nip_pop,
+          nip_target: payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0
+        });
+        Storage.nipPopulationCache?.save(current);
+        window.CHO?.Tables?.marawiPopulation?.loadFromStorage();
+        document.getElementById('nip-pop-add-form')?.reset();
+        this.hide();
+        Drawers.offline.showOfflineToast(`"${payload.barangay}" saved locally in IndexedDB and queued for auto-sync.`);
+        return;
+      }
       if (feedbackBox) {
         feedbackBox.classList.remove('hidden');
         feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
@@ -1627,6 +1665,9 @@ export class NipPopEditDrawer extends BaseDrawerController {
     if (btnText) btnText.textContent = 'Saving...';
 
     try {
+      if (!Drawers.offline?.isOnline) {
+        throw new Error('OFFLINE_MODE');
+      }
       const res = await Api.post('/api/v1/nip/population/update', payload);
       if (!res || !res.success) {
         throw new Error(res?.message || 'Failed to update Excel cells.');
@@ -1664,11 +1705,38 @@ export class NipPopEditDrawer extends BaseDrawerController {
       }
 
       Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
       Drawers.syncDownloadCardState();
       this.hide();
       Drawers.showStatusToast(true, 'Excel Updated', `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`);
       Drawers.showResyncToast(sourceFile);
     } catch (err) {
+      if (Drawers.offline?.isNetworkError(err)) {
+        await Storage.offlineSync.enqueue({
+          endpoint: '/api/v1/nip/population/update',
+          method: 'POST',
+          payload,
+          label: `Edit "${payload.barangay}"`
+        });
+        const cachedPop = Storage.nipPopulationCache?.get?.();
+        if (cachedPop && Array.isArray(cachedPop.rows)) {
+          const target = cachedPop.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
+          if (target) {
+            target.psgc10 = payload.psgc10 || '-';
+            target.barangay = payload.barangay;
+            target.total_pop = payload.total_pop;
+            target.household_pop = payload.household_pop;
+            target.households = payload.households;
+            target.nip_pop = payload.nip_pop;
+            target.nip_target = payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0;
+          }
+          Storage.nipPopulationCache?.save(cachedPop);
+          window.CHO?.Tables?.marawiPopulation?.loadFromStorage();
+        }
+        this.hide();
+        Drawers.offline.showOfflineToast(`"${payload.barangay}" edit saved locally in IndexedDB and queued for auto-sync.`);
+        return;
+      }
       if (feedbackBox) {
         feedbackBox.classList.remove('hidden');
         feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
@@ -1800,6 +1868,7 @@ export class NipPopDeleteModal {
       }
 
       Storage.nipResyncState?.setPending(sourceFile);
+      Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
       Drawers.syncDownloadCardState();
 
       const preservedCount = res.data?.preserved_formulas ?? 0;
@@ -1946,7 +2015,7 @@ export class TclInfantDrawer extends BaseDrawerController {
       const cls = isMale
         ? 'bg-sky-600 text-white border-sky-700'
         : 'bg-pink-500 text-white border-pink-600';
-      sexEl.className = `inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border shadow-xs ${cls}`;
+      sexEl.className = `inline-flex items-center gap-1.5 px-3 py-1 text-xs font-extrabold uppercase tracking-wide rounded-md border shadow-xs ${cls}`;
       sexEl.innerHTML = `${sexSvg}<span>${record.sex || '--'}</span>`;
     }
 
@@ -2025,14 +2094,14 @@ export class TclInfantDrawer extends BaseDrawerController {
   renderDoseRow(item) {
     const dateText = item.date || '—';
     return `
-      <div class="flex items-center justify-between gap-3 py-2.5 first:pt-1 last:pb-0">
+      <div class="flex items-center justify-between gap-3 py-3 first:pt-1 last:pb-0">
         <div class="flex items-center gap-2.5 min-w-0">
-          <span class="text-xs font-bold text-slate-700">${item.dose}</span>
+          <span class="text-sm font-bold text-slate-700">${item.dose}</span>
           ${this.getBadgeMarkup(item.status)}
         </div>
         <div class="text-right shrink-0">
-          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">Date</div>
-          <div class="text-xs font-semibold text-slate-800 mt-0.5">${dateText}</div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 leading-none">Date</div>
+          <div class="text-sm font-semibold text-slate-800 mt-0.5">${dateText}</div>
         </div>
       </div>
     `;
@@ -2045,9 +2114,838 @@ export class TclInfantDrawer extends BaseDrawerController {
     const cls = isInjected
       ? 'bg-emerald-600 text-white border-emerald-700'
       : 'bg-rose-600 text-white border-rose-700';
-    return `<span class="inline-flex items-center px-2.5 py-0.5 text-[10px] font-extrabold tracking-wide rounded-full border shadow-xs ${cls}">${isInjected ? 'INJECTED' : 'NOT YET'}</span>`;
+    return `<span class="inline-flex items-center px-3 py-0.5 text-xs font-extrabold tracking-wide rounded-full border shadow-xs ${cls}">${isInjected ? 'INJECTED' : 'NOT YET'}</span>`;
   }
   // END - getBadgeMarkup
+}
+
+// =============================================================================
+// SUBCHILD CLASS 6B: NipPopAddDrawer2
+// Handles adding a new Target Client List (0-12 Months) row (#drawer-nip-pop-add2)
+// =============================================================================
+const MARAWI_BARANGAYS = [
+  'Ambolong', 'Amito Marantao', 'Angoyao', 'Bacolod Chico Proper', 'Banga', 'Bangco',
+  'Banggolo Poblacion', 'Bangon', 'Basak Malutlut', 'Beyaba-Damag', 'Bito Buadi Itowa',
+  'Bito Buadi Parba', 'Boganga', 'Boto Ambolong', 'Buadi Sacayo (East Basak)', 'Bubong Lumbac',
+  'Bubonga Cadayonan', 'Bubonga Lilod Madaya', 'Bubonga Marawi', 'Bubonga Pagalamatan',
+  'Bubonga Punod', 'Cabasaran', 'Cabingan', 'Cadayonan', 'Cadayonan I', 'Calocan East',
+  'Calocan West', 'Daguduban', 'Dansalan', 'Datu Dalidigan', 'Datu Naga', 'Datu Sa Dansalan',
+  'Dayawan', 'Dimaluna', 'Dulay', 'Dulay West', 'East Basak', 'Emie Punud', 'Fort',
+  'Gadongan', 'Gadongan Mapantao', 'Guimba', 'Kapantaran', 'Kilala', 'Kormatan Matampay',
+  'Lilod Madaya (Poblacion)', 'Lilod Saduc', 'Lomidong', 'Lumbac Marinaut',
+  'Lumbaca Madaya (Poblacion)', 'Lumbaca Toros', 'Malimono', 'Marawi Poblacion',
+  'Marinaut East', 'Marinaut West', 'Matampay', 'Mipaga Proper', 'Moncado Colony',
+  'Moncado Kadingilan', 'Moriatao Loksadato', 'Navarro', 'Norhaya Village', 'Olawa Ambolong',
+  'Pagalamatan Gambai', 'Pagayawan', 'Panggao Saduc', 'Pantaon', 'Papandayan',
+  'Papandayan Caniogan', 'Paridi', 'Patani', 'Pindolonan', 'Poona Marantao', 'Pugaan',
+  'Rapasun MSU', 'Raya Madaya I', 'Raya Madaya II', 'Raya Saduc', 'Rorogagus East',
+  'Rorogagus Proper', 'Sabala Manao', 'Sabala Manao Proper', 'Saduc Proper', 'Saguiaran (Sagunsongan)',
+  'Sangcay Dansalan', 'Somiorang', 'South Madaya Proper', 'Sugod Proper', 'Sultan Corobong',
+  'Sultan Panoroganan', 'Tampilong', 'Timbangalan', 'Tolali', 'Tongantongan-Tuca Timbangalan',
+  'Toros', 'Tuca'
+];
+
+function bindBarangayDropdown(inputId, toggleId, dropdownId) {
+  const input = document.getElementById(inputId);
+  const toggleBtn = document.getElementById(toggleId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+
+  const renderList = (query = '') => {
+    const q = query.trim().toLowerCase();
+    const matches = q
+      ? MARAWI_BARANGAYS.filter((b) => b.toLowerCase().includes(q))
+      : MARAWI_BARANGAYS;
+
+    dropdown.innerHTML = matches.length
+      ? matches.map((b) => `
+          <button type="button" data-brgy-opt="${b}"
+                  class="w-full text-left px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-between cursor-pointer">
+            <span>${b}</span>
+            <span class="text-xs text-slate-400">Marawi City</span>
+          </button>
+        `).join('')
+      : `<div class="px-3.5 py-3 text-sm text-slate-400 text-center">No matching barangay found</div>`;
+
+    dropdown.querySelectorAll('[data-brgy-opt]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        input.value = btn.dataset.brgyOpt || '';
+        dropdown.classList.add('hidden');
+      });
+    });
+  };
+
+  input.addEventListener('focus', () => {
+    renderList(input.value);
+    dropdown.classList.remove('hidden');
+  });
+
+  input.addEventListener('input', () => {
+    renderList(input.value);
+    dropdown.classList.remove('hidden');
+  });
+
+  toggleBtn?.addEventListener('click', () => {
+    const isHidden = dropdown.classList.contains('hidden');
+    if (isHidden) {
+      renderList('');
+      dropdown.classList.remove('hidden');
+      input.focus();
+    } else {
+      dropdown.classList.add('hidden');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && e.target !== input && !toggleBtn?.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+}
+
+function bindSexDropdown(btnId, dropdownId, displayId, hiddenId) {
+  const btn = document.getElementById(btnId);
+  const dropdown = document.getElementById(dropdownId);
+  const display = document.getElementById(displayId);
+  const hiddenInput = document.getElementById(hiddenId);
+  if (!btn || !dropdown || !display || !hiddenInput) return () => {};
+
+  const getSexMarkup = (sex) => {
+    if (String(sex).toLowerCase() === 'female') {
+      return `<svg class="w-4 h-4 text-pink-500 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M12 14v7" /><path d="M9 18h6" /></svg><span>Female</span>`;
+    }
+    return `<svg class="w-4 h-4 text-sky-600 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 14a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M19 5l-5.4 5.4" /><path d="M19 5h-5" /><path d="M19 5v5" /></svg><span>Male</span>`;
+  };
+
+  const setSex = (sex) => {
+    const normalized = String(sex).toLowerCase() === 'female' ? 'Female' : 'Male';
+    hiddenInput.value = normalized;
+    display.innerHTML = getSexMarkup(normalized);
+    dropdown.classList.add('hidden');
+    btn.setAttribute('aria-expanded', 'false');
+  };
+
+  btn.addEventListener('click', () => {
+    const isHidden = dropdown.classList.contains('hidden');
+    dropdown.classList.toggle('hidden', !isHidden);
+    btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+  });
+
+  dropdown.querySelectorAll('[data-sex-value]').forEach((opt) => {
+    opt.addEventListener('click', () => setSex(opt.dataset.sexValue || 'Male'));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+      dropdown.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  return setSex;
+}
+
+function bindVaccineDateSync(prefix) {
+  const pairs = [
+    ['vax-date', 'bcg'], ['hepa-date', 'hepa'],
+    ['dpt1-date', 'dpt1'], ['dpt2-date', 'dpt2'],
+    ['opv1-date', 'opv1'], ['opv2-date', 'opv2'],
+    ['pcv1-date', 'pcv1'], ['pcv2-date', 'pcv2'], ['pcv3-date', 'pcv3'],
+    ['ipv1-date', 'ipv1']
+  ];
+  pairs.forEach(([dSuffix, sSuffix]) => {
+    const dateEl = document.getElementById(`${prefix}-${dSuffix}`);
+    const selEl = document.getElementById(`${prefix}-${sSuffix}`);
+    if (!dateEl || !selEl) return;
+    dateEl.addEventListener('change', () => {
+      selEl.value = dateEl.value ? 'INJECTED' : 'NOT YET';
+    });
+  });
+}
+
+function buildTclPayloadFromForm(prefix, rowId) {
+  const child = document.getElementById(`${prefix}-child`)?.value.trim() || '';
+  const barangay = document.getElementById(`${prefix}-barangay`)?.value.trim() || '';
+  const regDate = document.getElementById(`${prefix}-reg-date`)?.value || '';
+  const dob = document.getElementById(`${prefix}-dob`)?.value || '';
+  const sex = document.getElementById(`${prefix}-sex`)?.value || 'Male';
+  const bcg = document.getElementById(`${prefix}-bcg`)?.value || 'NOT YET';
+  const vaxDate = document.getElementById(`${prefix}-vax-date`)?.value || '';
+  const hepa = document.getElementById(`${prefix}-hepa`)?.value || 'NOT YET';
+  const hepaDate = document.getElementById(`${prefix}-hepa-date`)?.value || '';
+
+  const fmtDate = (iso, opts = { month: 'short', day: 'numeric', year: 'numeric' }) => {
+    if (!iso) return '';
+    const d = new Date(`${iso}T00:00:00`);
+    return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString('en-US', opts);
+  };
+
+  const doseEntry = (doseLabel, key) => {
+    const status = document.getElementById(`${prefix}-${key}`)?.value || 'NOT YET';
+    const iso = document.getElementById(`${prefix}-${key}-date`)?.value || '';
+    return { dose: doseLabel, status, date: fmtDate(iso), iso };
+  };
+
+  const dobDate = new Date(`${dob}T00:00:00`);
+  const diffDays = Number.isNaN(dobDate.getTime()) ? 0 : Math.max(0, Math.floor((new Date() - dobDate) / 86400000));
+  const months = Math.floor(diffDays / 30);
+  const ageShort = months >= 1 ? `${months} ${months === 1 ? 'mo' : 'mos'}` : `${diffDays} days`;
+  const ageFull = months >= 1 ? `${months} ${months === 1 ? 'month' : 'months'} old` : `${diffDays} days old`;
+
+  return {
+    id: rowId,
+    child,
+    barangay,
+    reg_date: regDate,
+    reg_date_fmt: fmtDate(regDate),
+    reg_date_full: fmtDate(regDate, { month: 'long', day: 'numeric', year: 'numeric' }),
+    dob,
+    dob_fmt: Number.isNaN(dobDate.getTime()) ? dob : `${dobDate.getMonth() + 1}/${dobDate.getDate()}/${dobDate.getFullYear()}`,
+    dob_full: fmtDate(dob, { month: 'long', day: 'numeric', year: 'numeric' }),
+    age: ageShort,
+    age_full: ageFull,
+    sex: sex.toUpperCase(),
+    overview_note: '',
+    imm1_note: '',
+    imm1: {
+      bcg: { status: bcg, date: fmtDate(vaxDate), iso: vaxDate },
+      hepa: { status: hepa, date: fmtDate(hepaDate), iso: hepaDate }
+    },
+    imm2: {
+      dpt: [doseEntry('1st Dose', 'dpt1'), doseEntry('2nd Dose', 'dpt2')],
+      opv: [doseEntry('1st Dose', 'opv1'), doseEntry('2nd Dose', 'opv2')],
+      pcv: [doseEntry('1st Dose', 'pcv1'), doseEntry('2nd Dose', 'pcv2'), doseEntry('3rd Dose', 'pcv3')],
+      ipv: [doseEntry('1st Dose', 'ipv1')]
+    }
+  };
+}
+
+function renderTclRowCells(tr, record) {
+  const id = record.id;
+  const isMale = record.sex === 'MALE';
+  const bcg = record.imm1?.bcg?.status || 'NOT YET';
+  const vaxFmt = record.imm1?.bcg?.date || '';
+  const vaxIso = record.imm1?.bcg?.iso || '';
+  const isInjected = bcg === 'INJECTED';
+  const bcgBadgeClass = isInjected
+    ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
+    : 'bg-rose-600 text-white border-rose-700 shadow-xs';
+  const sexBadgeClass = isMale
+    ? 'bg-sky-600 text-white border-sky-700 shadow-xs'
+    : 'bg-pink-500 text-white border-pink-600 shadow-xs';
+  const sexSvg = isMale
+    ? '<svg class="w-3.5 h-3.5 shrink-0 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 14a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M19 5l-5.4 5.4" /><path d="M19 5h-5" /><path d="M19 5v5" /></svg>'
+    : '<svg class="w-3.5 h-3.5 shrink-0 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M12 14v7" /><path d="M9 18h6" /></svg>';
+
+  const vaxCell = vaxIso
+    ? `<span id="tcl-vax-date-${id}-2" data-tooltip-target="tcl-vax-tooltip-${id}-2" data-tooltip-placement="top" class="text-xs font-semibold text-slate-800 underline decoration-dotted decoration-slate-400 underline-offset-4 cursor-help">${vaxFmt}</span>
+       <div id="tcl-vax-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-3 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">${vaxFmt}<div class="tooltip-arrow" data-popper-arrow></div></div>`
+    : `<span id="tcl-vax-date-${id}-2" class="text-xs font-medium text-slate-400">&mdash;</span>`;
+
+  tr.className = 'group hover:bg-sky-100 hover:shadow-sm transition-all duration-150 cursor-pointer';
+  tr.dataset.rowId = String(id);
+  tr.dataset.bcg = bcg;
+  tr.dataset.sex = isMale ? 'male' : 'female';
+  tr.dataset.tclRecord = JSON.stringify(record);
+
+  tr.innerHTML = `
+    <td class="px-4 py-3 font-mono text-xs font-bold text-slate-500 group-hover:text-slate-800 whitespace-nowrap">${id}</td>
+    <td class="px-4 py-3 bg-slate-50/60 group-hover:bg-transparent font-semibold text-slate-800 whitespace-nowrap">${record.barangay}</td>
+    <td class="px-4 py-3 whitespace-nowrap">
+      <span id="tcl-reg-date-${id}-2" data-tooltip-target="tcl-reg-tooltip-${id}-2" data-tooltip-placement="top" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 border border-slate-200 cursor-help">
+        <span class="w-1.5 h-1.5 rounded-full bg-cho-blue-700"></span>${record.reg_date_fmt}
+      </span>
+      <div id="tcl-reg-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-3 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">${record.reg_date_full}<div class="tooltip-arrow" data-popper-arrow></div></div>
+    </td>
+    <td class="px-4 py-3 bg-slate-50/60 group-hover:bg-transparent font-bold text-slate-900 whitespace-nowrap">${record.child}</td>
+    <td class="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">
+      <span id="tcl-dob-text-${id}-2" data-tooltip-target="tcl-dob-tooltip-${id}-2" data-tooltip-placement="top" class="inline-flex items-center underline decoration-dotted decoration-slate-400 underline-offset-4 cursor-help">${record.dob_fmt}</span>
+      <div id="tcl-dob-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-3 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">${record.dob_full}<div class="tooltip-arrow" data-popper-arrow></div></div>
+    </td>
+    <td class="px-4 py-3 bg-slate-50/60 group-hover:bg-transparent text-xs font-semibold text-slate-700 whitespace-nowrap">
+      <span id="tcl-age-text-${id}-2" data-tooltip-target="tcl-age-tooltip-${id}-2" data-tooltip-placement="top" class="inline-flex items-center underline decoration-dotted decoration-slate-400 underline-offset-4 cursor-help">${record.age}</span>
+      <div id="tcl-age-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-3 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">${record.age_full}<div class="tooltip-arrow" data-popper-arrow></div></div>
+    </td>
+    <td class="px-4 py-3 whitespace-nowrap">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border ${sexBadgeClass}">${sexSvg}${record.sex}</span>
+    </td>
+    <td class="px-4 py-2.5 bg-slate-50/60 group-hover:bg-transparent text-center whitespace-nowrap">
+      <div class="inline-flex items-center justify-center gap-3">
+        <span id="tcl-bcg-badge-${id}-2" class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-extrabold tracking-wide rounded-full border ${bcgBadgeClass}">${bcg}</span>
+        <div class="pl-3 border-l border-slate-200 text-center">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">Date of Vaccination</div>
+          ${vaxCell}
+        </div>
+      </div>
+    </td>
+    <td class="px-4 py-3 text-center whitespace-nowrap">
+      <div class="inline-flex items-center justify-center gap-1.5">
+        <button type="button" id="tcl-btn-edit-${id}-2" data-tooltip-target="tcl-edit-tooltip-${id}-2" data-tooltip-placement="top" aria-label="Edit record" class="p-1.5 text-slate-500 hover:text-cho-blue-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        </button>
+        <div id="tcl-edit-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-2.5 py-1 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">Edit Record<div class="tooltip-arrow" data-popper-arrow></div></div>
+        <button type="button" id="tcl-btn-delete-${id}-2" data-tooltip-target="tcl-delete-tooltip-${id}-2" data-tooltip-placement="top" aria-label="Delete record" class="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+        <div id="tcl-delete-tooltip-${id}-2" role="tooltip" class="absolute z-30 invisible inline-block px-2.5 py-1 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">Delete Record<div class="tooltip-arrow" data-popper-arrow></div></div>
+      </div>
+    </td>
+  `;
+}
+
+export class NipPopAddDrawer2 extends BaseDrawerController {
+  // START - constructor
+  constructor() {
+    super('drawer-nip-pop-add2');
+    this.resetSexDropdown = () => {};
+  }
+  // END - constructor
+
+  // START - init: Binds searchable barangay dropdown, sex icon dropdown, vaccine sync, IndexedDB hydrate, and submit
+  init() {
+    super.init();
+    bindBarangayDropdown('tcl-add-barangay', 'tcl-brgy-toggle', 'tcl-brgy-dropdown');
+    this.resetSexDropdown = bindSexDropdown('tcl-sex-btn', 'tcl-sex-dropdown', 'tcl-sex-display', 'tcl-add-sex');
+    bindVaccineDateSync('tcl-add');
+    this.hydrateFromIndexedDb();
+
+    const form = document.getElementById('nip-pop-add-form2');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAdd();
+      });
+    }
+  }
+  // END - init
+
+  // START - hydrateFromIndexedDb: Restores any locally saved TCL records from IndexedDB into the table
+  async hydrateFromIndexedDb() {
+    const tbody = document.getElementById('cho-nip-pop-tbody2');
+    if (!tbody || !Storage.offlineSync) return;
+    try {
+      const saved = await Storage.offlineSync.getAllTclRecords();
+      if (!Array.isArray(saved) || saved.length === 0) return;
+
+      saved.forEach((record) => {
+        const existing = tbody.querySelector(`tr[data-row-id="${record.id}"]`);
+        if (existing) {
+          renderTclRowCells(existing, record);
+        } else {
+          const tr = document.createElement('tr');
+          renderTclRowCells(tr, record);
+          tbody.appendChild(tr);
+        }
+      });
+      window.CHO_TCL_REFRESH_TABLE2?.();
+      initTooltips();
+    } catch (e) {
+      console.warn('[NipPopAddDrawer2] IndexedDB hydrate skipped:', e);
+    }
+  }
+  // END - hydrateFromIndexedDb
+
+  // START - handleAdd: Appends a new child entry with At-Birth & Routine Infant Doses to the NIP2 TCL table & IndexedDB
+  async handleAdd() {
+    const tbody = document.getElementById('cho-nip-pop-tbody2');
+    if (!tbody) return;
+
+    const maxId = Array.from(tbody.querySelectorAll('tr')).reduce((max, r) => Math.max(max, Number(r.dataset.rowId || 0)), 0);
+    const record = buildTclPayloadFromForm('tcl-add', maxId + 1);
+    if (!record.child || !record.barangay || !record.reg_date || !record.dob) return;
+
+    const tr = document.createElement('tr');
+    renderTclRowCells(tr, record);
+    tbody.appendChild(tr);
+
+    window.CHO_TCL_REFRESH_TABLE2?.();
+    initTooltips();
+
+    await Storage.offlineSync?.saveTclRecord(record).catch(() => {});
+    if (!Drawers.offline?.isOnline) {
+      await Storage.offlineSync?.enqueue({
+        endpoint: '/api/v1/nip2/tcl/add',
+        method: 'POST',
+        payload: record,
+        label: `Add "${record.child}"`
+      }).catch(() => {});
+    }
+
+    document.getElementById('nip-pop-add-form2')?.reset();
+    Drawers.drafts?.clearFormDraft('nip-pop-add-form2');
+    this.resetSexDropdown('Male');
+    this.hide();
+    Drawers.drafts?.clearFormDraft('nip-pop-edit-form2');
+    if (!Drawers.offline?.isOnline) {
+      Drawers.offline.showOfflineToast(`"${record.child}" saved locally in IndexedDB and queued for auto-sync.`);
+    } else {
+      Drawers.showStatusToast(true, 'Child Record Added', `"${record.child}" (${record.barangay}) has been added to the Target Client List.`);
+    }
+  }
+  // END - handleAdd
+}
+
+// =============================================================================
+// SUBCHILD CLASS 6C: NipPopEditDrawer2
+// Handles editing & deleting Target Client List (0-12 Months) rows (#drawer-nip-pop-edit2)
+// =============================================================================
+export class NipPopEditDrawer2 extends BaseDrawerController {
+  // START - constructor
+  constructor() {
+    super('drawer-nip-pop-edit2');
+    this.activeRowEl = null;
+    this.setSexDropdown = () => {};
+  }
+  // END - constructor
+
+  // START - init: Binds delegated edit/delete row actions, dropdowns, vaccine sync, and submit
+  init() {
+    super.init();
+    bindBarangayDropdown('tcl-edit-barangay', 'tcl-edit-brgy-toggle', 'tcl-edit-brgy-dropdown');
+    this.setSexDropdown = bindSexDropdown('tcl-edit-sex-btn', 'tcl-edit-sex-dropdown', 'tcl-edit-sex-display', 'tcl-edit-sex');
+    bindVaccineDateSync('tcl-edit');
+
+    const tbody = document.getElementById('cho-nip-pop-tbody2');
+    if (tbody && tbody.dataset.tclEditBound !== '1') {
+      tbody.dataset.tclEditBound = '1';
+      tbody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('[id^="tcl-btn-edit-"]');
+        if (editBtn) {
+          e.stopPropagation();
+          const tr = editBtn.closest('tr');
+          if (tr) this.openForRow(tr);
+          return;
+        }
+        const delBtn = e.target.closest('[id^="tcl-btn-delete-"]');
+        if (delBtn) {
+          e.stopPropagation();
+          const tr = delBtn.closest('tr');
+          if (tr) {
+            const parsed = JSON.parse(tr.dataset.tclRecord || '{}');
+            const name = parsed.child || 'Record';
+            const rowId = parsed.id || tr.dataset.rowId;
+            tr.remove();
+            window.CHO_TCL_REFRESH_TABLE2?.();
+            Storage.offlineSync?.deleteTclRecord(rowId).catch(() => {});
+            Drawers.showStatusToast(true, 'Record Removed', `"${name}" has been removed from the Target Client List.`);
+          }
+        }
+      });
+    }
+
+    const form = document.getElementById('nip-pop-edit-form2');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleEdit();
+      });
+    }
+  }
+  // END - init
+
+  // START - openForRow: Populates edit drawer fields from the clicked table row
+  openForRow(tr) {
+    this.activeRowEl = tr;
+    const record = JSON.parse(tr.dataset.tclRecord || '{}');
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val ?? '';
+    };
+
+    setVal('tcl-edit-row-id', record.id || tr.dataset.rowId || '');
+    const badge = document.getElementById('nip-pop-edit-row-badge2');
+    if (badge) badge.textContent = `Record #${record.id || tr.dataset.rowId || '--'}`;
+
+    setVal('tcl-edit-child', record.child || '');
+    setVal('tcl-edit-barangay', record.barangay || '');
+    setVal('tcl-edit-reg-date', record.reg_date || '');
+    setVal('tcl-edit-dob', record.dob || '');
+    this.setSexDropdown(record.sex || 'Male');
+
+    setVal('tcl-edit-bcg', record.imm1?.bcg?.status || 'NOT YET');
+    setVal('tcl-edit-vax-date', record.imm1?.bcg?.iso || '');
+    setVal('tcl-edit-hepa', record.imm1?.hepa?.status || 'NOT YET');
+    setVal('tcl-edit-hepa-date', record.imm1?.hepa?.iso || '');
+
+    const setDose = (key, arr, idx) => {
+      const item = arr?.[idx] || {};
+      setVal(`tcl-edit-${key}`, item.status || 'NOT YET');
+      setVal(`tcl-edit-${key}-date`, item.iso || '');
+    };
+    setDose('dpt1', record.imm2?.dpt, 0);
+    setDose('dpt2', record.imm2?.dpt, 1);
+    setDose('opv1', record.imm2?.opv, 0);
+    setDose('opv2', record.imm2?.opv, 1);
+    setDose('pcv1', record.imm2?.pcv, 0);
+    setDose('pcv2', record.imm2?.pcv, 1);
+    setDose('pcv3', record.imm2?.pcv, 2);
+    setDose('ipv1', record.imm2?.ipv, 0);
+
+    this.show();
+  }
+  // END - openForRow
+
+  // START - handleEdit: Updates the existing row in place, persists to IndexedDB, and refreshes tooltips
+  async handleEdit() {
+    if (!this.activeRowEl) return;
+    const rowId = Number(document.getElementById('tcl-edit-row-id')?.value || this.activeRowEl.dataset.rowId || 0);
+    const existing = JSON.parse(this.activeRowEl.dataset.tclRecord || '{}');
+    const updated = buildTclPayloadFromForm('tcl-edit', rowId);
+    if (!updated.child || !updated.barangay || !updated.reg_date || !updated.dob) return;
+
+    updated.overview_note = existing.overview_note || '';
+    updated.imm1_note = existing.imm1_note || '';
+
+    renderTclRowCells(this.activeRowEl, updated);
+    window.CHO_TCL_REFRESH_TABLE2?.();
+    initTooltips();
+
+    await Storage.offlineSync?.saveTclRecord(updated).catch(() => {});
+    if (!Drawers.offline?.isOnline) {
+      await Storage.offlineSync?.enqueue({
+        endpoint: '/api/v1/nip2/tcl/edit',
+        method: 'POST',
+        payload: updated,
+        label: `Edit "${updated.child}"`
+      }).catch(() => {});
+    }
+
+    this.hide();
+    Drawers.drafts?.clearFormDraft('nip-pop-edit-form2');
+    if (!Drawers.offline?.isOnline) {
+      Drawers.offline.showOfflineToast(`"${updated.child}" changes saved locally in IndexedDB and queued for auto-sync.`);
+    } else {
+      Drawers.showStatusToast(true, 'Child Record Updated', `"${updated.child}" has been updated.`);
+    }
+  }
+  // END - handleEdit
+}
+
+// =============================================================================
+// SUBCHILD CLASS 6D: OfflineSyncMonitor
+// Heartbeat connectivity monitor + IndexedDB pending_sync auto-flush & toasts
+// =============================================================================
+export class OfflineSyncMonitor {
+  // START - constructor
+  constructor() {
+    this.isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    this.isSlow = false;
+    this.isFlushing = false;
+    this.heartbeatTimer = null;
+  }
+  // END - constructor
+
+  // START - init: Attaches online/offline listeners and starts lightweight heartbeat
+  init() {
+    window.addEventListener('online', () => this.checkHeartbeat());
+    window.addEventListener('offline', () => this.setOfflineState('No internet connection detected.'));
+
+    this.checkHeartbeat();
+    this.heartbeatTimer = window.setInterval(() => this.checkHeartbeat(), 15000);
+  }
+  // END - init
+
+  // START - isNetworkError: Detects dropped Wi-Fi, offline mode, or aborted fetch errors
+  isNetworkError(err) {
+    if (!this.isOnline || !navigator.onLine) return true;
+    const msg = String(err?.message || '');
+    return msg === 'OFFLINE_MODE' || err?.name === 'TypeError' || msg.includes('Failed to fetch') || msg.includes('NetworkError');
+  }
+  // END - isNetworkError
+
+  // START - checkHeartbeat: Pings real internet connectivity + local API to detect offline/slow connection even on localhost
+  async checkHeartbeat() {
+    if (!navigator.onLine) {
+      this.setOfflineState('Wi-Fi or internet connection dropped.');
+      return;
+    }
+
+    const ctrl = new AbortController();
+    const timeoutId = window.setTimeout(() => ctrl.abort(), 3500);
+    const startedAt = performance.now();
+
+    try {
+      await fetch(`https://www.gstatic.com/generate_204?_hb=${Date.now()}`, {
+        method: 'GET',
+        mode: 'no-cors',
+        cache: 'no-store',
+        signal: ctrl.signal
+      });
+      window.clearTimeout(timeoutId);
+
+      const elapsed = performance.now() - startedAt;
+      const wasOffline = !this.isOnline;
+      this.isOnline = true;
+      this.isSlow = elapsed > 2000;
+      this.hideOfflineToast();
+
+      if (wasOffline) {
+        await this.flushPendingSync(true);
+      } else {
+        const pendingCount = await Storage.offlineSync?.countPending?.().catch(() => 0);
+        if (pendingCount > 0) {
+          await this.flushPendingSync(false);
+        }
+      }
+    } catch {
+      window.clearTimeout(timeoutId);
+      this.setOfflineState('No internet connection detected. Switched to Offline Mode.');
+    }
+  }
+  // END - checkHeartbeat
+
+  // START - setOfflineState: Marks client offline and displays persistent Flowbite offline toast
+  setOfflineState(reason) {
+    const changed = this.isOnline;
+    this.isOnline = false;
+    if (changed || !document.getElementById('cho-nip-offline-toast')) {
+      this.showOfflineToast(reason);
+    }
+  }
+  // END - setOfflineState
+
+  // START - flushPendingSync: Auto-pushes queued pending_sync mutations when connection stabilizes
+  async flushPendingSync(showReconnectToast = true) {
+    if (this.isFlushing || !this.isOnline || !Storage.offlineSync) return;
+    this.isFlushing = true;
+
+    try {
+      const pending = await Storage.offlineSync.getPending();
+      if (!Array.isArray(pending) || pending.length === 0) {
+        if (showReconnectToast) {
+          Drawers.showStatusToast(true, 'Back Online', 'Internet connection is stable.');
+        }
+        return;
+      }
+
+      let synced = 0;
+      for (const item of pending) {
+        try {
+          const res = await Api.request(item.endpoint, {
+            method: item.method || 'POST',
+            body: item.payload
+          });
+          if (res && res.success) {
+            await Storage.offlineSync.removePending(item.id);
+            synced++;
+          }
+        } catch {
+          break;
+        }
+      }
+
+      if (synced > 0) {
+        Drawers.showStatusToast(true, 'Offline Queue Synced', `Auto-pushed ${synced} queued record(s) to the server.`);
+      }
+    } finally {
+      this.isFlushing = false;
+    }
+  }
+  // END - flushPendingSync
+
+  // START - showOfflineToast: Displays bottom-center red-rose banner OR trimmed sidebar banner based on 5-day cookie preference
+  showOfflineToast(message = 'You are in Offline Mode. Changes are saved locally to IndexedDB.') {
+    const posPref = Storage.cookies?.get?.('cho_offline_banner_pos');
+
+    if (posPref === 'sidebar') {
+      // Refresh 5-day inactivity cookie on active visit
+      Storage.cookies?.set?.('cho_offline_banner_pos', 'sidebar', 5);
+      const sidebarBanner = document.getElementById('cho-sidebar-offline-banner');
+      if (sidebarBanner) {
+        const msgEl = document.getElementById('cho-sidebar-offline-msg');
+        const tipMsgEl = document.getElementById('cho-sidebar-offline-tooltip-msg');
+        if (msgEl) msgEl.textContent = message;
+        if (tipMsgEl) tipMsgEl.textContent = `Offline Mode: ${message}`;
+        if (sidebarBanner.classList.contains('hidden')) {
+          AppAnimations?.banner?.fadeIn ? AppAnimations.banner.fadeIn(sidebarBanner) : sidebarBanner.classList.remove('hidden');
+          initTooltips();
+        }
+        const closeBtn = document.getElementById('cho-sidebar-offline-close');
+        if (closeBtn && closeBtn.dataset.bound !== '1') {
+          closeBtn.dataset.bound = '1';
+          closeBtn.addEventListener('click', () => {
+            Storage.cookies?.remove?.('cho_offline_banner_pos');
+            if (AppAnimations?.banner?.dissolveOut) {
+              AppAnimations.banner.dissolveOut(sidebarBanner, () => {
+                sidebarBanner.classList.add('hidden', 'pointer-events-auto');
+                sidebarBanner.classList.remove('opacity-0', 'translate-y-2', 'scale-95', 'pointer-events-none');
+              });
+            } else {
+              sidebarBanner.classList.add('hidden');
+            }
+          });
+        }
+        return;
+      }
+    }
+
+    const existing = document.getElementById('cho-nip-offline-toast');
+    if (existing) {
+      const msgEl = existing.querySelector('[data-offline-msg]');
+      if (msgEl) msgEl.textContent = message;
+      return;
+    }
+
+    const toast = document.createElement('div');
+    toast.id = 'cho-nip-offline-toast';
+    toast.setAttribute('role', 'banner');
+    toast.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl px-4 py-2 text-white bg-rose-600 border-2 border-rose-700 rounded-xl shadow-lg opacity-60 hover:opacity-100 transition-all duration-200';
+    toast.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-white bg-rose-700/80 border border-rose-500 rounded-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+            </svg>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 min-w-0 text-xs sm:text-sm">
+            <span class="font-bold text-white shrink-0">Offline Mode:</span>
+            <span data-offline-msg class="text-rose-50 truncate">${message}</span>
+          </div>
+        </div>
+        <button type="button" id="cho-nip-offline-toast-close" aria-label="Close" class="shrink-0 text-rose-100 hover:text-white hover:bg-rose-700/70 rounded-lg p-1 transition-colors cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    document.getElementById('cho-nip-offline-toast-close')?.addEventListener('click', () => {
+      Storage.cookies?.set?.('cho_offline_banner_pos', 'sidebar', 5);
+      if (AppAnimations?.banner?.dissolveOut) {
+        AppAnimations.banner.dissolveOut(toast, () => toast.remove());
+      } else {
+        toast.remove();
+      }
+    });
+  }
+  // END - showOfflineToast
+
+  // START - hideOfflineToast: Dismisses both bottom-center and sidebar offline banners once connection stabilizes
+  hideOfflineToast() {
+    document.getElementById('cho-nip-offline-toast')?.remove();
+    document.getElementById('cho-sidebar-offline-banner')?.classList.add('hidden');
+  }
+  // END - hideOfflineToast
+}
+
+// =============================================================================
+// SUBCHILD CLASS 6E: DrawerDraftCache
+// Temporary 10-minute sessionStorage draft cache for all drawer forms.
+// Survives page refresh & navigation; auto-destroys on close, save, tab close, or logout.
+// =============================================================================
+export class DrawerDraftCache {
+  // START - constructor
+  constructor() {
+    this.PREFIX = 'cho_drawer_draft_';
+    this.TTL_MS = 10 * 60 * 1000; // 10 minutes (within 5–15 min window)
+    this.FORM_IDS = [
+      'nip-pop-add-form',
+      'nip-pop-edit-form',
+      'nip-pop-add-form2',
+      'nip-pop-edit-form2'
+    ];
+  }
+  // END - constructor
+
+  // START - init: Restores non-expired drafts, binds input listeners, and hooks logout cleanup
+  init() {
+    this.FORM_IDS.forEach((formId) => {
+      const form = document.getElementById(formId);
+      if (!form) return;
+
+      this.restoreFormDraft(form);
+
+      const saveHandler = () => this.saveFormDraft(form);
+      form.addEventListener('input', saveHandler);
+      form.addEventListener('change', saveHandler);
+      form.addEventListener('click', (e) => {
+        if (e.target.closest('[data-brgy-opt], [data-sex-value]')) {
+          setTimeout(saveHandler, 20);
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-cho-logout], #cho-btn-logout, #cho-logout-btn, a[href*="logout"]')) {
+        this.clearAllDrafts();
+      }
+    });
+  }
+  // END - init
+
+  // START - saveFormDraft: Serializes drawer form fields into sessionStorage with 10-min expiry
+  saveFormDraft(form) {
+    if (!form || !form.id) return;
+    const fields = {};
+    form.querySelectorAll('input, select, textarea').forEach((el) => {
+      if (!el.id || el.type === 'file') return;
+      fields[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    try {
+      sessionStorage.setItem(`${this.PREFIX}${form.id}`, JSON.stringify({
+        expiresAt: Date.now() + this.TTL_MS,
+        fields
+      }));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }
+  // END - saveFormDraft
+
+  // START - restoreFormDraft: Repopulates drawer form fields if draft exists and has not expired
+  restoreFormDraft(form) {
+    if (!form || !form.id) return;
+    const key = `${this.PREFIX}${form.id}`;
+    try {
+      const raw = sessionStorage.getItem(key);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (!parsed || Date.now() > Number(parsed.expiresAt || 0)) {
+        sessionStorage.removeItem(key);
+        return;
+      }
+
+      Object.entries(parsed.fields || {}).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = Boolean(val);
+        else el.value = val;
+      });
+
+      if (form.id === 'nip-pop-add-form2' && parsed.fields?.['tcl-add-sex']) {
+        Drawers.popAdd2?.resetSexDropdown?.(parsed.fields['tcl-add-sex']);
+      }
+      if (form.id === 'nip-pop-edit-form2' && parsed.fields?.['tcl-edit-sex']) {
+        Drawers.popEdit2?.setSexDropdown?.(parsed.fields['tcl-edit-sex']);
+      }
+    } catch {
+      sessionStorage.removeItem(key);
+    }
+  }
+  // END - restoreFormDraft
+
+  // START - clearFormDraft: Immediately removes a specific form's temporary draft
+  clearFormDraft(formId) {
+    if (!formId) return;
+    try {
+      sessionStorage.removeItem(`${this.PREFIX}${formId}`);
+    } catch {}
+  }
+  // END - clearFormDraft
+
+  // START - clearDrawerDrafts: Clears any form drafts inside a given drawer element
+  clearDrawerDrafts(drawerId) {
+    const drawer = document.getElementById(drawerId);
+    if (!drawer) return;
+    drawer.querySelectorAll('form[id]').forEach((f) => this.clearFormDraft(f.id));
+  }
+  // END - clearDrawerDrafts
+
+  // START - clearAllDrafts: Purges all drawer drafts (used on logout)
+  clearAllDrafts() {
+    this.FORM_IDS.forEach((id) => this.clearFormDraft(id));
+  }
+  // END - clearAllDrafts
 }
 
 // =============================================================================
@@ -2060,19 +2958,27 @@ export const Drawers = {
   reset: new NipResetDrawer(),
   upload: new NipUploadDrawer(),
   popAdd: new NipPopAddDrawer(),
+  popAdd2: new NipPopAddDrawer2(),
   popEdit: new NipPopEditDrawer(),
+  popEdit2: new NipPopEditDrawer2(),
   popDelete: new NipPopDeleteModal(),
   tclInfant: new TclInfantDrawer(),
   gate: new NipWorkspaceGate(),
+  offline: new OfflineSyncMonitor(),
+  drafts: new DrawerDraftCache(),
 
   init() {
+    this.offline.init();
     this.gate.init();
     this.load.init();
     this.generate.init();
     this.reset.init();
     this.upload.init();
     this.popAdd.init();
+    this.popAdd2.init();
     this.popEdit.init();
+    this.popEdit2.init();
+    this.drafts.init();
     this.popDelete.init();
     this.tclInfant.init();
 
@@ -2113,35 +3019,35 @@ export const Drawers = {
     toast.setAttribute('role', 'alert');
 
     if (isSuccess) {
-      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-sm p-4 text-slate-700 bg-white border border-emerald-200 rounded-xl shadow-lg transition-all';
+      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-md p-4 text-slate-700 bg-white border border-emerald-200 rounded-xl shadow-lg transition-all';
       toast.innerHTML = `
-        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-emerald-600 bg-emerald-50 rounded-lg">
+        <div class="inline-flex items-center justify-center shrink-0 w-9 h-9 text-emerald-600 bg-emerald-50 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
           </svg>
         </div>
-        <div class="ms-3 text-xs flex-1 min-w-0">
+        <div class="ms-3 text-sm flex-1 min-w-0">
           <p class="font-bold text-slate-900">${title}</p>
-          <p class="text-slate-600 mt-0.5">${message}</p>
+          <p class="text-slate-600 mt-0.5 text-xs sm:text-sm">${message}</p>
         </div>
-        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1 cursor-pointer">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
         </button>
       `;
     } else {
-      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-sm p-4 text-slate-700 bg-white border border-rose-200 rounded-xl shadow-lg transition-all';
+      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center w-full max-w-md p-4 text-slate-700 bg-white border border-rose-200 rounded-xl shadow-lg transition-all';
       toast.innerHTML = `
-        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-rose-600 bg-rose-50 rounded-lg">
+        <div class="inline-flex items-center justify-center shrink-0 w-9 h-9 text-rose-600 bg-rose-50 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </div>
-        <div class="ms-3 text-xs flex-1 min-w-0">
+        <div class="ms-3 text-sm flex-1 min-w-0">
           <p class="font-bold text-rose-700">${title}</p>
-          <p class="text-slate-600 mt-0.5 break-words">${message}</p>
+          <p class="text-slate-600 mt-0.5 text-xs sm:text-sm break-words">${message}</p>
         </div>
-        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1 cursor-pointer">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+        <button type="button" id="cho-nip-status-toast-close" aria-label="Close" class="ms-2 text-slate-400 hover:text-slate-700 rounded-lg p-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
         </button>
       `;
     }

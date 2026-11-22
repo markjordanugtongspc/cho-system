@@ -6,14 +6,39 @@
  * - Dynamic theme adaptation (Light / Dark mode colors)
  */
 
-import ApexCharts from 'apexcharts';
+let ApexCharts = null;
 
 export const Charts = {
   instances: {},
   lastNipData: null,
   lastNip2Data: null,
+  _apexPromise: null,
 
-  init() {
+  async loadApexCharts() {
+    if (ApexCharts) return ApexCharts;
+    if (!this._apexPromise) {
+      this._apexPromise = import('apexcharts').then((m) => {
+        ApexCharts = m.default || m;
+        return ApexCharts;
+      });
+    }
+    return this._apexPromise;
+  },
+
+  async init() {
+    const hasCharts = [
+      'cho-chart-outpatient-area',
+      'cho-chart-barangay-bar',
+      'cho-chart-services-donut',
+      'cho-nip-antigens-chart',
+      'cho-nip-catchments-chart',
+      'cho-nip-antigens-chart2',
+      'cho-nip-catchments-chart2'
+    ].some((id) => document.getElementById(id));
+
+    if (!hasCharts) return;
+
+    await this.loadApexCharts();
     this.initOutpatientAreaChart();
     this.initBarangayBarChart();
     this.initServicesDonutChart();
@@ -327,9 +352,24 @@ export const Charts = {
     this.applyNip2StatCards(activeData);
 
     const canvasPlaceholder = document.getElementById('cho-nip-canvas-card2');
+    const chartsSkeleton = document.getElementById('cho-nip-charts-skeleton2');
     if (canvasPlaceholder) canvasPlaceholder.classList.add('hidden');
-    if (chartsContainer) chartsContainer.classList.remove('hidden');
 
+    if (chartsSkeleton && chartsContainer) {
+      chartsContainer.classList.add('hidden');
+      chartsSkeleton.classList.remove('hidden');
+      setTimeout(() => {
+        chartsSkeleton.classList.add('hidden');
+        chartsContainer.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          this.renderNipAntigenChart(activeData.antigens || [], 'cho-nip-antigens-chart2', 'nipAntigens2');
+          this.renderNipCatchmentChart(activeData.catchments || [], activeData.fic_accomplished || 0, '2');
+        });
+      }, 240);
+      return;
+    }
+
+    if (chartsContainer) chartsContainer.classList.remove('hidden');
     requestAnimationFrame(() => {
       this.renderNipAntigenChart(activeData.antigens || [], 'cho-nip-antigens-chart2', 'nipAntigens2');
       this.renderNipCatchmentChart(activeData.catchments || [], activeData.fic_accomplished || 0, '2');

@@ -22,26 +22,28 @@
    <div class="relative h-full overflow-hidden bg-cho-blue-900 text-white border-s sm:border-s-0 sm:border-e border-cho-blue-800">
       <!-- Background Slideshow: CHO Building 1 & 2 (full top-to-bottom fill with 85% primary overlay) -->
       <div id="cho-sidebar-bg-slideshow" class="absolute inset-0 pointer-events-none">
-         <img id="cho-sidebar-bg-slide-1"
-              src="<?= asset('images/CHO-Building.png') ?>"
+         <img loading="lazy" decoding="async" id="cho-sidebar-bg-slide-1"
+              src="<?= asset('images/CHO-Building.webp') ?>"
+              loading="lazy" decoding="async"
               alt=""
               aria-hidden="true"
               class="absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-700 ease-in-out" />
-         <img id="cho-sidebar-bg-slide-2"
-              src="<?= asset('images/CHO-Building2.png') ?>"
-              data-fallback-src="<?= asset('images/CHO-Building.png') ?>"
+         <img loading="lazy" decoding="async" id="cho-sidebar-bg-slide-2"
+              src="<?= asset('images/CHO-Building2.webp') ?>"
+              loading="lazy" decoding="async"
+              data-fallback-src="<?= asset('images/CHO-Building.webp') ?>"
               alt=""
               aria-hidden="true"
               class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-700 ease-in-out" />
       </div>
       <div class="absolute inset-0 bg-cho-blue-900/85 pointer-events-none"></div>
 
-      <div class="relative z-10 h-full px-4 py-5 overflow-y-auto">
-      
+      <div class="relative z-10 h-full px-4 py-5 overflow-y-auto flex flex-col justify-between gap-4">
+      <div>
       <!-- Header with CHO Logo and Close Button (visible on mobile) -->
       <div class="flex items-center justify-between ps-2.5 mb-6">
          <a href="<?= url('/dashboard') ?>" class="flex items-center">
-            <img src="<?= asset('images/cho-logo.png') ?>" class="h-8 me-3 drop-shadow-sm" alt="CHO Logo" />
+            <img loading="lazy" decoding="async" src="<?= asset('images/cho-logo.png') ?>" class="h-8 me-3 drop-shadow-sm" alt="CHO Logo" />
             <span class="self-center text-lg text-white font-bold whitespace-nowrap tracking-tight">CHO MARAWI</span>
          </a>
          <button type="button" id="cho-sidebar-mobile-close-btn" aria-controls="logo-sidebar" class="sm:hidden text-white/80 bg-transparent hover:text-white hover:bg-white/10 rounded-base w-8 h-8 flex items-center justify-center p-1 cursor-pointer">
@@ -175,6 +177,46 @@
             </a>
          </li>
       </ul>
+      </div>
+
+      <!-- Trimmed Sidebar Bottom-Left Offline Banner (shown when bottom-center banner was dismissed, 5-day cookie) -->
+      <div id="cho-sidebar-offline-banner"
+           role="alert"
+           data-tooltip-target="cho-sidebar-offline-tooltip"
+           data-tooltip-placement="top"
+           class="hidden mt-auto w-full px-3 py-2 text-white bg-rose-600/95 border border-rose-400/70 rounded-xl shadow-md opacity-80 hover:opacity-100 transition-all duration-200 cursor-help">
+         <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+               <svg class="w-4 h-4 shrink-0 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+               </svg>
+               <div class="min-w-0 leading-tight">
+                  <p class="text-[11px] font-bold text-white truncate">Offline Mode</p>
+                  <p id="cho-sidebar-offline-msg" class="text-[10px] text-rose-100 truncate">Saved to IndexedDB</p>
+               </div>
+            </div>
+            <button type="button"
+                    id="cho-sidebar-offline-close"
+                    data-tooltip-target="cho-sidebar-offline-close-tooltip"
+                    data-tooltip-placement="top"
+                    aria-label="Dismiss sidebar offline notice"
+                    class="shrink-0 text-rose-100 hover:text-white hover:bg-rose-700/80 rounded-lg p-1 transition-colors cursor-pointer">
+               <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+            </button>
+         </div>
+      </div>
+      <div id="cho-sidebar-offline-tooltip"
+           role="tooltip"
+           class="absolute z-50 invisible inline-block max-w-xs px-3 py-2 text-xs font-medium text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">
+         <span id="cho-sidebar-offline-tooltip-msg">Offline Mode: Changes are saved locally to IndexedDB and auto-synced when internet stabilizes.</span>
+         <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <div id="cho-sidebar-offline-close-tooltip"
+           role="tooltip"
+           class="absolute z-50 invisible inline-block px-2.5 py-1 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">
+         Move back to bottom-center
+         <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
       </div>
    </div>
 </aside>

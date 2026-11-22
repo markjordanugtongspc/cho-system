@@ -85,7 +85,7 @@ $prefs     = prefs();
                     $webPath = asset('images/landing/' . $filename);
                     ?>
                     <div class="hidden duration-1000 ease-in-out transition-transform" data-carousel-item>
-                      <img src="<?= e($webPath) ?>" class="absolute block w-full h-full object-cover object-center" alt="City Health Office Facility <?= $index + 1 ?>" />
+                      <img src="<?= e($webPath) ?>" loading="lazy" decoding="async" class="absolute block w-full h-full object-cover object-center" alt="City Health Office Facility <?= $index + 1 ?>" />
                     </div>
                     <?php
                 }
@@ -105,6 +105,7 @@ $prefs     = prefs();
                 <div
                     class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full overflow-hidden ring-2 ring-white/60 shadow-xl flex items-center justify-center bg-transparent transition transform hover:scale-105 duration-300">
                     <img src="<?= asset('images/cho-logo.png') ?>"
+                        loading="lazy" decoding="async"
                         alt="City Health Office Logo"
                         class="w-full h-full object-cover scale-105 rounded-full drop-shadow-sm" />
                 </div>

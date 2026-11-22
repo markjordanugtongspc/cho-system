@@ -331,7 +331,7 @@ class BackgroundSlideshow {
 
     this.slide2.addEventListener('error', () => {
       this.slide2Failed = true;
-      this.handleImageError(this.slide2?.getAttribute('src') || 'CHO-Building2.png');
+      this.handleImageError(this.slide2?.getAttribute('src') || 'CHO-Building2.webp');
     });
 
     this.slide2.addEventListener('load', () => {
@@ -344,7 +344,7 @@ class BackgroundSlideshow {
   }
 
   /**
-   * Crossfades between CHO-Building.png and CHO-Building2.png; falls back to CHO-Building.png on missing image
+   * Crossfades between CHO-Building.webp and CHO-Building2.webp; falls back to CHO-Building.webp on missing image
    */
   swapSlide() {
     if (this.isPaused || !this.slide1 || !this.slide2) return;
@@ -353,7 +353,7 @@ class BackgroundSlideshow {
       const isSlide2Ready = !this.slide2Failed && this.slide2.complete && this.slide2.naturalWidth > 0;
       if (!isSlide2Ready) {
         this.stayOnPrimary();
-        this.handleImageError(this.slide2.getAttribute('src') || 'CHO-Building2.png');
+        this.handleImageError(this.slide2.getAttribute('src') || 'CHO-Building2.webp');
         return;
       }
 
@@ -369,7 +369,7 @@ class BackgroundSlideshow {
   }
 
   /**
-   * Keeps CHO-Building.png visible as the safe fallback background
+   * Keeps CHO-Building.webp visible as the safe fallback background
    */
   stayOnPrimary() {
     if (!this.slide1 || !this.slide2) return;
@@ -389,7 +389,7 @@ class BackgroundSlideshow {
     this.errorCount += 1;
 
     console.error(
-      `[Sidebar Slideshow] Image not detected (${this.errorCount}/${this.maxErrors}): ${imageSrc}. Staying on CHO-Building.png.`
+      `[Sidebar Slideshow] Image not detected (${this.errorCount}/${this.maxErrors}): ${imageSrc}. Staying on CHO-Building.webp.`
     );
 
     if (this.errorCount >= this.maxErrors) {

@@ -49,9 +49,9 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 1: Barangays Population (Blue Theme with Integrated Background Photo) -->
         <div id="cho-stat-card-barangays" class="group relative overflow-hidden rounded-none p-5 bg-[#005bf8] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <!-- Background Photo from assets/images/nip/nip1.jpeg: Resting color/opacity returned, Enhanced on hover -->
-            <img id="cho-stat-bg-img-barangays" 
-                 src="<?= asset('images/nip/nip1.jpeg') ?>" 
+            <!-- Background Photo from assets/images/nip/nip1.webp: Resting color/opacity returned, Enhanced on hover -->
+            <img loading="lazy" decoding="async" id="cho-stat-bg-img-barangays" 
+                 src="<?= asset('images/nip/nip1.webp') ?>" 
                  alt="Barangays Health Workers" 
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
 
@@ -100,9 +100,9 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 2: Eligible Infants (Orange/Amber Theme with Integrated Background Photo) -->
         <div id="cho-stat-card-infants" class="group relative overflow-hidden rounded-none p-5 bg-[#e66a00] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <!-- Background Photo from assets/images/nip/nip2.jpeg: Resting color/opacity returned, Enhanced on hover -->
-            <img id="cho-stat-bg-img-infants" 
-                 src="<?= asset('images/nip/nip2.jpeg') ?>" 
+            <!-- Background Photo from assets/images/nip/nip2.webp: Resting color/opacity returned, Enhanced on hover -->
+            <img loading="lazy" decoding="async" id="cho-stat-bg-img-infants" 
+                 src="<?= asset('images/nip/nip2.webp') ?>" 
                  alt="Infants Immunization" 
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
 
@@ -151,9 +151,9 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 3: Childrens Immunized / FIC (Deep Teal/Emerald Theme with Integrated Background Photo) -->
         <div id="cho-stat-card-childrens" class="group relative overflow-hidden rounded-none p-5 bg-[#007a64] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <!-- Background Photo from assets/images/nip/nip3.jpg: Resting color/opacity returned, Enhanced on hover -->
-            <img id="cho-stat-bg-img-childrens" 
-                 src="<?= asset('images/nip/nip3.jpg') ?>" 
+            <!-- Background Photo from assets/images/nip/nip3.webp: Resting color/opacity returned, Enhanced on hover -->
+            <img loading="lazy" decoding="async" id="cho-stat-bg-img-childrens" 
+                 src="<?= asset('images/nip/nip3.webp') ?>" 
                  alt="Childrens Immunization" 
                  class="absolute inset-0 w-full h-full object-cover object-[center_20%] opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
 
@@ -202,9 +202,9 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Card 4: FIC Coverage Rate (Crimson/Red Theme with Integrated Background Photo) -->
         <div id="cho-stat-card-coverage" class="group relative overflow-hidden rounded-none p-5 bg-[#c00030] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
-            <!-- Background Photo from assets/images/nip/nip4.jpg: Resting color/opacity returned, Enhanced on hover -->
-            <img id="cho-stat-bg-img-coverage" 
-                 src="<?= asset('images/nip/nip4.jpg') ?>" 
+            <!-- Background Photo from assets/images/nip/nip4.webp: Resting color/opacity returned, Enhanced on hover -->
+            <img loading="lazy" decoding="async" id="cho-stat-bg-img-coverage" 
+                 src="<?= asset('images/nip/nip4.webp') ?>" 
                  alt="Coverage Benchmark" 
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
 

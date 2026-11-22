@@ -376,6 +376,109 @@ export const Storage = {
     clear() {
       Storage.local.remove(this.STATE_KEY);
     }
-  }
+  },
   // END - NipResyncState
+
+  // START - OfflineSyncDB: IndexedDB subchild layer with pending_sync queue & local TCL records store (zero PWA required)
+  offlineSync: {
+    DB_NAME: 'cho_marawi_offline_db',
+    DB_VERSION: 1,
+    STORE_PENDING: 'pending_sync',
+    STORE_TCL: 'tcl_records',
+    _dbPromise: null,
+
+    // START - openDb: Opens or upgrades the IndexedDB database once and caches the connection
+    openDb() {
+      if (this._dbPromise) return this._dbPromise;
+      if (typeof indexedDB === 'undefined') {
+        return Promise.reject(new Error('IndexedDB is not supported in this browser.'));
+      }
+
+      this._dbPromise = new Promise((resolve, reject) => {
+        const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(this.STORE_PENDING)) {
+            db.createObjectStore(this.STORE_PENDING, { keyPath: 'id', autoIncrement: true });
+          }
+          if (!db.objectStoreNames.contains(this.STORE_TCL)) {
+            db.createObjectStore(this.STORE_TCL, { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => {
+          this._dbPromise = null;
+          reject(req.error);
+        };
+      });
+
+      return this._dbPromise;
+    },
+    // END - openDb
+
+    // START - runStore: Shared transaction helper for object stores
+    async runStore(storeName, mode, callback) {
+      const db = await this.openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, mode);
+        const store = tx.objectStore(storeName);
+        const req = callback(store);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    },
+    // END - runStore
+
+    // START - enqueue: Adds an offline mutation into pending_sync
+    async enqueue(item) {
+      return this.runStore(this.STORE_PENDING, 'readwrite', (store) =>
+        store.add({
+          endpoint: item.endpoint,
+          method: item.method || 'POST',
+          payload: item.payload || {},
+          label: item.label || 'Record',
+          createdAt: new Date().toISOString()
+        })
+      );
+    },
+    // END - enqueue
+
+    // START - getPending: Returns all queued offline mutations
+    async getPending() {
+      return this.runStore(this.STORE_PENDING, 'readonly', (store) => store.getAll());
+    },
+    // END - getPending
+
+    // START - removePending: Deletes a synced mutation by its auto-increment id
+    async removePending(id) {
+      return this.runStore(this.STORE_PENDING, 'readwrite', (store) => store.delete(id));
+    },
+    // END - removePending
+
+    // START - countPending: Returns total queued items in pending_sync
+    async countPending() {
+      return this.runStore(this.STORE_PENDING, 'readonly', (store) => store.count());
+    },
+    // END - countPending
+
+    // START - saveTclRecord: Persists a NIP2 Target Client List record locally in IndexedDB
+    async saveTclRecord(record) {
+      if (!record || !record.id) return null;
+      return this.runStore(this.STORE_TCL, 'readwrite', (store) => store.put(record));
+    },
+    // END - saveTclRecord
+
+    // START - getAllTclRecords: Loads all locally saved NIP2 Target Client List records
+    async getAllTclRecords() {
+      return this.runStore(this.STORE_TCL, 'readonly', (store) => store.getAll());
+    },
+    // END - getAllTclRecords
+
+    // START - deleteTclRecord: Removes a NIP2 Target Client List record from IndexedDB
+    async deleteTclRecord(id) {
+      return this.runStore(this.STORE_TCL, 'readwrite', (store) => store.delete(Number(id)));
+    }
+    // END - deleteTclRecord
+  }
+  // END - OfflineSyncDB
 };
