@@ -165,7 +165,7 @@
                   </a>
                </li>
                <li id="cho-sidebar-subitem-nip-population2" data-sidebar-parent="NIP Program System 2">
-                  <a href="<?= url('/frontend/pages/NIP2/population/') ?>" id="cho-sidebar-link-nip-population2" data-tooltip-target="cho-sidebar-tip-nip-population2" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+                  <a href="<?= url('/frontend/pages/NIP2/newborns/') ?>" id="cho-sidebar-link-nip-population2" data-tooltip-target="cho-sidebar-tip-nip-population2" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg id="cho-sidebar-icon-nip-population2" class="w-4 h-4 me-2 shrink-0 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
                         <path d="M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />

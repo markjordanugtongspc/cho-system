@@ -24,7 +24,7 @@ class NavigationHighlighter {
 
     const path = this.currentPath.replace(/\/$/, '');
     const isNip2Dashboard = path.includes('/nip2/dashboard');
-    const isNip2Population = path.includes('/nip2/population');
+    const isNip2Population = path.includes('/nip2/newborns');
     const isNipDashboard = path.includes('/nip/dashboard');
     const isNipPopulation = path.includes('/nip/population');
     const isMainHome = (path.includes('/dashboard') && !path.includes('/nip') && !path.includes('/nip2')) ||

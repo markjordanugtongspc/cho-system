@@ -299,6 +299,103 @@ class BannerAnimator {
 }
 // END - BannerAnimator
 
+// START - PlaceholderTyper: Loop typing placeholder animation for search inputs
+class PlaceholderTyper {
+  /**
+   * Animates placeholder text in a loop across multiple sample phrases
+   * @param {string} selector
+   * @param {string[]} phrases
+   * @param {Object} options
+   */
+  bind(
+    selector = '#cho-nip2-brgy-search',
+    phrases = [
+      'Search barangay (e.g. Tuca)...',
+      'Try "Poblacion" or "Banggolo"...',
+      'Search "Basak Malutlut" or "Dulay"...',
+      'Select a barangay to calculate totals...'
+    ],
+    options = {}
+  ) {
+    const input = document.querySelector(selector);
+    if (!input || input.dataset.choTyperBound === '1' || !phrases.length) return;
+    input.dataset.choTyperBound = '1';
+
+    const typeSpeed = options.typeSpeed ?? 45;
+    const deleteSpeed = options.deleteSpeed ?? 25;
+    const pauseMs = options.pauseMs ?? 1200;
+
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+
+    const tick = () => {
+      if (document.activeElement === input || input.value.trim().length > 0) {
+        window.setTimeout(tick, 350);
+        return;
+      }
+
+      const current = phrases[phraseIdx];
+      if (!isDeleting) {
+        charIdx += 1;
+        input.setAttribute('placeholder', `${current.slice(0, charIdx)}|`);
+        if (charIdx >= current.length) {
+          input.setAttribute('placeholder', current);
+          isDeleting = true;
+          window.setTimeout(tick, pauseMs);
+          return;
+        }
+        window.setTimeout(tick, typeSpeed);
+      } else {
+        charIdx -= 1;
+        input.setAttribute('placeholder', charIdx > 0 ? `${current.slice(0, charIdx)}|` : '');
+        if (charIdx <= 0) {
+          isDeleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          window.setTimeout(tick, 260);
+          return;
+        }
+        window.setTimeout(tick, deleteSpeed);
+      }
+    };
+
+    tick();
+  }
+
+  // START - runSearchSpinner: Shows a brief loading spinner on the search button before executing callback
+  runSearchSpinner(button, onComplete, duration = 380) {
+    const btn = typeof button === 'string' ? document.querySelector(button) : button;
+    if (!btn) {
+      if (typeof onComplete === 'function') onComplete();
+      return;
+    }
+
+    if (btn.dataset.choSpinning === '1') return;
+    btn.dataset.choSpinning = '1';
+
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.classList.add('opacity-90', 'cursor-wait');
+    btn.innerHTML = `
+      <svg class="w-3.5 h-3.5 animate-spin shrink-0 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <span>Searching...</span>
+    `;
+
+    window.setTimeout(() => {
+      if (typeof onComplete === 'function') onComplete();
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+      btn.classList.remove('opacity-90', 'cursor-wait');
+      delete btn.dataset.choSpinning;
+    }, duration);
+  }
+  // END - runSearchSpinner
+}
+// END - PlaceholderTyper
+
 // START - Animations: Master OOP orchestrator containing subchild functionality
 class Animations {
   constructor() {
@@ -307,10 +404,12 @@ class Animations {
     this.transition = new ElementTransition();
     this.counter = new MoneyCounterRunner();
     this.banner = new BannerAnimator();
+    this.placeholderTyper = new PlaceholderTyper();
   }
 
   init() {
     this.button.bindHoverEmphasis('[data-cho-drawer-target="drawer-nip-load"]:not(#cho-nip-action-load-card)');
+    this.placeholderTyper.bind('#cho-nip2-brgy-search');
   }
 }
 // END - Animations

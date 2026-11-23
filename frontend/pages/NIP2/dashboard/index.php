@@ -29,13 +29,87 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
          Note: This exact direct-download action is also fully integrated into Quick Access Action #4 below.
          ========================================================================= -->
 
-    <!-- TOP HEADER: Flat Text Elements Without Any Wrapping Div -->
-    <h1 id="cho-nip-dashboard-title2" class="text-2xl sm:text-3xl font-black font-heading tracking-tight text-cho-blue-900 dark:text-cho-blue-400">
-        NIP Dashboard
-    </h1>
-    <p id="cho-nip-dashboard-subtitle2" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium -mt-4">
-        18 Antigen Indicators & 74 Barangays Monitoring
-    </p>
+    <!-- TOP HEADER WITH GLOBAL PERIOD FILTER (Yearly / Monthly / Overall) -->
+    <div id="cho-nip-dashboard-header2" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+            <h1 id="cho-nip-dashboard-title2" class="text-2xl sm:text-3xl font-black font-heading tracking-tight text-cho-blue-900 dark:text-cho-blue-400">
+                NIP Dashboard
+            </h1>
+            <p id="cho-nip-dashboard-subtitle2" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                18 Antigen Indicators &amp; 74 Barangays Monitoring
+            </p>
+        </div>
+
+        <!-- Flowbite Global Period Filter Dropdown (Affects KPI Cards, Expandable Cards, and Charts) -->
+        <div class="relative shrink-0">
+            <button id="cho-nip2-period-btn"
+                    data-dropdown-toggle="cho-nip2-period-dropdown"
+                    data-dropdown-placement="bottom-end"
+                    type="button"
+                    class="inline-flex items-center justify-between gap-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-semibold rounded-xl shadow-xs focus:ring-2 focus:ring-cho-blue-600 focus:border-cho-blue-600 px-3.5 py-2.5 cursor-pointer transition-colors">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cho-blue-800 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="cho-nip2-period-label">All Years (Overall)</span>
+                </span>
+                <svg class="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div id="cho-nip2-period-dropdown"
+                 class="z-40 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-72 p-3.5 space-y-3">
+                <button type="button"
+                        id="cho-nip2-period-overall"
+                        class="w-full inline-flex items-center justify-between px-3 py-2 text-xs font-bold text-cho-blue-900 bg-cho-blue-50 hover:bg-cho-blue-100 rounded-lg cursor-pointer transition-colors">
+                    <span>All Years (Overall)</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-cho-blue-700">Default</span>
+                </button>
+                <div>
+                    <label for="cho-nip2-period-year" class="block mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Year (Annually)</label>
+                    <select id="cho-nip2-period-year"
+                            class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-2.5 py-2">
+                        <option value="all" selected>All Years (2024 &ndash; 2026)</option>
+                        <option value="2026">2026 (Latest)</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="cho-nip2-period-month" class="block mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Month (Monthly)</label>
+                    <select id="cho-nip2-period-month"
+                            class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-2.5 py-2">
+                        <option value="all" selected>All Months (Entire Year)</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button"
+                            id="cho-nip2-period-apply"
+                            class="flex-1 inline-flex items-center justify-center text-white bg-cho-blue-900 hover:bg-cho-blue-950 font-semibold rounded-lg text-xs px-3 py-2 cursor-pointer transition-colors">
+                        Apply Filter
+                    </button>
+                    <button type="button"
+                            id="cho-nip2-period-reset"
+                            class="inline-flex items-center justify-center text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold rounded-lg text-xs px-3 py-2 cursor-pointer transition-colors">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- =========================================================================
          QUICK STAT CARDS: INFLUENCED BY IMAGE 1
@@ -256,145 +330,288 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
     <!-- EXPANDABLE DUPLICATED STATS GRID (Revealed by clicking SEE MORE below) -->
     <div id="cho-nip-stats-expandable2" class="grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-out overflow-hidden">
         <div id="cho-nip-stats-expandable-inner2" class="min-h-0">
-            <div id="cho-nip-stats-grid-extra2" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+            <div id="cho-nip-stats-grid-extra2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-1">
 
-                <!-- Extra Card 05 -->
-                <div id="cho-stat-card-barangays-extra2" class="group relative overflow-hidden rounded-none p-5 bg-[#005bf8] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                <!-- Extra Card 05 (Plain with Photo - General Stats Highlight) -->
+                <div id="cho-stat-card-barangays-extra2" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 border-t-4 border-t-amber-400 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
                     <img loading="lazy" decoding="async" id="cho-stat-bg-img-barangays-extra2"
                          src="<?= asset('images/nip/nip1.webp') ?>"
                          alt="Indicator 05"
-                         class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
-                    <div id="cho-stat-overlay-barangays-extra2" class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-                    <svg id="cho-stat-bg-icon-barangays-extra2" class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out z-[5]" fill="currentColor" viewBox="0 0 24 24">
+                         class="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div id="cho-stat-overlay-barangays-extra2" class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg id="cho-stat-bg-icon-barangays-extra2" class="absolute right-2 bottom-1.5 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out z-[5]" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd" d="M11.906 1.994a8.002 8.002 0 0 1 8.09 8.421 7.996 7.996 0 0 1-1.297 3.957.996.996 0 0 1-.133.204l-.108.129c-.178.243-.37.477-.573.699l-5.112 6.224a1 1 0 0 1-1.545 0L5.982 15.26l-.002-.002a18.146 18.146 0 0 1-.309-.38l-.133-.163a.999.999 0 0 1-.13-.202 7.995 7.995 0 0 1 6.498-12.518ZM15 9.997a3 3 0 1 1-5.999 0 3 3 0 0 1 5.999 0Z" clip-rule="evenodd"/>
                     </svg>
-                    <div id="cho-stat-content-barangays-extra2" class="relative z-10">
-                        <div id="cho-stat-header-barangays-extra2" class="flex items-center justify-between">
-                            <span id="cho-stat-label-barangays-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Fully Completed
-                            </span>
-                            <span id="cho-stat-idx-barangays-extra2" class="text-xs font-black tracking-widest text-white/60">
-                                05
-                            </span>
+                    <div id="cho-stat-content-barangays-extra2" class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div id="cho-stat-header-barangays-extra2" class="flex items-center justify-between gap-1">
+                                <span id="cho-stat-label-barangays-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate">
+                                    Fully Completed
+                                </span>
+                                <span id="cho-stat-idx-barangays-extra2" class="text-xs font-black tracking-widest text-white/60 shrink-0">
+                                    05
+                                </span>
+                            </div>
+                            <div id="cho-stat-val-barangays-extra2" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">
+                                1
+                            </div>
                         </div>
-                        <div id="cho-stat-val-barangays-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            1
-                        </div>
-                        <div id="cho-stat-divider-barangays-extra2" class="w-full border-t border-white/20 my-2.5"></div>
-                        <div id="cho-stat-footer-barangays-extra2" class="flex items-center justify-between text-xs text-white/90">
-                            <span id="cho-stat-sub-barangays-extra2" class="text-[11px] font-medium text-white/80">
-                                100% All Doses Injected
-                            </span>
-                            <span id="cho-stat-pill-barangays-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>✓</span> Fully Immunized
-                            </span>
+                        <div>
+                            <div id="cho-stat-divider-barangays-extra2" class="w-full border-t border-white/20 my-1.5"></div>
+                            <div id="cho-stat-footer-barangays-extra2" class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span id="cho-stat-sub-barangays-extra2" class="text-[10px] font-medium text-white/80 truncate">
+                                    100% All Doses
+                                </span>
+                                <span id="cho-stat-pill-barangays-extra2" class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0">
+                                    <span>✓</span> Done
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Extra Card 06 -->
-                <div id="cho-stat-card-infants-extra2" class="group relative overflow-hidden rounded-none p-5 bg-[#e66a00] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                <!-- Extra Card 06 (Plain with Photo - General Stats Highlight) -->
+                <div id="cho-stat-card-infants-extra2" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 border-t-4 border-t-amber-400 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
                     <img loading="lazy" decoding="async" id="cho-stat-bg-img-infants-extra2"
                          src="<?= asset('images/nip/nip2.webp') ?>"
                          alt="Indicator 06"
-                         class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
-                    <div id="cho-stat-overlay-infants-extra2" class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-                    <svg id="cho-stat-bg-icon-infants-extra2" class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
+                         class="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div id="cho-stat-overlay-infants-extra2" class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg id="cho-stat-bg-icon-infants-extra2" class="absolute right-2 bottom-1.5 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd" d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z" clip-rule="evenodd"/>
                     </svg>
-                    <div id="cho-stat-content-infants-extra2" class="relative z-10">
-                        <div id="cho-stat-header-infants-extra2" class="flex items-center justify-between">
-                            <span id="cho-stat-label-infants-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Total Male Infants
-                            </span>
-                            <span id="cho-stat-idx-infants-extra2" class="text-xs font-black tracking-widest text-white/60">
-                                06
-                            </span>
+                    <div id="cho-stat-content-infants-extra2" class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div id="cho-stat-header-infants-extra2" class="flex items-center justify-between gap-1">
+                                <span id="cho-stat-label-infants-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate">
+                                    Total Male Infants
+                                </span>
+                                <span id="cho-stat-idx-infants-extra2" class="text-xs font-black tracking-widest text-white/60 shrink-0">
+                                    06
+                                </span>
+                            </div>
+                            <div id="cho-stat-val-infants-extra2" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">
+                                5
+                            </div>
                         </div>
-                        <div id="cho-stat-val-infants-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            5
-                        </div>
-                        <div id="cho-stat-divider-infants-extra2" class="w-full border-t border-white/20 my-2.5"></div>
-                        <div id="cho-stat-footer-infants-extra2" class="flex items-center justify-between text-xs text-white/90">
-                            <span id="cho-stat-sub-infants-extra2" class="text-[11px] font-medium text-white/80">
-                                Male Gender Total
-                            </span>
-                            <span id="cho-stat-pill-infants-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>♂</span> Male Cohort
-                            </span>
+                        <div>
+                            <div id="cho-stat-divider-infants-extra2" class="w-full border-t border-white/20 my-1.5"></div>
+                            <div id="cho-stat-footer-infants-extra2" class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span id="cho-stat-sub-infants-extra2" class="text-[10px] font-medium text-white/80 truncate">
+                                    Male Gender Total
+                                </span>
+                                <span id="cho-stat-pill-infants-extra2" class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0">
+                                    <span>♂</span> Male
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Extra Card 07 -->
-                <div id="cho-stat-card-childrens-extra2" class="group relative overflow-hidden rounded-none p-5 bg-[#007a64] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                <!-- Extra Card 07 (Plain with Photo - General Stats Highlight) -->
+                <div id="cho-stat-card-childrens-extra2" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 border-t-4 border-t-amber-400 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
                     <img loading="lazy" decoding="async" id="cho-stat-bg-img-childrens-extra2"
                          src="<?= asset('images/nip/nip3.webp') ?>"
                          alt="Indicator 07"
-                         class="absolute inset-0 w-full h-full object-cover object-[center_20%] opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
-                    <div id="cho-stat-overlay-childrens-extra2" class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-                    <svg id="cho-stat-bg-icon-childrens-extra2" class="absolute right-2 bottom-5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
+                         class="absolute inset-0 w-full h-full object-cover object-[center_20%] opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div id="cho-stat-overlay-childrens-extra2" class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg id="cho-stat-bg-icon-childrens-extra2" class="absolute right-2 bottom-2 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
                         <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z"/>
                     </svg>
-                    <div id="cho-stat-content-childrens-extra2" class="relative z-10">
-                        <div id="cho-stat-header-childrens-extra2" class="flex items-center justify-between">
-                            <span id="cho-stat-label-childrens-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Total Female Infants
-                            </span>
-                            <span id="cho-stat-idx-childrens-extra2" class="text-xs font-black tracking-widest text-white/60">
-                                07
-                            </span>
+                    <div id="cho-stat-content-childrens-extra2" class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div id="cho-stat-header-childrens-extra2" class="flex items-center justify-between gap-1">
+                                <span id="cho-stat-label-childrens-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate">
+                                    Total Female Infants
+                                </span>
+                                <span id="cho-stat-idx-childrens-extra2" class="text-xs font-black tracking-widest text-white/60 shrink-0">
+                                    07
+                                </span>
+                            </div>
+                            <div id="cho-stat-val-childrens-extra2" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">
+                                5
+                            </div>
                         </div>
-                        <div id="cho-stat-val-childrens-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            5
-                        </div>
-                        <div id="cho-stat-divider-childrens-extra2" class="w-full border-t border-white/20 my-2.5"></div>
-                        <div id="cho-stat-footer-childrens-extra2" class="flex items-center justify-between text-xs text-white/90">
-                            <span id="cho-stat-sub-childrens-extra2" class="text-[11px] font-medium text-white/80">
-                                Female Gender Total
-                            </span>
-                            <span id="cho-stat-pill-childrens-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>♀</span> Female Cohort
-                            </span>
+                        <div>
+                            <div id="cho-stat-divider-childrens-extra2" class="w-full border-t border-white/20 my-1.5"></div>
+                            <div id="cho-stat-footer-childrens-extra2" class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span id="cho-stat-sub-childrens-extra2" class="text-[10px] font-medium text-white/80 truncate">
+                                    Female Gender Total
+                                </span>
+                                <span id="cho-stat-pill-childrens-extra2" class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0">
+                                    <span>♀</span> Female
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Extra Card 08 -->
-                <div id="cho-stat-card-coverage-extra2" class="group relative overflow-hidden rounded-none p-5 bg-[#c00030] text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                <!-- Extra Card 08 (Plain with Photo - General Stats Highlight) -->
+                <div id="cho-stat-card-coverage-extra2" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 border-t-4 border-t-amber-400 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
                     <img loading="lazy" decoding="async" id="cho-stat-bg-img-coverage-extra2"
                          src="<?= asset('images/nip/nip4.webp') ?>"
                          alt="Indicator 08"
-                         class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
-                    <div id="cho-stat-overlay-coverage-extra2" class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-                    <svg id="cho-stat-bg-icon-coverage-extra2" class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         class="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div id="cho-stat-overlay-coverage-extra2" class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg id="cho-stat-bg-icon-coverage-extra2" class="absolute right-2 bottom-1.5 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-width="2" d="M8.737 8.737a21.49 21.49 0 0 1 3.308-2.724m0 0c3.063-2.026 5.99-2.641 7.331-1.3 1.827 1.828.026 6.591-4.023 10.64-4.049 4.049-8.812 5.85-10.64 4.023-1.33-1.33-.736-4.218 1.249-7.253m6.083-6.11c-3.063-2.026-5.99-2.641-7.331-1.3-1.827 1.828-.026 6.591 4.023 10.64m3.308-9.34a21.497 21.497 0 0 1 3.308 2.724m2.775 3.386c1.985 3.035 2.579 5.923 1.248 7.253-1.336 1.337-4.245.732-7.295-1.275M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
                     </svg>
-                    <div id="cho-stat-content-coverage-extra2" class="relative z-10">
-                        <div id="cho-stat-header-coverage-extra2" class="flex items-center justify-between">
-                            <span id="cho-stat-label-coverage-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Not Yet Completed
-                            </span>
-                            <span id="cho-stat-idx-coverage-extra2" class="text-xs font-black tracking-widest text-white/60">
-                                08
-                            </span>
+                    <div id="cho-stat-content-coverage-extra2" class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div id="cho-stat-header-coverage-extra2" class="flex items-center justify-between gap-1">
+                                <span id="cho-stat-label-coverage-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate">
+                                    Not Yet Completed
+                                </span>
+                                <span id="cho-stat-idx-coverage-extra2" class="text-xs font-black tracking-widest text-white/60 shrink-0">
+                                    08
+                                </span>
+                            </div>
+                            <div id="cho-stat-val-coverage-extra2" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">
+                                9
+                            </div>
                         </div>
-                        <div id="cho-stat-val-coverage-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            9
-                        </div>
-                        <div id="cho-stat-divider-coverage-extra2" class="w-full border-t border-white/20 my-2.5"></div>
-                        <div id="cho-stat-footer-coverage-extra2" class="flex items-center justify-between text-xs text-white/90">
-                            <span id="cho-stat-sub-coverage-extra2" class="text-[11px] font-medium text-white/80">
-                                Pending ≥1 Dose
-                            </span>
-                            <span id="cho-stat-pill-coverage-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>⏳</span> Needs Follow-up
-                            </span>
+                        <div>
+                            <div id="cho-stat-divider-coverage-extra2" class="w-full border-t border-white/20 my-1.5"></div>
+                            <div id="cho-stat-footer-coverage-extra2" class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span id="cho-stat-sub-coverage-extra2" class="text-[10px] font-medium text-white/80 truncate">
+                                    Pending ≥1 Dose
+                                </span>
+                                <span id="cho-stat-pill-coverage-extra2" class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0">
+                                    <span>⏳</span> Pending
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <?php
+                $topAntigenCards = [
+                    ['id' => 'bcg',  'idx' => '09', 'label' => 'BCG',      'sub' => 'Injected Infants', 'pill' => 'At-Birth', 'img' => 'images/nip/nip1.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>'],
+                    ['id' => 'hepa', 'idx' => '10', 'label' => 'Hepa - B', 'sub' => 'Injected Infants', 'pill' => 'At-Birth', 'img' => 'images/nip/nip2.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>'],
+                ];
+                foreach ($topAntigenCards as $card):
+                ?>
+                <div id="cho-nip2-calc-card-<?= $card['id'] ?>" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                    <img loading="lazy" decoding="async"
+                         src="<?= asset($card['img']) ?>"
+                         alt="<?= e($card['label']) ?>"
+                         class="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg class="absolute right-2 bottom-1.5 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out z-[5]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <?= $card['svg'] ?>
+                    </svg>
+                    <div class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate"><?= e($card['label']) ?></span>
+                                <span class="text-xs font-black tracking-widest text-white/60 shrink-0"><?= $card['idx'] ?></span>
+                            </div>
+                            <div id="cho-nip2-calc-<?= $card['id'] ?>" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">0</div>
+                        </div>
+                        <div>
+                            <div class="w-full border-t border-white/20 my-1.5"></div>
+                            <div class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span class="text-[10px] font-medium text-white/80 truncate"><?= e($card['sub']) ?></span>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0"><span>💉</span> <?= e($card['pill']) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+
             </div>
+
+            <!-- Row 2: Per-Immunization Injected Calculations (Synced from NIP2 Population TCL) -->
+            <div id="cho-nip-stats-grid-antigens2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-3">
+                <?php
+                $antigenCards = [
+                    ['id' => 'dpt',  'idx' => '11', 'label' => 'DPT-HiB-HepB', 'sub' => 'Injected Doses (1st–3rd)', 'pill' => '3 Doses',  'img' => 'images/nip/nip3.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 3l4 4M19 5l-4.5 4.5M11.5 6.5l6 6M16.5 11.5l-6.5 6.5H6v-4l6.5-6.5M3 21l3-3"/>'],
+                    ['id' => 'opv',  'idx' => '12', 'label' => 'OPV',          'sub' => 'Injected Doses (1st–3rd)', 'pill' => '3 Doses',  'img' => 'images/nip/nip4.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.5 19.4c2.6 2.1 6.4 2.1 9 0 2.6-2.1 3.3-5.7 1.6-8.5L13.2 3.6a1.4 1.4 0 00-2.4 0L5.9 10.9c-1.7 2.8-1 6.4 1.6 8.5z"/>'],
+                    ['id' => 'pcv',  'idx' => '13', 'label' => 'PCV',          'sub' => 'Injected Doses (1st–3rd)', 'pill' => '3 Doses',  'img' => 'images/nip/nip1.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>'],
+                    ['id' => 'ipv',  'idx' => '14', 'label' => 'IPV',          'sub' => 'Injected Doses (1st–2nd)', 'pill' => '2 Doses',  'img' => 'images/nip/nip2.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a12 12 0 008.5 3A12 12 0 0112 21 12 12 0 013.5 6 12 12 0 0012 3zm-3 9l2 2 4-4"/>'],
+                    ['id' => 'mcv1', 'idx' => '15', 'label' => 'MCV1 (9 mos)', 'sub' => 'Injected Infants',        'pill' => '1 Dose',   'img' => 'images/nip/nip3.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>'],
+                    ['id' => 'mcv2', 'idx' => '16', 'label' => 'MCV2 (12 mos)','sub' => 'Injected Infants',        'pill' => '1 Dose',   'img' => 'images/nip/nip4.webp', 'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>'],
+                ];
+                foreach ($antigenCards as $card):
+                ?>
+                <div id="cho-nip2-calc-card-<?= $card['id'] ?>" class="group relative overflow-hidden rounded-none p-4 bg-slate-900 text-white shadow-xs transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl cursor-default">
+                    <img loading="lazy" decoding="async"
+                         src="<?= asset($card['img']) ?>"
+                         alt="<?= e($card['label']) ?>"
+                         class="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none" />
+                    <div class="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors duration-500 pointer-events-none z-[2]"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
+                    <svg class="absolute right-2 bottom-1.5 w-16 h-16 text-white/25 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out z-[5]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <?= $card['svg'] ?>
+                    </svg>
+                    <div class="relative z-10 flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate"><?= e($card['label']) ?></span>
+                                <span class="text-xs font-black tracking-widest text-white/60 shrink-0"><?= $card['idx'] ?></span>
+                            </div>
+                            <div id="cho-nip2-calc-<?= $card['id'] ?>" class="font-money text-3xl sm:text-4xl font-black leading-none text-white tracking-tight mt-1.5">0</div>
+                        </div>
+                        <div>
+                            <div class="w-full border-t border-white/20 my-1.5"></div>
+                            <div class="flex items-center justify-between text-xs text-white/90 gap-1">
+                                <span class="text-[10px] font-medium text-white/80 truncate"><?= e($card['sub']) ?></span>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-white shrink-0"><span>💉</span> <?= e($card['pill']) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDED BARANGAY SEARCH BAR ON TOP OF SEE MORE (Hidden by default, shown when SEE MORE is clicked) -->
+    <div id="cho-nip2-brgy-search-wrap" class="hidden w-full max-w-3xl mx-auto pt-1 relative">
+        <label for="cho-nip2-brgy-search" class="sr-only">Search Barangay for Immunization Calculations</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                </svg>
+            </div>
+            <input type="text"
+                   id="cho-nip2-brgy-search"
+                   autocomplete="off"
+                   class="block w-full ps-10 pe-40 py-3 text-sm text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs focus:ring-2 focus:ring-cho-blue-600 focus:border-cho-blue-600 placeholder-slate-400"
+                   placeholder="Search barangay..." />
+            <button type="button"
+                    id="cho-nip2-brgy-search-clear"
+                    class="hidden absolute inset-y-0 end-[122px] flex items-center px-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    aria-label="Clear barangay search">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <button type="button"
+                    id="cho-nip2-brgy-toggle"
+                    class="absolute inset-y-0 end-[98px] flex items-center px-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    aria-label="Toggle barangay list">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                </svg>
+            </button>
+            <button type="button"
+                    id="cho-nip2-brgy-search-btn"
+                    class="absolute inset-y-1.5 end-1.5 inline-flex items-center justify-center gap-1.5 px-3.5 text-xs font-semibold text-white bg-cho-blue-800 hover:bg-cho-blue-900 focus:ring-4 focus:ring-cho-blue-300/40 rounded-lg shadow-xs hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer">
+                <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                </svg>
+                <span>Search</span>
+            </button>
+        </div>
+        <div id="cho-nip2-brgy-dropdown"
+             class="hidden absolute z-40 mt-1.5 w-full max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100">
         </div>
     </div>
 
@@ -1230,32 +1447,6 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
     </div>
 
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const syncGlobalTclStats = () => {
-            try {
-                const raw = localStorage.getItem('cho_nip2_global_tcl_stats');
-                if (!raw) return;
-                const stats = JSON.parse(raw);
-                const setVal = (id, val) => {
-                    const el = document.getElementById(id);
-                    if (el && val !== undefined && val !== null) {
-                        el.textContent = Number(val).toLocaleString();
-                    }
-                };
-                setVal('cho-stat-val-barangays-extra2', stats.fullyCompleted);
-                setVal('cho-stat-val-infants-extra2', stats.male);
-                setVal('cho-stat-val-childrens-extra2', stats.female);
-                setVal('cho-stat-val-coverage-extra2', stats.notYetCompleted);
-            } catch {}
-        };
-        syncGlobalTclStats();
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'cho_nip2_global_tcl_stats') syncGlobalTclStats();
-        });
-    });
-</script>
 
 <?php
 require BASE_PATH . '/frontend/layouts/footer.php';

@@ -315,6 +315,8 @@ export const Charts = {
     if (!chartsContainer && !antigensEl) return;
 
     this.bindNip2SeeMoreToggle();
+    this.bindNip2PeriodFilter();
+    this.initNip2BarangayCalculator();
 
     const defaultDataset = this.getNip2DatabaseFallback();
     let activeData = defaultDataset;
@@ -349,7 +351,7 @@ export const Charts = {
     }
 
     this.lastNip2Data = activeData;
-    this.applyNip2StatCards(activeData);
+    this.applyNip2ChartPeriod();
 
     const canvasPlaceholder = document.getElementById('cho-nip-canvas-card2');
     const chartsSkeleton = document.getElementById('cho-nip-charts-skeleton2');
@@ -362,8 +364,7 @@ export const Charts = {
         chartsSkeleton.classList.add('hidden');
         chartsContainer.classList.remove('hidden');
         requestAnimationFrame(() => {
-          this.renderNipAntigenChart(activeData.antigens || [], 'cho-nip-antigens-chart2', 'nipAntigens2');
-          this.renderNipCatchmentChart(activeData.catchments || [], activeData.fic_accomplished || 0, '2');
+          this.applyNip2ChartPeriod();
         });
       }, 240);
       return;
@@ -371,8 +372,7 @@ export const Charts = {
 
     if (chartsContainer) chartsContainer.classList.remove('hidden');
     requestAnimationFrame(() => {
-      this.renderNipAntigenChart(activeData.antigens || [], 'cho-nip-antigens-chart2', 'nipAntigens2');
-      this.renderNipCatchmentChart(activeData.catchments || [], activeData.fic_accomplished || 0, '2');
+      this.applyNip2ChartPeriod();
     });
   },
   // END - initNip2DashboardCharts
@@ -398,9 +398,412 @@ export const Charts = {
 
       if (labelEl) labelEl.textContent = nextState ? 'SEE LESS' : 'SEE MORE';
       if (iconEl) iconEl.classList.toggle('rotate-180', nextState);
+      const searchWrap = document.getElementById('cho-nip2-brgy-search-wrap');
+      if (searchWrap) searchWrap.classList.toggle('hidden', !nextState);
     });
   },
   // END - bindNip2SeeMoreToggle
+
+  // START - bindNip2PeriodFilter: Global Yearly/Monthly filter affecting KPIs, expandable cards, and charts
+  bindNip2PeriodFilter() {
+    this.nip2Period = { year: 'all', month: 'all' };
+    const dropdownEl = document.getElementById('cho-nip2-period-dropdown');
+    const labelEl = document.getElementById('cho-nip2-period-label');
+    const yearEl = document.getElementById('cho-nip2-period-year');
+    const monthEl = document.getElementById('cho-nip2-period-month');
+    const overallBtn = document.getElementById('cho-nip2-period-overall');
+    const applyBtn = document.getElementById('cho-nip2-period-apply');
+    const resetBtn = document.getElementById('cho-nip2-period-reset');
+    if (!yearEl || !monthEl) return;
+
+    const monthNames = {
+      '01': 'January', '02': 'February', '03': 'March', '04': 'April',
+      '05': 'May', '06': 'June', '07': 'July', '08': 'August',
+      '09': 'September', '10': 'October', '11': 'November', '12': 'December'
+    };
+
+    const syncLabel = () => {
+      if (!labelEl) return;
+      const { year, month } = this.nip2Period;
+      if (year === 'all' && month === 'all') {
+        labelEl.textContent = 'All Years (Overall)';
+      } else if (month === 'all') {
+        labelEl.textContent = `Year ${year} (Annually)`;
+      } else {
+        labelEl.textContent = `${monthNames[month] || month} ${year === 'all' ? '2026' : year}`;
+      }
+    };
+
+    const applyScope = () => {
+      const year = yearEl.value || 'all';
+      const month = monthEl.value || 'all';
+      this.nip2Period = {
+        year: month !== 'all' && year === 'all' ? '2026' : year,
+        month
+      };
+      if (month !== 'all' && year === 'all') yearEl.value = '2026';
+
+      syncLabel();
+      dropdownEl?.classList.add('hidden');
+      this.refreshNip2BarangayCalculator?.();
+      this.applyNip2ChartPeriod?.();
+    };
+
+    dropdownEl?.addEventListener('click', (e) => e.stopPropagation());
+    applyBtn?.addEventListener('click', applyScope);
+
+    const resetPeriod = () => {
+      yearEl.value = 'all';
+      monthEl.value = 'all';
+      this.nip2Period = { year: 'all', month: 'all' };
+      syncLabel();
+      dropdownEl?.classList.add('hidden');
+      this.refreshNip2BarangayCalculator?.();
+      this.applyNip2ChartPeriod?.();
+    };
+
+    overallBtn?.addEventListener('click', resetPeriod);
+    resetBtn?.addEventListener('click', resetPeriod);
+  },
+
+  applyNip2ChartPeriod() {
+    const base = this.lastNip2Data || this.getNip2DatabaseFallback();
+    const { year, month } = this.nip2Period || { year: 'all', month: 'all' };
+    const tclData = this.buildNip2DatasetFromTcl(year, month);
+
+    const merged = {
+      ...base,
+      annual_target: tclData.annual_target,
+      fic_accomplished: tclData.fic_accomplished,
+      fic_coverage_pct: tclData.fic_coverage_pct,
+      antigens: tclData.antigens,
+      catchments: tclData.catchments
+    };
+
+    this.applyNip2StatCards(merged);
+    this.renderNipAntigenChart(merged.antigens, 'cho-nip-antigens-chart2', 'nipAntigens2');
+    this.renderNipCatchmentChart(merged.catchments, merged.fic_accomplished, '2');
+  },
+
+  // START - buildNip2DatasetFromTcl: Computes live antigens & catchment charts directly from NIP2/newborns TCL records
+  buildNip2DatasetFromTcl(year = 'all', month = 'all') {
+    let records = [];
+    try {
+      const raw = localStorage.getItem('cho_nip2_tcl_records');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) records = parsed;
+      }
+    } catch {}
+    if (!records.length && typeof this.getDefaultTclMockRecords === 'function') {
+      records = this.getDefaultTclMockRecords();
+    }
+
+    const matchesPeriod = (iso = '') => {
+      if (year === 'all' && month === 'all') return true;
+      if (!iso) return false;
+      const prefix = month === 'all' ? `${year}-` : `${year}-${month}-`;
+      return String(iso).startsWith(prefix);
+    };
+
+    const scoped = records.filter((r) => matchesPeriod(r.reg_date || r.dob || ''));
+    const target = scoped.length;
+
+    const specs = [
+      { name: 'BCG', get: (r) => r.imm1?.bcg },
+      { name: 'Hepa - B', get: (r) => r.imm1?.hepa },
+      { name: 'DPT 1', get: (r) => r.imm2?.dpt?.[0] },
+      { name: 'DPT 2', get: (r) => r.imm2?.dpt?.[1] },
+      { name: 'DPT 3', get: (r) => r.imm2?.dpt?.[2] },
+      { name: 'OPV 1', get: (r) => r.imm2?.opv?.[0] },
+      { name: 'OPV 2', get: (r) => r.imm2?.opv?.[1] },
+      { name: 'OPV 3', get: (r) => r.imm2?.opv?.[2] },
+      { name: 'PCV 1', get: (r) => r.imm2?.pcv?.[0] },
+      { name: 'PCV 2', get: (r) => r.imm2?.pcv?.[1] },
+      { name: 'PCV 3', get: (r) => r.imm2?.pcv?.[2] },
+      { name: 'IPV 1', get: (r) => r.imm2?.ipv?.[0] },
+      { name: 'IPV 2', get: (r) => r.imm2?.ipv?.[1] },
+      { name: 'MCV1 (9 mos)', get: (r) => r.imm2?.mcv1?.[0] },
+      { name: 'MCV2 (12 mos)', get: (r) => r.imm2?.mcv2?.[0] }
+    ];
+
+    const antigens = specs.map((s) => {
+      let male = 0;
+      let female = 0;
+      scoped.forEach((r) => {
+        const d = s.get(r);
+        if (d?.status === 'INJECTED' && matchesPeriod(d.iso || r.reg_date || '')) {
+          if (String(r.sex || '').toUpperCase() === 'MALE') male += 1;
+          else female += 1;
+        }
+      });
+      return { name: s.name, target, total: male + female, male, female };
+    });
+
+    let ficAccomplished = 0;
+    let ficMale = 0;
+    let ficFemale = 0;
+    const brgyCounts = new Map();
+
+    scoped.forEach((r) => {
+      const brgy = (r.barangay || 'Unknown').trim();
+      brgyCounts.set(brgy, (brgyCounts.get(brgy) || 0) + 1);
+
+      const allDoses = [
+        r.imm1?.bcg, r.imm1?.hepa,
+        ...(r.imm2?.dpt || []), ...(r.imm2?.opv || []),
+        ...(r.imm2?.pcv || []), ...(r.imm2?.ipv || []),
+        ...(r.imm2?.mcv1 || []), ...(r.imm2?.mcv2 || [])
+      ].filter(Boolean);
+
+      if (allDoses.length > 0 && allDoses.every((d) => d.status === 'INJECTED')) {
+        ficAccomplished += 1;
+        if (String(r.sex || '').toUpperCase() === 'MALE') ficMale += 1;
+        else ficFemale += 1;
+      }
+    });
+
+    antigens.push({ name: 'Fully Immunized (100%)', target, total: ficAccomplished, male: ficMale, female: ficFemale });
+
+    const catchments = Array.from(brgyCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([name, cnt]) => ({ name, barangays: 1, fic_total: cnt }));
+
+    return {
+      annual_target: target,
+      fic_accomplished: ficAccomplished,
+      fic_coverage_pct: target > 0 ? (ficAccomplished / target) * 100 : 0,
+      antigens,
+      catchments
+    };
+  },
+  // END - buildNip2DatasetFromTcl
+  // END - bindNip2PeriodFilter
+
+  // START - getDefaultTclMockRecords: Baseline TCL fallback when NIP2/newborns has not yet been visited
+  getDefaultTclMockRecords() {
+    return [
+      { id: 1, barangay: 'Tuca', reg_date: '2026-10-04', sex: 'MALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-10-04' }, hepa: { status: 'INJECTED', iso: '2026-09-18' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2026-10-30' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'INJECTED', iso: '2026-10-30' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'INJECTED', iso: '2026-10-30' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 2, barangay: 'Basak Malutlut', reg_date: '2026-10-09', sex: 'FEMALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-10-09' }, hepa: { status: 'INJECTED', iso: '2026-09-25' } }, imm2: { dpt: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 3, barangay: 'Banggolo', reg_date: '2026-10-14', sex: 'MALE', imm1: { bcg: { status: 'NOT YET', iso: '' }, hepa: { status: 'NOT YET', iso: '' } }, imm2: { dpt: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 4, barangay: 'Marawi Central', reg_date: '2026-10-19', sex: 'FEMALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-10-19' }, hepa: { status: 'NOT YET', iso: '' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2026-09-23' }, { status: 'INJECTED', iso: '2026-10-21' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'INJECTED', iso: '2026-09-23' }, { status: 'INJECTED', iso: '2026-10-21' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'INJECTED', iso: '2026-09-23' }, { status: 'INJECTED', iso: '2026-10-21' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 5, barangay: 'Dulay', reg_date: '2026-10-22', sex: 'MALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-10-22' }, hepa: { status: 'INJECTED', iso: '2026-07-05' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2026-08-16' }, { status: 'INJECTED', iso: '2026-09-13' }, { status: 'INJECTED', iso: '2026-10-11' }], opv: [{ status: 'INJECTED', iso: '2026-08-16' }, { status: 'INJECTED', iso: '2026-09-13' }, { status: 'INJECTED', iso: '2026-10-11' }], pcv: [{ status: 'INJECTED', iso: '2026-08-16' }, { status: 'INJECTED', iso: '2026-09-13' }, { status: 'INJECTED', iso: '2026-10-11' }], ipv: [{ status: 'INJECTED', iso: '2026-10-11' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 6, barangay: 'Kilala', reg_date: '2026-10-27', sex: 'FEMALE', imm1: { bcg: { status: 'NOT YET', iso: '' }, hepa: { status: 'INJECTED', iso: '2026-10-15' } }, imm2: { dpt: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 7, barangay: 'Matampay', reg_date: '2026-11-02', sex: 'MALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-11-02' }, hepa: { status: 'INJECTED', iso: '2026-05-20' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2026-07-01' }, { status: 'INJECTED', iso: '2026-07-29' }, { status: 'INJECTED', iso: '2026-08-26' }], opv: [{ status: 'INJECTED', iso: '2026-07-01' }, { status: 'INJECTED', iso: '2026-07-29' }, { status: 'INJECTED', iso: '2026-08-26' }], pcv: [{ status: 'INJECTED', iso: '2026-07-01' }, { status: 'INJECTED', iso: '2026-07-29' }, { status: 'INJECTED', iso: '2026-08-26' }], ipv: [{ status: 'INJECTED', iso: '2026-08-26' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 8, barangay: 'Lilod Madaya', reg_date: '2026-11-06', sex: 'FEMALE', imm1: { bcg: { status: 'INJECTED', iso: '2026-11-06' }, hepa: { status: 'INJECTED', iso: '2026-03-11' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2026-04-22' }, { status: 'INJECTED', iso: '2026-05-20' }, { status: 'INJECTED', iso: '2026-06-17' }], opv: [{ status: 'INJECTED', iso: '2026-04-22' }, { status: 'INJECTED', iso: '2026-05-20' }, { status: 'INJECTED', iso: '2026-06-17' }], pcv: [{ status: 'INJECTED', iso: '2026-04-22' }, { status: 'INJECTED', iso: '2026-05-20' }, { status: 'INJECTED', iso: '2026-06-17' }], ipv: [{ status: 'INJECTED', iso: '2026-06-17' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 9, barangay: 'Marinaut', reg_date: '2026-11-11', sex: 'MALE', imm1: { bcg: { status: 'NOT YET', iso: '' }, hepa: { status: 'NOT YET', iso: '' } }, imm2: { dpt: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], opv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], pcv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], ipv: [{ status: 'NOT YET', iso: '' }, { status: 'NOT YET', iso: '' }], mcv1: [{ status: 'NOT YET', iso: '' }], mcv2: [{ status: 'NOT YET', iso: '' }] } },
+      { id: 10, barangay: 'Poblacion', reg_date: '2026-11-15', sex: 'FEMALE', imm1: { bcg: { status: 'INJECTED', iso: '2025-11-20' }, hepa: { status: 'INJECTED', iso: '2025-11-15' } }, imm2: { dpt: [{ status: 'INJECTED', iso: '2025-12-27' }, { status: 'INJECTED', iso: '2026-01-24' }, { status: 'INJECTED', iso: '2026-02-21' }], opv: [{ status: 'INJECTED', iso: '2025-12-27' }, { status: 'INJECTED', iso: '2026-01-24' }, { status: 'INJECTED', iso: '2026-02-21' }], pcv: [{ status: 'INJECTED', iso: '2025-12-27' }, { status: 'INJECTED', iso: '2026-01-24' }, { status: 'INJECTED', iso: '2026-02-21' }], ipv: [{ status: 'INJECTED', iso: '2026-02-21' }, { status: 'INJECTED', iso: '2026-08-15' }], mcv1: [{ status: 'INJECTED', iso: '2026-08-15' }], mcv2: [{ status: 'INJECTED', iso: '2026-11-15' }] } }
+    ];
+  },
+  // END - getDefaultTclMockRecords
+
+  // START - initNip2BarangayCalculator: Live barangay search dropdown & annual immunization totals synced with NIP2/newborns
+  initNip2BarangayCalculator() {
+    const searchEl = document.getElementById('cho-nip2-brgy-search');
+    const searchBtnEl = document.getElementById('cho-nip2-brgy-search-btn');
+    const clearEl = document.getElementById('cho-nip2-brgy-search-clear');
+    const toggleDropdownEl = document.getElementById('cho-nip2-brgy-toggle');
+    const dropdownEl = document.getElementById('cho-nip2-brgy-dropdown');
+    if (!searchEl) return;
+
+    const loadRecords = () => {
+      try {
+        const raw = localStorage.getItem('cho_nip2_tcl_records');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {}
+      return this.getDefaultTclMockRecords();
+    };
+
+    const matchesPeriod = (iso = '') => {
+      const { year, month } = this.nip2Period || { year: 'all', month: 'all' };
+      if (year === 'all' && month === 'all') return true;
+      if (!iso) return false;
+      const prefix = month === 'all' ? `${year}-` : `${year}-${month}-`;
+      return String(iso).startsWith(prefix);
+    };
+
+    const countInjected = (arr) => (
+      Array.isArray(arr)
+        ? arr.filter((d) => d?.status === 'INJECTED' && matchesPeriod(d.iso)).length
+        : 0
+    );
+
+    const calculateAndRender = () => {
+      const q = searchEl.value.trim().toLowerCase();
+      if (clearEl) clearEl.classList.toggle('hidden', q.length === 0);
+
+      const records = loadRecords();
+      const scoped = records.filter((r) => {
+        const matchBrgy = !q || (r.barangay || '').toLowerCase().includes(q);
+        const matchTime = matchesPeriod(r.reg_date || r.dob || '');
+        return matchBrgy && matchTime;
+      });
+
+      let fullyCompleted = 0;
+      let male = 0;
+      let female = 0;
+      let bcg = 0;
+      let hepa = 0;
+      let dpt = 0;
+      let opv = 0;
+      let pcv = 0;
+      let ipv = 0;
+      let mcv1 = 0;
+      let mcv2 = 0;
+
+      scoped.forEach((rec) => {
+        const sex = String(rec.sex || '').toUpperCase();
+        if (sex === 'MALE') male += 1;
+        else if (sex === 'FEMALE') female += 1;
+
+        if (rec.imm1?.bcg?.status === 'INJECTED' && matchesPeriod(rec.imm1?.bcg?.iso)) bcg += 1;
+        if (rec.imm1?.hepa?.status === 'INJECTED' && matchesPeriod(rec.imm1?.hepa?.iso)) hepa += 1;
+        dpt += countInjected(rec.imm2?.dpt);
+        opv += countInjected(rec.imm2?.opv);
+        pcv += countInjected(rec.imm2?.pcv);
+        ipv += countInjected(rec.imm2?.ipv);
+        mcv1 += countInjected(rec.imm2?.mcv1);
+        mcv2 += countInjected(rec.imm2?.mcv2);
+
+        const allDoses = [
+          rec.imm1?.bcg,
+          rec.imm1?.hepa,
+          ...(rec.imm2?.dpt || []),
+          ...(rec.imm2?.opv || []),
+          ...(rec.imm2?.pcv || []),
+          ...(rec.imm2?.ipv || []),
+          ...(rec.imm2?.mcv1 || []),
+          ...(rec.imm2?.mcv2 || [])
+        ].filter(Boolean);
+        if (allDoses.length > 0 && allDoses.every((d) => d.status === 'INJECTED')) {
+          fullyCompleted += 1;
+        }
+      });
+
+      const notYetCompleted = scoped.length - fullyCompleted;
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = Number(val).toLocaleString();
+      };
+
+      setVal('cho-stat-val-barangays-extra2', fullyCompleted);
+      setVal('cho-stat-val-infants-extra2', male);
+      setVal('cho-stat-val-childrens-extra2', female);
+      setVal('cho-stat-val-coverage-extra2', notYetCompleted);
+
+      setVal('cho-nip2-calc-bcg', bcg);
+      setVal('cho-nip2-calc-hepa', hepa);
+      setVal('cho-nip2-calc-dpt', dpt);
+      setVal('cho-nip2-calc-opv', opv);
+      setVal('cho-nip2-calc-pcv', pcv);
+      setVal('cho-nip2-calc-ipv', ipv);
+      setVal('cho-nip2-calc-mcv1', mcv1);
+      setVal('cho-nip2-calc-mcv2', mcv2);
+    };
+
+    const renderBarangayDropdown = (query = '') => {
+      if (!dropdownEl) return;
+      const records = loadRecords();
+      const counts = new Map();
+      records.forEach((r) => {
+        const b = (r.barangay || '').trim();
+        if (b) counts.set(b, (counts.get(b) || 0) + 1);
+      });
+
+      const q = query.trim().toLowerCase();
+      const matches = Array.from(counts.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .filter(([name]) => !q || name.toLowerCase().includes(q));
+
+      dropdownEl.innerHTML = matches.length
+        ? matches.map(([name, cnt]) => `
+            <button type="button" data-brgy-calc-opt="${name.replace(/"/g, '&quot;')}"
+                    class="w-full text-left px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center justify-between cursor-pointer">
+              <span>${name}</span>
+              <span class="text-xs text-slate-400">${cnt} ${cnt === 1 ? 'infant' : 'infants'} • Marawi City</span>
+            </button>
+          `).join('')
+        : `<div class="px-3.5 py-3 text-sm text-slate-400 text-center">No matching barangay found</div>`;
+
+      dropdownEl.querySelectorAll('[data-brgy-calc-opt]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          searchEl.value = btn.dataset.brgyCalcOpt || '';
+          dropdownEl.classList.add('hidden');
+          calculateAndRender();
+        });
+      });
+    };
+
+    searchEl.addEventListener('focus', () => {
+      renderBarangayDropdown(searchEl.value);
+      dropdownEl?.classList.remove('hidden');
+    });
+
+    searchEl.addEventListener('input', () => {
+      if (clearEl) clearEl.classList.toggle('hidden', searchEl.value.trim().length === 0);
+      renderBarangayDropdown(searchEl.value);
+      dropdownEl?.classList.remove('hidden');
+    });
+
+    toggleDropdownEl?.addEventListener('click', () => {
+      if (!dropdownEl) return;
+      const isHidden = dropdownEl.classList.contains('hidden');
+      if (isHidden) {
+        renderBarangayDropdown('');
+        dropdownEl.classList.remove('hidden');
+        searchEl.focus();
+      } else {
+        dropdownEl.classList.add('hidden');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (dropdownEl && !dropdownEl.contains(e.target) && e.target !== searchEl && !toggleDropdownEl?.contains(e.target)) {
+        dropdownEl.classList.add('hidden');
+      }
+    });
+
+    const triggerSearchWithSpinner = () => {
+      dropdownEl?.classList.add('hidden');
+      const typer = window.CHO?.Animations?.placeholderTyper;
+      if (typer && typeof typer.runSearchSpinner === 'function') {
+        typer.runSearchSpinner(searchBtnEl, () => calculateAndRender());
+      } else {
+        calculateAndRender();
+      }
+    };
+
+    searchEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        triggerSearchWithSpinner();
+      }
+    });
+
+    searchBtnEl?.addEventListener('click', triggerSearchWithSpinner);
+
+    clearEl?.addEventListener('click', () => {
+      searchEl.value = '';
+      renderBarangayDropdown('');
+      calculateAndRender();
+      searchEl.focus();
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'cho_nip2_tcl_records' || e.key === 'cho_nip2_global_tcl_stats') {
+        calculateAndRender();
+        this.applyNip2ChartPeriod?.();
+      }
+    });
+
+    this.refreshNip2BarangayCalculator = calculateAndRender;
+    calculateAndRender();
+  },
+  // END - initNip2BarangayCalculator
 
   // START - applyNip2StatCards: Hydrates NIP2 top KPI cards from database payload
   applyNip2StatCards(data) {

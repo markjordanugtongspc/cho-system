@@ -481,16 +481,46 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <tbody id="cho-nip-pop-tbody2" class="divide-y divide-slate-200/80 bg-white">
                     <?php
                     $tclMockSamples = [
-                        ['id' => 1,  'barangay' => 'Tuca',     'reg_date' => '2026-10-04', 'child' => 'Al-Amin M. Macaraya',      'dob' => '2026-09-18', 'age' => '2 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-10-04'],
-                        ['id' => 2,  'barangay' => 'Basak Malutlut',  'reg_date' => '2026-10-09', 'child' => 'Sittie Aisha D. Ampaso',   'dob' => '2026-09-25', 'age' => '1 mo',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-10-09'],
-                        ['id' => 3,  'barangay' => 'Banggolo',        'reg_date' => '2026-10-14', 'child' => 'Mohammad R. Sultan',       'dob' => '2026-10-02', 'age' => '1 mo',   'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => ''],
-                        ['id' => 4,  'barangay' => 'Marawi Central',  'reg_date' => '2026-10-19', 'child' => 'Norhanie K. Hadji Ali',    'dob' => '2026-08-12', 'age' => '3 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-10-19'],
-                        ['id' => 5,  'barangay' => 'Dulay',           'reg_date' => '2026-10-22', 'child' => 'Abdulrahman P. Dimaporo',  'dob' => '2026-07-05', 'age' => '4 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-10-22'],
-                        ['id' => 6,  'barangay' => 'Kilala',          'reg_date' => '2026-10-27', 'child' => 'Fatimah Z. Balindong',     'dob' => '2026-10-15', 'age' => '1 mo',   'sex' => 'Female', 'bcg' => 'NOT YET',  'vax_date' => ''],
-                        ['id' => 7,  'barangay' => 'Matampay',        'reg_date' => '2026-11-02', 'child' => 'Hamza L. Pangcoga',        'dob' => '2026-05-20', 'age' => '6 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-11-02'],
-                        ['id' => 8,  'barangay' => 'Lilod Madaya',    'reg_date' => '2026-11-06', 'child' => 'Jannah R. Marohombsar',    'dob' => '2026-03-11', 'age' => '8 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-11-06'],
-                        ['id' => 9,  'barangay' => 'Marinaut',        'reg_date' => '2026-11-11', 'child' => 'Yusuf A. Usman',           'dob' => '2026-11-01', 'age' => '19 days','sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => ''],
-                        ['id' => 10, 'barangay' => 'Poblacion',       'reg_date' => '2026-11-15', 'child' => 'Amina S. Lucman',          'dob' => '2025-11-15', 'age' => '12 mos', 'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-11-20'],
+                        ['id' => 1,  'barangay' => 'Tuca',                  'reg_date' => '2026-10-04', 'child' => 'Al-Amin M. Macaraya',      'dob' => '2026-09-18', 'age' => '2 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-10-04', 'lvl' => 'dose1'],
+                        ['id' => 2,  'barangay' => 'Basak Malutlut',        'reg_date' => '2026-10-09', 'child' => 'Sittie Aisha D. Ampaso',   'dob' => '2026-09-25', 'age' => '1 mo',    'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-10-09', 'lvl' => 'birth'],
+                        ['id' => 3,  'barangay' => 'Banggolo',              'reg_date' => '2026-10-14', 'child' => 'Mohammad R. Sultan',       'dob' => '2026-10-02', 'age' => '1 mo',    'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'none'],
+                        ['id' => 4,  'barangay' => 'Marawi Central',        'reg_date' => '2026-10-19', 'child' => 'Norhanie K. Hadji Ali',    'dob' => '2026-08-12', 'age' => '3 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-10-19', 'lvl' => 'dose2'],
+                        ['id' => 5,  'barangay' => 'Dulay',                 'reg_date' => '2026-10-22', 'child' => 'Abdulrahman P. Dimaporo',  'dob' => '2026-07-05', 'age' => '4 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-10-22', 'lvl' => 'dose3'],
+                        ['id' => 6,  'barangay' => 'Kilala',                'reg_date' => '2026-10-27', 'child' => 'Fatimah Z. Balindong',     'dob' => '2026-10-15', 'age' => '1 mo',    'sex' => 'Female', 'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'birth'],
+                        ['id' => 7,  'barangay' => 'Matampay',              'reg_date' => '2026-11-02', 'child' => 'Hamza L. Pangcoga',        'dob' => '2026-05-20', 'age' => '6 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-11-02', 'lvl' => 'dose3'],
+                        ['id' => 8,  'barangay' => 'Lilod Madaya',          'reg_date' => '2026-11-06', 'child' => 'Jannah R. Marohombsar',    'dob' => '2026-03-11', 'age' => '8 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-11-06', 'lvl' => 'dose3'],
+                        ['id' => 9,  'barangay' => 'Marinaut',              'reg_date' => '2026-11-11', 'child' => 'Yusuf A. Usman',           'dob' => '2026-11-01', 'age' => '19 days', 'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'none'],
+                        ['id' => 10, 'barangay' => 'Poblacion',             'reg_date' => '2026-11-15', 'child' => 'Amina S. Lucman',          'dob' => '2025-11-15', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-11-20', 'lvl' => 'full'],
+                        ['id' => 11, 'barangay' => 'Tuca',                  'reg_date' => '2026-01-12', 'child' => 'Ibrahim B. Alonto',        'dob' => '2025-01-10', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2025-01-15', 'lvl' => 'full'],
+                        ['id' => 12, 'barangay' => 'Tuca',                  'reg_date' => '2026-03-08', 'child' => 'Rohaima M. Benito',        'dob' => '2025-06-01', 'age' => '9 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-06-05', 'lvl' => 'dose3'],
+                        ['id' => 13, 'barangay' => 'Basak Malutlut',        'reg_date' => '2026-02-14', 'child' => 'Khalid T. Guro',           'dob' => '2025-02-10', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2025-02-14', 'lvl' => 'full'],
+                        ['id' => 14, 'barangay' => 'Banggolo',              'reg_date' => '2026-04-21', 'child' => 'Naima A. Disomangcop',     'dob' => '2025-11-18', 'age' => '5 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-11-20', 'lvl' => 'dose2'],
+                        ['id' => 15, 'barangay' => 'Saduc Proper',          'reg_date' => '2026-05-09', 'child' => 'Zaid H. Mimbalawag',       'dob' => '2026-03-01', 'age' => '2 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-03-05', 'lvl' => 'dose1'],
+                        ['id' => 16, 'barangay' => 'Calocan East',          'reg_date' => '2026-06-18', 'child' => 'Salma K. Dipatuan',        'dob' => '2025-06-12', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-06-15', 'lvl' => 'full'],
+                        ['id' => 17, 'barangay' => 'Dansalan',              'reg_date' => '2026-07-03', 'child' => 'Omar F. Amerol',           'dob' => '2026-05-10', 'age' => '2 mos',   'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'birth'],
+                        ['id' => 18, 'barangay' => 'Gadongan',              'reg_date' => '2026-08-19', 'child' => 'Asiyah R. Sarip',          'dob' => '2025-08-14', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-08-18', 'lvl' => 'full'],
+                        ['id' => 19, 'barangay' => 'Mipaga Proper',         'reg_date' => '2026-09-11', 'child' => 'Tariq S. Mangondato',      'dob' => '2026-07-20', 'age' => '2 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-07-24', 'lvl' => 'dose1'],
+                        ['id' => 20, 'barangay' => 'Moncado Colony',        'reg_date' => '2026-12-02', 'child' => 'Hafsah L. Pangarungan',    'dob' => '2026-08-15', 'age' => '4 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-08-19', 'lvl' => 'dose2'],
+                        ['id' => 21, 'barangay' => 'Poblacion',             'reg_date' => '2025-01-20', 'child' => 'Rayyan D. Munder',         'dob' => '2024-01-15', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2024-01-18', 'lvl' => 'full'],
+                        ['id' => 22, 'barangay' => 'Tuca',                  'reg_date' => '2025-02-11', 'child' => 'Mariam C. Bansil',         'dob' => '2024-08-05', 'age' => '6 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2024-08-10', 'lvl' => 'dose3'],
+                        ['id' => 23, 'barangay' => 'Dulay',                 'reg_date' => '2025-03-17', 'child' => 'Ismail N. Bara',           'dob' => '2024-03-10', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2024-03-14', 'lvl' => 'full'],
+                        ['id' => 24, 'barangay' => 'Kilala',                'reg_date' => '2025-04-25', 'child' => 'Khadija P. Tomawis',       'dob' => '2024-11-12', 'age' => '5 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2024-11-16', 'lvl' => 'dose2'],
+                        ['id' => 25, 'barangay' => 'Matampay',              'reg_date' => '2025-05-14', 'child' => 'Haris G. Balt',            'dob' => '2025-04-20', 'age' => '1 mo',    'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'none'],
+                        ['id' => 26, 'barangay' => 'Lilod Madaya',          'reg_date' => '2025-06-22', 'child' => 'Zainab M. Tanggol',        'dob' => '2024-06-18', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2024-06-20', 'lvl' => 'full'],
+                        ['id' => 27, 'barangay' => 'Marinaut',              'reg_date' => '2025-07-08', 'child' => 'Bilal K. Lomondot',        'dob' => '2025-01-05', 'age' => '6 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2025-01-09', 'lvl' => 'dose3'],
+                        ['id' => 28, 'barangay' => 'Raya Madaya I',         'reg_date' => '2025-08-30', 'child' => 'Sumayyah A. Pacasum',      'dob' => '2025-06-25', 'age' => '2 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-06-29', 'lvl' => 'dose1'],
+                        ['id' => 29, 'barangay' => 'Saduc Proper',          'reg_date' => '2025-09-12', 'child' => 'Luqman R. Sangcopan',      'dob' => '2024-09-08', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2024-09-12', 'lvl' => 'full'],
+                        ['id' => 30, 'barangay' => 'Basak Malutlut',        'reg_date' => '2025-10-19', 'child' => 'Safiya T. Macaumbos',      'dob' => '2025-08-10', 'age' => '2 mos',   'sex' => 'Female', 'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'birth'],
+                        ['id' => 31, 'barangay' => 'Banggolo',              'reg_date' => '2024-01-15', 'child' => 'Ammar S. Benito',          'dob' => '2023-01-12', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2023-01-15', 'lvl' => 'full'],
+                        ['id' => 32, 'barangay' => 'Marawi Central',        'reg_date' => '2024-02-24', 'child' => 'Hana D. Paporo',           'dob' => '2023-08-20', 'age' => '6 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2023-08-25', 'lvl' => 'dose3'],
+                        ['id' => 33, 'barangay' => 'Dansalan',              'reg_date' => '2024-03-19', 'child' => 'Idris M. Abbas',           'dob' => '2024-01-10', 'age' => '2 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2024-01-14', 'lvl' => 'dose1'],
+                        ['id' => 34, 'barangay' => 'Gadongan',              'reg_date' => '2024-04-28', 'child' => 'Rania F. Abdullah',        'dob' => '2023-04-20', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2023-04-24', 'lvl' => 'full'],
+                        ['id' => 35, 'barangay' => 'Calocan East',          'reg_date' => '2024-05-16', 'child' => 'Musa H. Cali',             'dob' => '2024-04-02', 'age' => '1 mo',    'sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => '',           'lvl' => 'none'],
+                        ['id' => 36, 'barangay' => 'Mipaga Proper',         'reg_date' => '2024-06-21', 'child' => 'Yasmin L. Maruhom',        'dob' => '2024-03-15', 'age' => '3 mos',   'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2024-03-19', 'lvl' => 'dose2'],
+                        ['id' => 37, 'barangay' => 'Moncado Colony',        'reg_date' => '2024-07-11', 'child' => 'Anas P. Dima',             'dob' => '2023-07-05', 'age' => '12 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2023-07-09', 'lvl' => 'full'],
+                        ['id' => 38, 'barangay' => 'Tuca',                  'reg_date' => '2024-08-25', 'child' => 'Suhaila R. Pundato',       'dob' => '2024-07-20', 'age' => '1 mo',    'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2024-07-24', 'lvl' => 'birth'],
+                        ['id' => 39, 'barangay' => 'Poblacion',             'reg_date' => '2024-10-05', 'child' => 'Sulaiman N. Gandamra',     'dob' => '2024-04-01', 'age' => '6 mos',   'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2024-04-05', 'lvl' => 'dose3'],
+                        ['id' => 40, 'barangay' => 'Raya Madaya I',         'reg_date' => '2024-11-18', 'child' => 'Ayesha B. Cosain',         'dob' => '2023-11-12', 'age' => '12 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2023-11-16', 'lvl' => 'full'],
                     ];
                     foreach ($tclMockSamples as $row):
                         $isInjected = $row['bcg'] === 'INJECTED';
@@ -511,14 +541,15 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         $dobFmt = date('n/j/Y', $dobTs);
                         $dobFull = date('F j, Y', $dobTs);
                         $vaxFmt = $row['vax_date'] ? date('M j, Y', strtotime($row['vax_date'])) : '';
-                        $hepaInjected = in_array($row['id'], [1, 2, 5, 6, 7, 8, 10], true);
+                        $lvl = $row['lvl'] ?? 'none';
+                        $hepaInjected = in_array($lvl, ['birth', 'dose1', 'dose2', 'dose3', 'full'], true) && $row['id'] !== 4;
                         $hepaDate = $hepaInjected ? date('M j, Y', $dobTs) : '';
-                        $hasDose1 = in_array($row['id'], [1, 4, 5, 7, 8, 10], true);
-                        $hasDose2 = in_array($row['id'], [4, 5, 7, 8, 10], true);
-                        $hasDose3 = in_array($row['id'], [5, 7, 8, 10], true);
-                        $hasIpv2  = ($row['id'] === 10);
-                        $hasMcv1  = ($row['id'] === 10);
-                        $hasMcv2  = ($row['id'] === 10);
+                        $hasDose1 = in_array($lvl, ['dose1', 'dose2', 'dose3', 'full'], true);
+                        $hasDose2 = in_array($lvl, ['dose2', 'dose3', 'full'], true);
+                        $hasDose3 = in_array($lvl, ['dose3', 'full'], true);
+                        $hasIpv2  = ($lvl === 'full');
+                        $hasMcv1  = ($lvl === 'full');
+                        $hasMcv2  = ($lvl === 'full');
                         $overviewNotes = [
                             1 => "[Oct 4, 2026 • Nurse Rohaida]\n• Birth weight: 3.2 kg (Normal).\n• Exclusive breastfeeding confirmed during 6-week checkup.\n• Scheduled for 2nd dose DPT-HiB-HepB, OPV, and PCV on Nov 28, 2026.",
                             2 => '',
@@ -747,8 +778,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
         <!-- Table Footer Status -->
         <div id="cho-nip-pop-footer2" class="px-4 py-3 border-t border-slate-200/90 bg-slate-50/70 rounded-b-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-500">
-            <span id="cho-nip-pop-count-status2" class="font-medium">Showing 10 of 10 infant records</span>
-            <span id="cho-nip-pop-source-status2" class="text-[11px] text-slate-400">Source: Target Client List (10 Mock Samples)</span>
+            <span id="cho-nip-pop-count-status2" class="font-medium">Showing 40 of 40 infant records</span>
+            <span id="cho-nip-pop-source-status2" class="text-[11px] text-slate-400">Source: Target Client List (40 Mock Samples)</span>
         </div>
     </div>
 
@@ -948,8 +979,16 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
             const hydrateStats = () => {
                 const allRows = Array.from(tbodyEl.querySelectorAll('tr'));
                 const globalStats = computeStatsForRows(allRows);
+                const allRecords = allRows.map((tr) => {
+                    try {
+                        return JSON.parse(tr.dataset.tclRecord || '{}');
+                    } catch {
+                        return null;
+                    }
+                }).filter(Boolean);
                 try {
                     localStorage.setItem('cho_nip2_global_tcl_stats', JSON.stringify(globalStats));
+                    localStorage.setItem('cho_nip2_tcl_records', JSON.stringify(allRecords));
                 } catch {}
 
                 const scopedRows = activeFilter === 'barangay' && activeBarangay
@@ -2207,7 +2246,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
 
                 <!-- Moved from Immunization II: DPT-HiB-HepB (1st, 2nd & 3rd Dose) -->
-                <div id="tcl-imm2-dpt-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                <div id="tcl-imm2-dpt-card2" class="sm:col-span-2 bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
                             <span>DPT-HiB-HepB</span>
@@ -2223,7 +2262,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
 
                 <!-- Moved from Immunization II: OPV (1st, 2nd & 3rd Dose) -->
-                <div id="tcl-imm2-opv-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                <div id="tcl-imm2-opv-card2" class="sm:col-span-2 bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
                             <span>OPV</span>
