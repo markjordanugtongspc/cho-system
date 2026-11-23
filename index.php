@@ -84,8 +84,8 @@ $prefs     = prefs();
                     $filename = basename($imgPath);
                     $webPath = asset('images/landing/' . $filename);
                     ?>
-                    <div class="hidden duration-1000 ease-in-out transition-transform" data-carousel-item>
-                      <img src="<?= e($webPath) ?>" loading="lazy" decoding="async" class="absolute block w-full h-full object-cover object-center" alt="City Health Office Facility <?= $index + 1 ?>" />
+                    <div class="hidden duration-1000 ease-in-out transition-transform" data-carousel-item<?= $index === 0 ? '="active"' : '' ?>>
+                      <img src="<?= e($webPath) ?>" decoding="async" class="absolute block w-full h-full object-cover object-center" alt="City Health Office Facility <?= $index + 1 ?>" />
                     </div>
                     <?php
                 }

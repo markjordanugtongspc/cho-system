@@ -57,7 +57,7 @@ window.CHO = {
 // 4) Flowbite Image Loading Skeleton Helper (for all lazy-loaded images)
 function initImageSkeletons() {
   document.querySelectorAll('img[loading="lazy"]').forEach((img) => {
-    if (img.closest('#cho-quick-access-grid, #cho-systems-grid')) return;
+    if (img.closest('#cho-quick-access-grid, #cho-systems-grid, #landing-carousel')) return;
     if ((img.getAttribute('src') || '').toLowerCase().endsWith('.svg')) return;
     if (img.complete && img.naturalWidth > 0) return;
     const parent = img.parentElement;
