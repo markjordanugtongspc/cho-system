@@ -50,12 +50,14 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                  alt="Barangays Population"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out z-[5]" fill="currentColor" viewBox="0 0 24 24">
-                <path fill-rule="evenodd" d="M11.906 1.994a8.002 8.002 0 0 1 8.09 8.421 7.996 7.996 0 0 1-1.297 3.957.996.996 0 0 1-.133.204l-.108.129c-.178.243-.37.477-.573.699l-5.112 6.224a1 1 0 0 1-1.545 0L5.982 15.26l-.002-.002a18.146 18.146 0 0 1-.309-.38l-.133-.163a.999.999 0 0 1-.13-.202 7.995 7.995 0 0 1 6.498-12.518ZM15 9.997a3 3 0 1 1-5.999 0 3 3 0 0 1 5.999 0Z" clip-rule="evenodd"/>
+            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-slate-300/60 group-hover:text-white/75 pointer-events-none transform -rotate-6 group-hover:scale-110 group-hover:rotate-0 transition-all duration-500 ease-out z-[5]" fill="currentColor" viewBox="0 0 511.117 511.117" aria-hidden="true">
+                <g transform="translate(1 1)">
+                    <path d="M507.469,64.324L444.793,1.648c-3.531-3.531-8.828-3.531-12.359,0c-3.531,3.531-3.531,8.828,0,12.359l6.179,6.179l-56.938,56.938l-31.338-31.338c-3.531-3.531-8.828-3.531-12.359,0l-24.717,24.717c-1.766,1.766-2.648,3.531-2.648,6.179c0,2.648,0.883,4.414,2.648,6.179l6.647,6.595l-49.902,49.902l-118.29,118.29c-18.354,19.152-20.112,48.402-5.282,68.841L127,345.924c-0.934,0.934-1.613,1.872-2.053,2.936l-24.43,24.43c-7.685,7.685-9.282,18.685-4.803,27.754L1.648,495.11c-3.531,3.531-3.531,8.828,0,12.359c1.766,1.766,3.531,2.648,6.179,2.648c2.648,0,4.414-0.883,6.179-2.648l93.421-93.421c3.938,2.707,8.664,4.262,13.393,4.262c7.062,0,12.359-2.648,16.772-7.945l26.483-26.483c0.934-0.934,1.613-1.872,2.053-2.936l17.283-17.283c8.671,6.407,19.113,9.626,30.098,9.626c14.124,0,27.366-5.297,37.959-15.89l118.29-118.29l50.293-50.293l6.203,6.155c1.766,1.766,3.531,2.648,6.179,2.648c1.766,0,4.414-0.883,5.297-2.648l24.717-24.717c1.766-1.766,2.648-3.531,2.648-6.179c0-2.648-0.883-4.414-2.648-6.179l-31.338-31.338l56.938-56.938l7.062,7.062c1.766,1.766,3.531,2.648,6.179,2.648c1.766,0,4.414-0.883,6.179-2.648C511,73.152,511,67.855,507.469,64.324z M288.545,145.538l44.138-43.255l12.8,12.8l-43.697,43.697L288.545,145.538z M313.262,170.255l43.697-43.697l24.717,24.717l-43.697,43.697L313.262,170.255z M157.897,338.862l12.359,12.359l-12.359,12.359l-12.359-12.359L157.897,338.862z M125.234,398.007c-1.766,2.648-6.179,2.648-8.828,0l-3.531-3.531c-2.648-1.766-2.648-6.179,0-8.828l20.303-20.303l12.359,12.359L125.234,398.007z M238.228,344.159c-6.179,7.062-15.007,10.593-24.717,10.593c-8.828,0-17.655-3.531-24.717-10.593l-24.717-24.717c-14.124-13.241-14.124-35.31,0-49.434l24.717-24.717l24.717,24.717c1.766,1.766,3.531,2.648,6.179,2.648c2.648,0,5.297-0.883,6.179-2.648c3.531-3.531,3.531-8.828,0-12.359l-24.717-24.717l18.979-18.979l25.159,25.159c1.766,1.766,3.531,2.648,6.179,2.648c1.766,0,4.414-0.883,6.179-2.648c3.531-3.531,3.531-8.828,0-12.359l-25.159-25.159l18.538-18.538l25.159,25.159c1.766,1.766,3.531,2.648,6.179,2.648c2.648,0,4.414-0.883,6.179-2.648c3.531-3.531,3.531-8.828,0-12.359l-25.159-25.159l12.8-12.8l19.421,19.421l37.076,37.076l17.655,17.655L238.228,344.159z M363.579,220.572l-12.359-12.359l43.697-43.697l12.8,12.8L363.579,220.572z M432.434,176.435l-6.178-6.178c0,0,0-0.001-0.001-0.001l-24.716-24.716c0,0-0.001-0.001-0.001-0.001l-37.076-37.076c0,0-0.001,0-0.001-0.001l-31.778-31.779l12.359-12.359l30.897,30.897l37.959,37.959l30.897,30.897L432.434,176.435z M419.193,113.759l-24.717-24.717l56.497-55.614l24.717,24.717L419.193,113.759z"/>
+                </g>
             </svg>
             <div class="relative z-10">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">Barangay Records</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">Fully Completed</span>
                     <span class="text-xs font-black tracking-widest text-white/60">01</span>
                 </div>
                 <div id="cho-nip-pop-stat-records-val2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
@@ -63,8 +65,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
                 <div class="w-full border-t border-white/20 my-2.5"></div>
                 <div class="flex items-center justify-between text-xs text-white/90">
-                    <span class="text-[11px] font-medium text-white/80">Marawi City Census</span>
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>↑</span> Active Registry</span>
+                    <span class="text-[11px] font-medium text-white/80">100% All Doses Injected</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>✓</span> Fully Immunized</span>
                 </div>
             </div>
         </div>
@@ -75,12 +77,15 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                  alt="City Total Population"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
-                <path fill-rule="evenodd" d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z" clip-rule="evenodd"/>
+            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-slate-300/60 group-hover:text-white/75 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-all duration-500 ease-out" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 14a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" />
+                <path d="M19 5l-5.4 5.4" />
+                <path d="M19 5h-5" />
+                <path d="M19 5v5" />
             </svg>
             <div class="relative z-10">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">City Total Pop 2024</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">Total Male Infants</span>
                     <span class="text-xs font-black tracking-widest text-white/60">02</span>
                 </div>
                 <div id="cho-nip-pop-stat-total-val2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
@@ -88,8 +93,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
                 <div class="w-full border-t border-white/20 my-2.5"></div>
                 <div class="flex items-center justify-between text-xs text-white/90">
-                    <span class="text-[11px] font-medium text-white/80">PSA Master Census</span>
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>👥</span> Master Pop</span>
+                    <span class="text-[11px] font-medium text-white/80">Male Gender Total</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>♂</span> Male Cohort</span>
                 </div>
             </div>
         </div>
@@ -100,12 +105,14 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                  alt="Household Population Estimates"
                  class="absolute inset-0 w-full h-full object-cover object-[center_20%] opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-            <svg class="absolute right-2 bottom-5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="currentColor" viewBox="0 0 24 24">
-                <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z"/>
+            <svg class="absolute right-2 bottom-2 w-24 h-24 text-slate-300/60 group-hover:text-white/75 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-all duration-500 ease-out" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 9a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" />
+                <path d="M12 14v7" />
+                <path d="M9 18h6" />
             </svg>
             <div class="relative z-10">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate pr-2">Household Population Estimates 2024</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate pr-2">Total Female Infants</span>
                     <span class="text-xs font-black tracking-widest text-white/60 shrink-0">03</span>
                 </div>
                 <div id="cho-nip-pop-stat-households-val2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
@@ -113,8 +120,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
                 <div class="w-full border-t border-white/20 my-2.5"></div>
                 <div class="flex items-center justify-between text-xs text-white/90">
-                    <span class="text-[11px] font-medium text-white/80">Marawi Household Pop</span>
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>✓</span> Verified Estimate</span>
+                    <span class="text-[11px] font-medium text-white/80">Female Gender Total</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>♀</span> Female Cohort</span>
                 </div>
             </div>
         </div>
@@ -125,12 +132,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                  alt="Number of Households Estimates 2024"
                  class="absolute inset-0 w-full h-full object-cover object-center opacity-45 mix-blend-overlay group-hover:opacity-75 group-hover:mix-blend-normal group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 ease-out pointer-events-none" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-[4]"></div>
-            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-white/20 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-transform duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-width="2" d="M8.737 8.737a21.49 21.49 0 0 1 3.308-2.724m0 0c3.063-2.026 5.99-2.641 7.331-1.3 1.827 1.828.026 6.591-4.023 10.64-4.049 4.049-8.812 5.85-10.64 4.023-1.33-1.33-.736-4.218 1.249-7.253m6.083-6.11c-3.063-2.026-5.99-2.641-7.331-1.3-1.827 1.828-.026 6.591 4.023 10.64m3.308-9.34a21.497 21.497 0 0 1 3.308 2.724m2.775 3.386c1.985 3.035 2.579 5.923 1.248 7.253-1.336 1.337-4.245.732-7.295-1.275M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+            <svg class="absolute right-2 bottom-1.5 w-24 h-24 text-slate-300/60 group-hover:text-white/75 pointer-events-none transform -rotate-6 z-[5] group-hover:scale-110 group-hover:rotate-0 transition-all duration-500 ease-out" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 9L9.50038 19.5C8.11966 20.8807 5.88109 20.8807 4.50038 19.5C3.11967 18.1193 3.11967 15.8807 4.50038 14.5L15 4M14.0004 3L21.0004 10M7 12H17" />
             </svg>
             <div class="relative z-10">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate pr-2">Number of Households Estimates 2024</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 truncate pr-2">Not Yet Completed</span>
                     <span class="text-xs font-black tracking-widest text-white/60 shrink-0">04</span>
                 </div>
                 <div id="cho-nip-pop-stat-target-val2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
@@ -138,8 +145,8 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
                 <div class="w-full border-t border-white/20 my-2.5"></div>
                 <div class="flex items-center justify-between text-xs text-white/90">
-                    <span class="text-[11px] font-medium text-white/80">Estimated Households</span>
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>📊</span> PSA Census</span>
+                    <span class="text-[11px] font-medium text-white/80">Pending ≥1 Dose</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-white"><span>⏳</span> Needs Follow-up</span>
                 </div>
             </div>
         </div>
@@ -149,10 +156,10 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
     <!-- FLOWBITE TABLE CARD: Striped Columns + Hover State + Sortable Head + Wided Search + Filter + Infinite Scroll -->
     <div id="cho-nip-population-table-card2"
          data-sheets-base-url="<?= e(url('/SHEETS/')) ?>"
-         class="relative bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
+         class="relative bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-visible">
 
         <!-- Table Toolbar: Wided Search + Table Filter + Database Status -->
-        <div id="cho-nip-pop-toolbar2" class="p-4 border-b border-slate-200/90 bg-white flex flex-col lg:flex-row lg:items-center gap-3">
+        <div id="cho-nip-pop-toolbar2" class="p-4 border-b border-slate-200/90 bg-white rounded-t-xl flex flex-col lg:flex-row lg:items-center gap-3">
             <!-- Wided Table Search -->
             <div class="relative flex-1 min-w-0">
                 <label for="cho-nip-pop-search2" class="sr-only">Search Target Client List</label>
@@ -177,53 +184,230 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
 
             <!-- Table Filter, Order & Database Source -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+                <!-- Flowbite Multi-Level Dropdown Filter -->
                 <div class="relative flex items-center">
-                    <label for="cho-nip-pop-filter2" class="sr-only">Filter Records</label>
-                    <span data-tooltip-target="cho-nip-pop-filter-tooltip2"
-                          data-tooltip-placement="top"
-                          class="absolute inset-y-0 start-0 flex items-center ps-3 text-slate-500 cursor-help z-10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
-                    </span>
-                    <div id="cho-nip-pop-filter-tooltip2"
-                         role="tooltip"
-                         class="absolute z-30 invisible inline-block px-2.5 py-1 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">
-                        Filter Records
-                        <div class="tooltip-arrow" data-popper-arrow></div>
-                    </div>
-                    <select id="cho-nip-pop-filter2"
+                    <button id="cho-nip-pop-filter2"
+                            data-dropdown-toggle="cho-nip-pop-filter-dropdown2"
+                            data-dropdown-placement="bottom-start"
+                            type="button"
                             aria-label="Filter Records"
-                            class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-medium rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full sm:w-44 ps-9 pe-3 py-2.5 cursor-pointer">
-                        <option value="all">All Infants</option>
-                        <option value="injected">BCG: INJECTED</option>
-                        <option value="not_yet">BCG: NOT YET</option>
-                        <option value="male">Sex: Male</option>
-                        <option value="female">Sex: Female</option>
-                    </select>
+                            class="inline-flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 text-xs sm:text-sm font-medium rounded-lg focus:ring-2 focus:ring-cho-blue-600 focus:border-cho-blue-600 w-full sm:w-52 px-3 py-2.5 cursor-pointer transition-colors">
+                        <span class="inline-flex items-center gap-2 min-w-0">
+                            <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            <span id="cho-nip-pop-filter-label2" class="truncate">All Infants</span>
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Level 1 Dropdown Menu -->
+                    <div id="cho-nip-pop-filter-dropdown2"
+                         class="z-40 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-52">
+                        <ul class="p-2 text-sm text-slate-700 font-medium space-y-0.5" aria-labelledby="cho-nip-pop-filter2">
+                            <li>
+                                <button type="button" data-filter-value="all" data-filter-label="All Infants"
+                                        class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    All Infants
+                                </button>
+                            </li>
+                            <li>
+                                <button id="cho-nip-pop-brgy-dropdown-btn2"
+                                        data-dropdown-toggle="cho-nip-pop-brgy-dropdown2"
+                                        data-dropdown-placement="right-start"
+                                        type="button"
+                                        class="inline-flex items-center justify-between w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    <span>Barangay</span>
+                                    <svg class="h-4 w-4 ms-auto text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Level 2 Submenu: Searchable Barangay Filter -->
+                                <div id="cho-nip-pop-brgy-dropdown2"
+                                     class="z-50 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-64">
+                                    <div class="bg-slate-50 border-b border-slate-200 p-2 rounded-t-xl">
+                                        <label for="cho-nip-pop-brgy-search2" class="sr-only">Search Barangay</label>
+                                        <input type="text"
+                                               id="cho-nip-pop-brgy-search2"
+                                               class="bg-white border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-2.5 py-1.5 placeholder-slate-400"
+                                               placeholder="Search barangay..." />
+                                    </div>
+                                    <ul id="cho-nip-pop-brgy-list2"
+                                        class="h-48 p-2 text-xs sm:text-sm text-slate-700 font-medium overflow-y-auto space-y-0.5"
+                                        aria-labelledby="cho-nip-pop-brgy-dropdown-btn2">
+                                    </ul>
+                                    <div class="bg-slate-50 border-t border-slate-200 p-2 rounded-b-xl">
+                                        <button type="button"
+                                                id="cho-nip-pop-brgy-clear2"
+                                                class="w-full inline-flex items-center justify-center text-white bg-cho-blue-900 hover:bg-cho-blue-950 focus:ring-4 focus:ring-cho-blue-300/40 shadow-xs font-semibold rounded-lg text-xs px-3 py-1.5 cursor-pointer transition-colors">
+                                            Show All Barangays (Global)
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <button id="cho-nip-pop-gender-dropdown-btn2"
+                                        data-dropdown-toggle="cho-nip-pop-gender-dropdown2"
+                                        data-dropdown-placement="right-start"
+                                        type="button"
+                                        class="inline-flex items-center justify-between w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    <span>Genders</span>
+                                    <svg class="h-4 w-4 ms-auto text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Level 2 Submenu: Genders (No Search) -->
+                                <div id="cho-nip-pop-gender-dropdown2"
+                                     class="z-50 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-44">
+                                    <ul class="p-2 text-sm text-slate-700 font-medium space-y-0.5" aria-labelledby="cho-nip-pop-gender-dropdown-btn2">
+                                        <li>
+                                            <button type="button" data-filter-value="male" data-filter-label="Genders: Male"
+                                                    class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                                Male
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-filter-value="female" data-filter-label="Genders: Female"
+                                                    class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                                Female
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <button id="cho-nip-pop-imm-dropdown-btn2"
+                                        data-dropdown-toggle="cho-nip-pop-imm-dropdown2"
+                                        data-dropdown-placement="right-start"
+                                        type="button"
+                                        class="inline-flex items-center justify-between w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    <span>Immunizations</span>
+                                    <svg class="h-4 w-4 ms-auto text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Level 2 Submenu: Immunizations Status -->
+                                <div id="cho-nip-pop-imm-dropdown2"
+                                     class="z-50 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-48">
+                                    <ul class="p-2 text-sm text-slate-700 font-medium space-y-0.5" aria-labelledby="cho-nip-pop-imm-dropdown-btn2">
+                                        <li>
+                                            <button type="button" data-filter-value="all" data-filter-label="Immunizations: All"
+                                                    class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                                All (Injected / Not Yet)
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-filter-value="injected" data-filter-label="Immunizations: INJECTED"
+                                                    class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                                INJECTED
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-filter-value="not_yet" data-filter-label="Immunizations: NOT YET"
+                                                    class="cho-filter-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                                NOT YET
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
+                <!-- Flowbite Multi-Level Order & Date/Immunization Filter Dropdown -->
                 <div class="relative flex items-center">
-                    <label for="cho-nip-pop-order2" class="sr-only">Order By</label>
-                    <span data-tooltip-target="cho-nip-pop-order-tooltip2"
-                          data-tooltip-placement="top"
-                          class="absolute inset-y-0 start-0 flex items-center ps-3 text-slate-500 cursor-help z-10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
-                        </svg>
-                    </span>
-                    <div id="cho-nip-pop-order-tooltip2"
-                         role="tooltip"
-                         class="absolute z-30 invisible inline-block px-2.5 py-1 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip">
-                        Order By
-                        <div class="tooltip-arrow" data-popper-arrow></div>
-                    </div>
-                    <select id="cho-nip-pop-order2"
+                    <button id="cho-nip-pop-order2"
+                            data-dropdown-toggle="cho-nip-pop-order-dropdown2"
+                            data-dropdown-placement="bottom-start"
+                            type="button"
                             aria-label="Order By"
-                            class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-medium rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full sm:w-48 ps-9 pe-3 py-2.5 cursor-pointer">
-                        <option value="asc">By # (1 &rarr; N)</option>
-                        <option value="newest">Newly Added First</option>
-                    </select>
+                            class="inline-flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 text-xs sm:text-sm font-medium rounded-lg focus:ring-2 focus:ring-cho-blue-600 focus:border-cho-blue-600 w-full sm:w-52 px-3 py-2.5 cursor-pointer transition-colors">
+                        <span class="inline-flex items-center gap-2 min-w-0">
+                            <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                            </svg>
+                            <span id="cho-nip-pop-order-label2" class="truncate">By # (1 &rarr; N)</span>
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Level 1 Order Dropdown Menu -->
+                    <div id="cho-nip-pop-order-dropdown2"
+                         class="z-40 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-52">
+                        <ul class="p-2 text-sm text-slate-700 font-medium space-y-0.5" aria-labelledby="cho-nip-pop-order2">
+                            <li>
+                                <button type="button" data-order-value="asc" data-order-label="By # (1 &rarr; N)"
+                                        class="cho-order-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    By # (1 &rarr; N)
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" data-order-value="newest" data-order-label="Newly Added First"
+                                        class="cho-order-opt2 inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left cursor-pointer">
+                                    Newly Added First
+                                </button>
+                            </li>
+                            <li class="pt-1 mt-1 border-t border-slate-100">
+                                <button id="cho-nip-pop-date-dropdown-btn2"
+                                        data-dropdown-toggle="cho-nip-pop-date-dropdown2"
+                                        data-dropdown-placement="right-start"
+                                        type="button"
+                                        class="inline-flex items-center justify-between w-full p-2 hover:bg-slate-100 hover:text-cho-blue-800 rounded-lg text-left font-semibold cursor-pointer">
+                                    <span>By Date &amp; Immunization</span>
+                                    <svg class="h-4 w-4 ms-auto text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Level 2 Submenu: Date + Immunization Picker -->
+                                <div id="cho-nip-pop-date-dropdown2"
+                                     class="z-50 hidden bg-white border border-slate-200 rounded-xl shadow-xl w-72 p-3 space-y-2.5">
+                                    <div>
+                                        <label for="cho-nip-pop-date-imm2" class="block mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">Immunization</label>
+                                        <select id="cho-nip-pop-date-imm2"
+                                                class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-2.5 py-2">
+                                            <option value="any">Any Immunization / Reg. Date</option>
+                                            <option value="reg_date">Registration Date</option>
+                                            <option value="bcg">BCG</option>
+                                            <option value="hepa">Hepa - B</option>
+                                            <option value="dpt">DPT-HiB-HepB</option>
+                                            <option value="opv">OPV</option>
+                                            <option value="pcv">PCV</option>
+                                            <option value="ipv">IPV</option>
+                                            <option value="mcv1">MCV1 (9 mos)</option>
+                                            <option value="mcv2">MCV2 (12 mos)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="cho-nip-pop-date-input2" class="block mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">Select Date</label>
+                                        <input type="date"
+                                               id="cho-nip-pop-date-input2"
+                                               class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-2.5 py-2" />
+                                    </div>
+                                    <div class="flex items-center gap-2 pt-1">
+                                        <button type="button"
+                                                id="cho-nip-pop-date-apply2"
+                                                class="flex-1 inline-flex items-center justify-center text-white bg-cho-blue-900 hover:bg-cho-blue-950 font-semibold rounded-lg text-xs px-3 py-2 cursor-pointer transition-colors">
+                                            Apply Date
+                                        </button>
+                                        <button type="button"
+                                                id="cho-nip-pop-date-clear2"
+                                                class="inline-flex items-center justify-center text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold rounded-lg text-xs px-3 py-2 cursor-pointer transition-colors">
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -306,7 +490,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         ['id' => 7,  'barangay' => 'Matampay',        'reg_date' => '2026-11-02', 'child' => 'Hamza L. Pangcoga',        'dob' => '2026-05-20', 'age' => '6 mos',  'sex' => 'Male',   'bcg' => 'INJECTED', 'vax_date' => '2026-11-02'],
                         ['id' => 8,  'barangay' => 'Lilod Madaya',    'reg_date' => '2026-11-06', 'child' => 'Jannah R. Marohombsar',    'dob' => '2026-03-11', 'age' => '8 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-11-06'],
                         ['id' => 9,  'barangay' => 'Marinaut',        'reg_date' => '2026-11-11', 'child' => 'Yusuf A. Usman',           'dob' => '2026-11-01', 'age' => '19 days','sex' => 'Male',   'bcg' => 'NOT YET',  'vax_date' => ''],
-                        ['id' => 10, 'barangay' => 'Poblacion',       'reg_date' => '2026-11-15', 'child' => 'Amina S. Lucman',          'dob' => '2026-01-28', 'age' => '9 mos',  'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2026-11-15'],
+                        ['id' => 10, 'barangay' => 'Poblacion',       'reg_date' => '2026-11-15', 'child' => 'Amina S. Lucman',          'dob' => '2025-11-15', 'age' => '12 mos', 'sex' => 'Female', 'bcg' => 'INJECTED', 'vax_date' => '2025-11-20'],
                     ];
                     foreach ($tclMockSamples as $row):
                         $isInjected = $row['bcg'] === 'INJECTED';
@@ -332,6 +516,9 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         $hasDose1 = in_array($row['id'], [1, 4, 5, 7, 8, 10], true);
                         $hasDose2 = in_array($row['id'], [4, 5, 7, 8, 10], true);
                         $hasDose3 = in_array($row['id'], [5, 7, 8, 10], true);
+                        $hasIpv2  = ($row['id'] === 10);
+                        $hasMcv1  = ($row['id'] === 10);
+                        $hasMcv2  = ($row['id'] === 10);
                         $overviewNotes = [
                             1 => "[Oct 4, 2026 • Nurse Rohaida]\n• Birth weight: 3.2 kg (Normal).\n• Exclusive breastfeeding confirmed during 6-week checkup.\n• Scheduled for 2nd dose DPT-HiB-HepB, OPV, and PCV on Nov 28, 2026.",
                             2 => '',
@@ -379,10 +566,12 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                 'dpt' => [
                                     ['dose' => '1st Dose', 'status' => $hasDose1 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose1 ? date('M j, Y', strtotime('+6 weeks', $dobTs)) : '', 'iso' => $hasDose1 ? date('Y-m-d', strtotime('+6 weeks', $dobTs)) : ''],
                                     ['dose' => '2nd Dose', 'status' => $hasDose2 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose2 ? date('M j, Y', strtotime('+10 weeks', $dobTs)) : '', 'iso' => $hasDose2 ? date('Y-m-d', strtotime('+10 weeks', $dobTs)) : ''],
+                                    ['dose' => '3rd Dose', 'status' => $hasDose3 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose3 ? date('M j, Y', strtotime('+14 weeks', $dobTs)) : '', 'iso' => $hasDose3 ? date('Y-m-d', strtotime('+14 weeks', $dobTs)) : ''],
                                 ],
                                 'opv' => [
                                     ['dose' => '1st Dose', 'status' => $hasDose1 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose1 ? date('M j, Y', strtotime('+6 weeks', $dobTs)) : '', 'iso' => $hasDose1 ? date('Y-m-d', strtotime('+6 weeks', $dobTs)) : ''],
                                     ['dose' => '2nd Dose', 'status' => $hasDose2 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose2 ? date('M j, Y', strtotime('+10 weeks', $dobTs)) : '', 'iso' => $hasDose2 ? date('Y-m-d', strtotime('+10 weeks', $dobTs)) : ''],
+                                    ['dose' => '3rd Dose', 'status' => $hasDose3 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose3 ? date('M j, Y', strtotime('+14 weeks', $dobTs)) : '', 'iso' => $hasDose3 ? date('Y-m-d', strtotime('+14 weeks', $dobTs)) : ''],
                                 ],
                                 'pcv' => [
                                     ['dose' => '1st Dose', 'status' => $hasDose1 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose1 ? date('M j, Y', strtotime('+6 weeks', $dobTs)) : '', 'iso' => $hasDose1 ? date('Y-m-d', strtotime('+6 weeks', $dobTs)) : ''],
@@ -391,12 +580,20 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                 ],
                                 'ipv' => [
                                     ['dose' => '1st Dose', 'status' => $hasDose3 ? 'INJECTED' : 'NOT YET', 'date' => $hasDose3 ? date('M j, Y', strtotime('+14 weeks', $dobTs)) : '', 'iso' => $hasDose3 ? date('Y-m-d', strtotime('+14 weeks', $dobTs)) : ''],
+                                    ['dose' => '2nd Dose', 'status' => $hasIpv2 ? 'INJECTED' : 'NOT YET', 'date' => $hasIpv2 ? date('M j, Y', strtotime('+9 months', $dobTs)) : '', 'iso' => $hasIpv2 ? date('Y-m-d', strtotime('+9 months', $dobTs)) : ''],
+                                ],
+                                'mcv1' => [
+                                    ['dose' => '1st Dose', 'status' => $hasMcv1 ? 'INJECTED' : 'NOT YET', 'date' => $hasMcv1 ? date('M j, Y', strtotime('+9 months', $dobTs)) : '', 'iso' => $hasMcv1 ? date('Y-m-d', strtotime('+9 months', $dobTs)) : ''],
+                                ],
+                                'mcv2' => [
+                                    ['dose' => '1st Dose', 'status' => $hasMcv2 ? 'INJECTED' : 'NOT YET', 'date' => $hasMcv2 ? date('M j, Y', strtotime('+12 months', $dobTs)) : '', 'iso' => $hasMcv2 ? date('Y-m-d', strtotime('+12 months', $dobTs)) : ''],
                                 ],
                             ],
                         ];
                     ?>
                     <tr class="group hover:bg-sky-100 hover:shadow-sm transition-all duration-150 cursor-pointer"
                         data-row-id="<?= (int) $row['id'] ?>"
+                        data-barangay="<?= e($row['barangay']) ?>"
                         data-bcg="<?= e($row['bcg']) ?>"
                         data-sex="<?= e(strtolower($row['sex'])) ?>"
                         data-tcl-record="<?= e(json_encode($tclRecord, JSON_UNESCAPED_UNICODE)) ?>">
@@ -549,7 +746,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
         </div>
 
         <!-- Table Footer Status -->
-        <div id="cho-nip-pop-footer2" class="px-4 py-3 border-t border-slate-200/90 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-500">
+        <div id="cho-nip-pop-footer2" class="px-4 py-3 border-t border-slate-200/90 bg-slate-50/70 rounded-b-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-500">
             <span id="cho-nip-pop-count-status2" class="font-medium">Showing 10 of 10 infant records</span>
             <span id="cho-nip-pop-source-status2" class="text-[11px] text-slate-400">Source: Target Client List (10 Mock Samples)</span>
         </div>
@@ -559,14 +756,123 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
         document.addEventListener('DOMContentLoaded', () => {
             const searchEl = document.getElementById('cho-nip-pop-search2');
             const clearEl = document.getElementById('cho-nip-pop-search-clear2');
-            const filterEl = document.getElementById('cho-nip-pop-filter2');
-            const orderEl = document.getElementById('cho-nip-pop-order2');
+            const filterBtnEl = document.getElementById('cho-nip-pop-filter2');
+            const filterLabelEl = document.getElementById('cho-nip-pop-filter-label2');
+            const filterDropdownEl = document.getElementById('cho-nip-pop-filter-dropdown2');
+            const brgyDropdownEl = document.getElementById('cho-nip-pop-brgy-dropdown2');
+            const brgySearchEl = document.getElementById('cho-nip-pop-brgy-search2');
+            const brgyListEl = document.getElementById('cho-nip-pop-brgy-list2');
+            const brgyClearEl = document.getElementById('cho-nip-pop-brgy-clear2');
+            const genderDropdownEl = document.getElementById('cho-nip-pop-gender-dropdown2');
+            const immDropdownBtnEl = document.getElementById('cho-nip-pop-imm-dropdown-btn2');
+            const immDropdownEl = document.getElementById('cho-nip-pop-imm-dropdown2');
+            const orderLabelEl = document.getElementById('cho-nip-pop-order-label2');
+            const orderDropdownEl = document.getElementById('cho-nip-pop-order-dropdown2');
+            const dateDropdownEl = document.getElementById('cho-nip-pop-date-dropdown2');
+            const dateImmEl = document.getElementById('cho-nip-pop-date-imm2');
+            const dateInputEl = document.getElementById('cho-nip-pop-date-input2');
+            const dateApplyEl = document.getElementById('cho-nip-pop-date-apply2');
+            const dateClearEl = document.getElementById('cho-nip-pop-date-clear2');
             const tbodyEl = document.getElementById('cho-nip-pop-tbody2');
             const countEl = document.getElementById('cho-nip-pop-count-status2');
             if (!tbodyEl) return;
 
+            let activeFilter = 'all';
+            let activeBarangay = '';
+            let activeOrder = 'asc';
+            let activeDateImm = 'any';
+            let activeDateIso = '';
+
+            const isRecordFullyCompleted = (tr) => {
+                try {
+                    const rec = JSON.parse(tr.dataset.tclRecord || '{}');
+                    const doses = [
+                        rec.imm1?.bcg,
+                        rec.imm1?.hepa,
+                        ...(rec.imm2?.dpt || []),
+                        ...(rec.imm2?.opv || []),
+                        ...(rec.imm2?.pcv || []),
+                        ...(rec.imm2?.ipv || []),
+                        ...(rec.imm2?.mcv1 || []),
+                        ...(rec.imm2?.mcv2 || [])
+                    ].filter(Boolean);
+                    return doses.length > 0 && doses.every((d) => d.status === 'INJECTED');
+                } catch {
+                    return false;
+                }
+            };
+
+            const computeStatsForRows = (rows) => {
+                const total = rows.length;
+                const fullyCompleted = rows.filter(isRecordFullyCompleted).length;
+                const male = rows.filter((r) => r.dataset.sex === 'male').length;
+                const female = rows.filter((r) => r.dataset.sex === 'female').length;
+                const notYetCompleted = total - fullyCompleted;
+                return { total, fullyCompleted, male, female, notYetCompleted };
+            };
+
+            const getRowBarangay = (tr) => {
+                if (tr.dataset.barangay) return tr.dataset.barangay;
+                try {
+                    return JSON.parse(tr.dataset.tclRecord || '{}').barangay || '';
+                } catch {
+                    return '';
+                }
+            };
+
+            const renderBarangayList = (query = '') => {
+                if (!brgyListEl) return;
+                const rows = Array.from(tbodyEl.querySelectorAll('tr'));
+                const counts = new Map();
+                rows.forEach((tr) => {
+                    const b = getRowBarangay(tr).trim();
+                    if (b) counts.set(b, (counts.get(b) || 0) + 1);
+                });
+
+                const q = query.trim().toLowerCase();
+                const items = Array.from(counts.entries())
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .filter(([name]) => !q || name.toLowerCase().includes(q));
+
+                if (items.length === 0) {
+                    brgyListEl.innerHTML = `<li class="px-2 py-3 text-center text-xs text-slate-400">No matching barangay found</li>`;
+                    return;
+                }
+
+                brgyListEl.innerHTML = items.map(([name, cnt]) => {
+                    const checked = activeFilter === 'barangay' && activeBarangay.toLowerCase() === name.toLowerCase();
+                    return `
+                        <li>
+                            <button type="button"
+                                    data-brgy-filter="${name.replace(/"/g, '&quot;')}"
+                                    class="w-full flex items-center justify-between p-2 rounded-lg text-left cursor-pointer transition-colors ${checked ? 'bg-cho-blue-50 text-cho-blue-900 font-bold' : 'hover:bg-slate-100 text-slate-700'}">
+                                <span class="truncate pr-2">${name}</span>
+                                <span class="inline-flex items-center gap-1.5 shrink-0">
+                                    <span class="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">${cnt}</span>
+                                    <input type="checkbox" ${checked ? 'checked' : ''} tabindex="-1" class="w-4 h-4 text-cho-blue-800 border-slate-300 rounded pointer-events-none" />
+                                </span>
+                            </button>
+                        </li>
+                    `;
+                }).join('');
+
+                brgyListEl.querySelectorAll('[data-brgy-filter]').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        activeFilter = 'barangay';
+                        activeBarangay = btn.dataset.brgyFilter || '';
+                        if (filterLabelEl) filterLabelEl.textContent = `Brgy: ${activeBarangay}`;
+                        brgyDropdownEl?.classList.add('hidden');
+                        filterDropdownEl?.classList.add('hidden');
+                        applyFilter();
+                        hydrateStats();
+                        renderBarangayList(brgySearchEl?.value || '');
+                    });
+                });
+            };
+
             const applyOrder = () => {
-                const mode = orderEl?.value || 'asc';
+                const mode = activeOrder || 'asc';
                 const rows = Array.from(tbodyEl.querySelectorAll('tr'));
                 rows.sort((a, b) => {
                     const idA = Number(a.dataset.rowId || 0);
@@ -576,10 +882,43 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 rows.forEach((tr) => tbodyEl.appendChild(tr));
             };
 
+            const matchesDateAndImm = (tr) => {
+                if (!activeDateIso) return true;
+                try {
+                    const rec = JSON.parse(tr.dataset.tclRecord || '{}');
+                    const checkDoseArr = (arr) => Array.isArray(arr) && arr.some((d) => d?.iso === activeDateIso);
+                    switch (activeDateImm) {
+                        case 'reg_date': return rec.reg_date === activeDateIso;
+                        case 'bcg': return rec.imm1?.bcg?.iso === activeDateIso;
+                        case 'hepa': return rec.imm1?.hepa?.iso === activeDateIso;
+                        case 'dpt': return checkDoseArr(rec.imm2?.dpt);
+                        case 'opv': return checkDoseArr(rec.imm2?.opv);
+                        case 'pcv': return checkDoseArr(rec.imm2?.pcv);
+                        case 'ipv': return checkDoseArr(rec.imm2?.ipv);
+                        case 'mcv1': return checkDoseArr(rec.imm2?.mcv1);
+                        case 'mcv2': return checkDoseArr(rec.imm2?.mcv2);
+                        case 'any':
+                        default:
+                            return (
+                                rec.reg_date === activeDateIso ||
+                                rec.imm1?.bcg?.iso === activeDateIso ||
+                                rec.imm1?.hepa?.iso === activeDateIso ||
+                                checkDoseArr(rec.imm2?.dpt) ||
+                                checkDoseArr(rec.imm2?.opv) ||
+                                checkDoseArr(rec.imm2?.pcv) ||
+                                checkDoseArr(rec.imm2?.ipv) ||
+                                checkDoseArr(rec.imm2?.mcv1) ||
+                                checkDoseArr(rec.imm2?.mcv2)
+                            );
+                    }
+                } catch {
+                    return false;
+                }
+            };
+
             const applyFilter = () => {
                 const rows = Array.from(tbodyEl.querySelectorAll('tr'));
                 const q = (searchEl?.value || '').trim().toLowerCase();
-                const f = filterEl?.value || 'all';
                 if (clearEl) clearEl.classList.toggle('hidden', q.length === 0);
 
                 let visible = 0;
@@ -587,15 +926,18 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     const text = tr.textContent.toLowerCase();
                     const bcg = tr.dataset.bcg || '';
                     const sex = tr.dataset.sex || '';
+                    const brgy = getRowBarangay(tr).toLowerCase();
                     const matchQuery = !q || text.includes(q);
                     const matchFilter =
-                        f === 'all' ||
-                        (f === 'injected' && bcg === 'INJECTED') ||
-                        (f === 'not_yet' && bcg === 'NOT YET') ||
-                        (f === 'male' && sex === 'male') ||
-                        (f === 'female' && sex === 'female');
+                        activeFilter === 'all' ||
+                        (activeFilter === 'injected' && bcg === 'INJECTED') ||
+                        (activeFilter === 'not_yet' && bcg === 'NOT YET') ||
+                        (activeFilter === 'male' && sex === 'male') ||
+                        (activeFilter === 'female' && sex === 'female') ||
+                        (activeFilter === 'barangay' && brgy === activeBarangay.toLowerCase());
+                    const matchDate = matchesDateAndImm(tr);
 
-                    const show = matchQuery && matchFilter;
+                    const show = matchQuery && matchFilter && matchDate;
                     tr.classList.toggle('hidden', !show);
                     if (show) visible++;
                 });
@@ -604,35 +946,127 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
             };
 
             const hydrateStats = () => {
-                const rows = Array.from(tbodyEl.querySelectorAll('tr'));
-                const total = rows.length;
-                const injected = rows.filter((r) => r.dataset.bcg === 'INJECTED').length;
-                const male = rows.filter((r) => r.dataset.sex === 'male').length;
-                const female = rows.filter((r) => r.dataset.sex === 'female').length;
+                const allRows = Array.from(tbodyEl.querySelectorAll('tr'));
+                const globalStats = computeStatsForRows(allRows);
+                try {
+                    localStorage.setItem('cho_nip2_global_tcl_stats', JSON.stringify(globalStats));
+                } catch {}
+
+                const scopedRows = activeFilter === 'barangay' && activeBarangay
+                    ? allRows.filter((tr) => getRowBarangay(tr).toLowerCase() === activeBarangay.toLowerCase())
+                    : allRows;
+                const scopedStats = computeStatsForRows(scopedRows);
+
                 const setStat = (id, val) => {
                     const el = document.getElementById(id);
                     if (el) el.textContent = Number(val).toLocaleString();
                 };
-                setStat('cho-nip-pop-stat-records-val2', total);
-                setStat('cho-nip-pop-stat-total-val2', injected);
-                setStat('cho-nip-pop-stat-households-val2', male);
-                setStat('cho-nip-pop-stat-target-val2', female);
+                setStat('cho-nip-pop-stat-records-val2', scopedStats.fullyCompleted);
+                setStat('cho-nip-pop-stat-total-val2', scopedStats.male);
+                setStat('cho-nip-pop-stat-households-val2', scopedStats.female);
+                setStat('cho-nip-pop-stat-target-val2', scopedStats.notYetCompleted);
             };
+
+            const closeFilterMenus = () => {
+                brgyDropdownEl?.classList.add('hidden');
+                genderDropdownEl?.classList.add('hidden');
+                immDropdownEl?.classList.add('hidden');
+                filterDropdownEl?.classList.add('hidden');
+            };
+
+            document.querySelectorAll('.cho-filter-opt2').forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    activeFilter = btn.dataset.filterValue || 'all';
+                    activeBarangay = '';
+                    if (filterLabelEl) filterLabelEl.textContent = btn.dataset.filterLabel || 'All Infants';
+                    closeFilterMenus();
+                    applyFilter();
+                    hydrateStats();
+                    renderBarangayList(brgySearchEl?.value || '');
+                });
+            });
+
+            immDropdownBtnEl?.addEventListener('click', () => {
+                activeFilter = 'all';
+                activeBarangay = '';
+                if (filterLabelEl) filterLabelEl.textContent = 'Immunizations: All';
+                applyFilter();
+                hydrateStats();
+            });
+
+            brgySearchEl?.addEventListener('input', () => {
+                renderBarangayList(brgySearchEl.value);
+            });
+            brgySearchEl?.addEventListener('click', (e) => e.stopPropagation());
+
+            brgyClearEl?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                activeFilter = 'all';
+                activeBarangay = '';
+                if (brgySearchEl) brgySearchEl.value = '';
+                if (filterLabelEl) filterLabelEl.textContent = 'All Infants';
+                closeFilterMenus();
+                applyFilter();
+                hydrateStats();
+                renderBarangayList('');
+            });
+
+            document.querySelectorAll('.cho-order-opt2').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    activeOrder = btn.dataset.orderValue || 'asc';
+                    if (orderLabelEl && !activeDateIso) {
+                        orderLabelEl.textContent = btn.dataset.orderLabel || 'By # (1 → N)';
+                    }
+                    dateDropdownEl?.classList.add('hidden');
+                    orderDropdownEl?.classList.add('hidden');
+                    applyOrder();
+                    applyFilter();
+                });
+            });
+
+            dateDropdownEl?.addEventListener('click', (e) => e.stopPropagation());
+
+            dateApplyEl?.addEventListener('click', () => {
+                activeDateImm = dateImmEl?.value || 'any';
+                activeDateIso = dateInputEl?.value || '';
+                if (orderLabelEl) {
+                    if (activeDateIso) {
+                        const immText = dateImmEl?.options[dateImmEl.selectedIndex]?.text || 'Date';
+                        orderLabelEl.textContent = `${immText}: ${activeDateIso}`;
+                    } else {
+                        orderLabelEl.textContent = activeOrder === 'newest' ? 'Newly Added First' : 'By # (1 → N)';
+                    }
+                }
+                dateDropdownEl?.classList.add('hidden');
+                orderDropdownEl?.classList.add('hidden');
+                applyFilter();
+            });
+
+            dateClearEl?.addEventListener('click', () => {
+                activeDateImm = 'any';
+                activeDateIso = '';
+                if (dateImmEl) dateImmEl.value = 'any';
+                if (dateInputEl) dateInputEl.value = '';
+                if (orderLabelEl) {
+                    orderLabelEl.textContent = activeOrder === 'newest' ? 'Newly Added First' : 'By # (1 → N)';
+                }
+                dateDropdownEl?.classList.add('hidden');
+                orderDropdownEl?.classList.add('hidden');
+                applyFilter();
+            });
 
             window.CHO_TCL_REFRESH_TABLE2 = () => {
                 applyOrder();
                 applyFilter();
                 hydrateStats();
+                renderBarangayList(brgySearchEl?.value || '');
             };
 
+            renderBarangayList('');
             setTimeout(hydrateStats, 220);
 
             searchEl?.addEventListener('input', applyFilter);
-            filterEl?.addEventListener('change', applyFilter);
-            orderEl?.addEventListener('change', () => {
-                applyOrder();
-                applyFilter();
-            });
             clearEl?.addEventListener('click', () => {
                 if (searchEl) searchEl.value = '';
                 applyFilter();
@@ -793,21 +1227,21 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div>
-                        <label for="tcl-add-hepa" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa B-BD Status</label>
-                        <select id="tcl-add-hepa"
-                                class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5">
-                            <option value="NOT YET">NOT YET</option>
-                            <option value="INJECTED">INJECTED</option>
-                        </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label for="tcl-add-hepa" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa - B Status</label>
+                            <select id="tcl-add-hepa"
+                                    class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-hepa-date" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa - B Date</label>
+                            <input type="date" id="tcl-add-hepa-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
+                        </div>
                     </div>
-                    <div>
-                        <label for="tcl-add-hepa-date" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa B-BD Date</label>
-                        <input type="date" id="tcl-add-hepa-date"
-                               class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
-                    </div>
-                </div>
             </div>
 
             <!-- Routine Infant Doses -->
@@ -850,6 +1284,21 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-add-dpt3" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Status</label>
+                            <select id="tcl-add-dpt3"
+                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-dpt3-date" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Date</label>
+                            <input type="date" id="tcl-add-dpt3-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- OPV -->
@@ -882,6 +1331,21 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         <div>
                             <label for="tcl-add-opv2-date" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Date</label>
                             <input type="date" id="tcl-add-opv2-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-add-opv3" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Status</label>
+                            <select id="tcl-add-opv3"
+                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-opv3-date" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Date</label>
+                            <input type="date" id="tcl-add-opv3-date"
                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
@@ -952,6 +1416,61 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         <div>
                             <label for="tcl-add-ipv1-date" class="block mb-1 text-xs font-semibold text-slate-600">1st Dose Date</label>
                             <input type="date" id="tcl-add-ipv1-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-add-ipv2" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Status</label>
+                            <select id="tcl-add-ipv2"
+                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-ipv2-date" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Date</label>
+                            <input type="date" id="tcl-add-ipv2-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCV1 (9 mos) -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-semibold text-slate-700">MCV1 (9 mos)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-add-mcv1" class="block mb-1 text-xs font-semibold text-slate-600">Dose Status</label>
+                            <select id="tcl-add-mcv1"
+                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-mcv1-date" class="block mb-1 text-xs font-semibold text-slate-600">Dose Date</label>
+                            <input type="date" id="tcl-add-mcv1-date"
+                                   class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCV2 (12 mos) -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-semibold text-slate-700">MCV2 (12 mos)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-add-mcv2" class="block mb-1 text-xs font-semibold text-slate-600">Dose Status</label>
+                            <select id="tcl-add-mcv2"
+                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-add-mcv2-date" class="block mb-1 text-xs font-semibold text-slate-600">Dose Date</label>
+                            <input type="date" id="tcl-add-mcv2-date"
                                    class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
@@ -1133,7 +1652,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                        <label for="tcl-edit-hepa" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa B-BD Status</label>
+                        <label for="tcl-edit-hepa" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa - B Status</label>
                         <select id="tcl-edit-hepa"
                                 class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5">
                             <option value="NOT YET">NOT YET</option>
@@ -1141,7 +1660,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         </select>
                     </div>
                     <div>
-                        <label for="tcl-edit-hepa-date" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa B-BD Date</label>
+                        <label for="tcl-edit-hepa-date" class="block mb-1.5 text-sm font-semibold text-slate-700">Hepa - B Date</label>
                         <input type="date" id="tcl-edit-hepa-date"
                                class="bg-white border border-slate-300 text-slate-900 text-base rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3.5 py-2.5" />
                     </div>
@@ -1184,6 +1703,19 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                             <input type="date" id="tcl-edit-dpt2-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-edit-dpt3" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Status</label>
+                            <select id="tcl-edit-dpt3" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-edit-dpt3-date" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Date</label>
+                            <input type="date" id="tcl-edit-dpt3-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- OPV -->
@@ -1213,6 +1745,19 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         <div>
                             <label for="tcl-edit-opv2-date" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Date</label>
                             <input type="date" id="tcl-edit-opv2-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-edit-opv3" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Status</label>
+                            <select id="tcl-edit-opv3" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-edit-opv3-date" class="block mb-1 text-xs font-semibold text-slate-600">3rd Dose Date</label>
+                            <input type="date" id="tcl-edit-opv3-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
                 </div>
@@ -1275,6 +1820,55 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         <div>
                             <label for="tcl-edit-ipv1-date" class="block mb-1 text-xs font-semibold text-slate-600">1st Dose Date</label>
                             <input type="date" id="tcl-edit-ipv1-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-edit-ipv2" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Status</label>
+                            <select id="tcl-edit-ipv2" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-edit-ipv2-date" class="block mb-1 text-xs font-semibold text-slate-600">2nd Dose Date</label>
+                            <input type="date" id="tcl-edit-ipv2-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCV1 (9 mos) -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-semibold text-slate-700">MCV1 (9 mos)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-edit-mcv1" class="block mb-1 text-xs font-semibold text-slate-600">Dose Status</label>
+                            <select id="tcl-edit-mcv1" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-edit-mcv1-date" class="block mb-1 text-xs font-semibold text-slate-600">Dose Date</label>
+                            <input type="date" id="tcl-edit-mcv1-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCV2 (12 mos) -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-semibold text-slate-700">MCV2 (12 mos)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="tcl-edit-mcv2" class="block mb-1 text-xs font-semibold text-slate-600">Dose Status</label>
+                            <select id="tcl-edit-mcv2" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2">
+                                <option value="NOT YET">NOT YET</option>
+                                <option value="INJECTED">INJECTED</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tcl-edit-mcv2-date" class="block mb-1 text-xs font-semibold text-slate-600">Dose Date</label>
+                            <input type="date" id="tcl-edit-mcv2-date" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-cho-blue-600 focus:border-cho-blue-600 block w-full px-3 py-2" />
                         </div>
                     </div>
                 </div>
@@ -1594,11 +2188,11 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                 <path d="M3 21l3 -3" />
                             </svg>
                         </div>
-                        <div class="text-sm font-black text-slate-900 mt-0.5">Hepa B-BD</div>
+                        <div class="text-sm font-black text-slate-900 mt-0.5">Hepa - B</div>
                     </div>
                     <span id="tcl-imm1-hepa-badge2"></span>
                 </div>
-                <!-- Cell 4: Hepa B-BD Date -->
+                <!-- Cell 4: Hepa - B Date -->
                 <div id="tcl-imm1-hepa-date-card2" class="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col justify-center">
                     <div class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                         <span>Date of Vaccination</span>
@@ -1610,6 +2204,36 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         </svg>
                     </div>
                     <div id="tcl-imm1-hepa-date2" class="text-sm font-bold text-slate-800 mt-0.5">&mdash;</div>
+                </div>
+
+                <!-- Moved from Immunization II: DPT-HiB-HepB (1st, 2nd & 3rd Dose) -->
+                <div id="tcl-imm2-dpt-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
+                            <span>DPT-HiB-HepB</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17 3l4 4" />
+                                <path d="M16.5 11.5l-6.5 6.5h-4v-4l6.5 -6.5" />
+                                <path d="M3 21l3 -3" />
+                            </svg>
+                        </h6>
+                        <span class="text-[11px] font-semibold text-slate-400">3 Doses</span>
+                    </div>
+                    <div id="tcl-imm2-dpt-list2" class="divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- Moved from Immunization II: OPV (1st, 2nd & 3rd Dose) -->
+                <div id="tcl-imm2-opv-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
+                            <span>OPV</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546z" />
+                            </svg>
+                        </h6>
+                        <span class="text-[11px] font-semibold text-slate-400">3 Doses</span>
+                    </div>
+                    <div id="tcl-imm2-opv-list2" class="divide-y divide-slate-100"></div>
                 </div>
             </div>
 
@@ -1646,40 +2270,10 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         <path d="M10 10h4" />
                     </svg>
                 </span>
-                <span class="text-[11px] text-slate-400 font-medium">DPT-HiB-HepB &bull; OPV &bull; PCV &bull; IPV</span>
+                <span class="text-[11px] text-slate-400 font-medium">PCV &bull; IPV &bull; MCV1 &bull; MCV2</span>
             </div>
             <div id="tcl-imm2-grid2" class="grid grid-cols-1 gap-3">
-                <!-- Card 1: DPT-HiB-HepB (1st & 2nd Dose) -->
-                <div id="tcl-imm2-dpt-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
-                            <span>DPT-HiB-HepB</span>
-                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M17 3l4 4" />
-                                <path d="M16.5 11.5l-6.5 6.5h-4v-4l6.5 -6.5" />
-                                <path d="M3 21l3 -3" />
-                            </svg>
-                        </h6>
-                        <span class="text-[11px] font-semibold text-slate-400">2 Doses</span>
-                    </div>
-                    <div id="tcl-imm2-dpt-list2" class="divide-y divide-slate-100"></div>
-                </div>
-
-                <!-- Card 2: OPV (1st & 2nd Dose) -->
-                <div id="tcl-imm2-opv-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
-                            <span>OPV</span>
-                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546z" />
-                            </svg>
-                        </h6>
-                        <span class="text-[11px] font-semibold text-slate-400">2 Doses</span>
-                    </div>
-                    <div id="tcl-imm2-opv-list2" class="divide-y divide-slate-100"></div>
-                </div>
-
-                <!-- Card 3: PCV (1st, 2nd & 3rd Dose) -->
+                <!-- Card 1: PCV (1st, 2nd & 3rd Dose) -->
                 <div id="tcl-imm2-pcv-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
@@ -1695,7 +2289,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     <div id="tcl-imm2-pcv-list2" class="divide-y divide-slate-100"></div>
                 </div>
 
-                <!-- Card 4: IPV (1st Dose) -->
+                <!-- Card 2: IPV (1st & 2nd Dose) -->
                 <div id="tcl-imm2-ipv-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                         <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
@@ -1705,9 +2299,41 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                                 <path d="M9 12l2 2l4 -4" />
                             </svg>
                         </h6>
-                        <span class="text-[11px] font-semibold text-slate-400">1 Dose</span>
+                        <span class="text-[11px] font-semibold text-slate-400">2 Doses</span>
                     </div>
                     <div id="tcl-imm2-ipv-list2" class="divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- Card 3: MCV1 (9 mos) -->
+                <div id="tcl-imm2-mcv1-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
+                            <span>MCV1 (9 mos)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17 3l4 4" />
+                                <path d="M16.5 11.5l-6.5 6.5h-4v-4l6.5 -6.5" />
+                                <path d="M3 21l3 -3" />
+                            </svg>
+                        </h6>
+                        <span class="text-[11px] font-semibold text-slate-400">1 Dose</span>
+                    </div>
+                    <div id="tcl-imm2-mcv1-list2" class="divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- Card 4: MCV2 (12 mos) -->
+                <div id="tcl-imm2-mcv2-card2" class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-2.5">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h6 class="inline-flex items-center gap-1.5 text-sm font-black text-slate-900">
+                            <span>MCV2 (12 mos)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17 3l4 4" />
+                                <path d="M16.5 11.5l-6.5 6.5h-4v-4l6.5 -6.5" />
+                                <path d="M3 21l3 -3" />
+                            </svg>
+                        </h6>
+                        <span class="text-[11px] font-semibold text-slate-400">1 Dose</span>
+                    </div>
+                    <div id="tcl-imm2-mcv2-list2" class="divide-y divide-slate-100"></div>
                 </div>
             </div>
         </div>

@@ -52,10 +52,35 @@
          </button>
       </div>
 
+      <!-- Mini Smart Search above Homepage -->
+      <div id="cho-sidebar-search-wrap" class="mb-3">
+         <label for="cho-sidebar-search-input" class="sr-only">Search sidebar navigation</label>
+         <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none text-white/60">
+               <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+               </svg>
+            </div>
+            <input type="text"
+                   id="cho-sidebar-search-input"
+                   autocomplete="off"
+                   class="block w-full ps-8 pe-7 py-2 text-xs text-white bg-white/10 border border-white/20 rounded-lg placeholder-white/60 focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:bg-white/15 focus:outline-none transition-colors"
+                   placeholder="Search menu (e.g. Homepage)..." />
+            <button type="button"
+                    id="cho-sidebar-search-clear"
+                    class="hidden absolute inset-y-0 end-0 flex items-center pe-2 text-white/60 hover:text-white cursor-pointer"
+                    aria-label="Clear menu search">
+               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+               </svg>
+            </button>
+         </div>
+      </div>
+
       <ul id="cho-sidebar-nav-list" class="space-y-2 font-medium">
          <!-- Homepage (Formerly Dashboard) -->
-         <li id="cho-sidebar-item-dashboard">
-            <a href="<?= url('/dashboard') ?>" id="cho-sidebar-link-dashboard" class="flex items-center px-3 py-2 text-white/95 rounded-base hover:bg-white/10 hover:text-white group transition-colors">
+         <li id="cho-sidebar-item-dashboard" data-sidebar-parent="Portal">
+            <a href="<?= url('/dashboard') ?>" id="cho-sidebar-link-dashboard" data-tooltip-target="cho-sidebar-tip-dashboard" data-tooltip-placement="right" class="flex items-center px-3 py-2 text-white/95 rounded-base hover:bg-white/10 hover:text-white group transition-colors">
                <svg id="cho-sidebar-icon-dashboard" class="w-5 h-5 text-white/90 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
                </svg>
@@ -79,16 +104,16 @@
 
             <!-- NIP Submenu Items -->
             <ul id="cho-nip-dropdown-menu" class="hidden py-1 pl-6 space-y-1">
-               <li id="cho-sidebar-subitem-nip-dash">
-                  <a href="<?= url('/frontend/pages/NIP/dashboard/') ?>" id="cho-sidebar-link-nip-dash" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-dash" data-sidebar-parent="NIP Program System">
+                  <a href="<?= url('/frontend/pages/NIP/dashboard/') ?>" id="cho-sidebar-link-nip-dash" data-tooltip-target="cho-sidebar-tip-nip-dash" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg id="cho-sidebar-icon-nip-dash" class="w-4 h-4 me-2 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/>
                      </svg>
                      Dashboard
                   </a>
                </li>
-               <li id="cho-sidebar-subitem-nip-population">
-                  <a href="<?= url('/frontend/pages/NIP/population/') ?>" id="cho-sidebar-link-nip-population" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-population" data-sidebar-parent="NIP Program System">
+                  <a href="<?= url('/frontend/pages/NIP/population/') ?>" id="cho-sidebar-link-nip-population" data-tooltip-target="cho-sidebar-tip-nip-population" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg id="cho-sidebar-icon-nip-population" class="w-4 h-4 me-2 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.8 13.938h-.011a7 7 0 1 0-11.464.144h-.016l.14.171c.1.127.2.251.3.371L12 21l5.13-6.248c.194-.209.374-.429.54-.659l.13-.155Z"/>
@@ -96,16 +121,16 @@
                      Marawi Population
                   </a>
                </li>
-               <li id="cho-sidebar-subitem-nip-reports">
-                  <a href="#" id="cho-sidebar-link-nip-reports" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-reports" data-sidebar-parent="NIP Program System">
+                  <a href="#" id="cho-sidebar-link-nip-reports" data-tooltip-target="cho-sidebar-tip-nip-reports" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg class="w-4 h-4 me-2 text-white/85 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                      </svg>
                      Quarterly Reports
                   </a>
                </li>
-               <li id="cho-sidebar-subitem-nip-stock">
-                  <a href="#" id="cho-sidebar-link-nip-stock" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-stock" data-sidebar-parent="NIP Program System">
+                  <a href="#" id="cho-sidebar-link-nip-stock" data-tooltip-target="cho-sidebar-tip-nip-stock" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg class="w-4 h-4 me-2 text-white/85 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                      </svg>
@@ -131,16 +156,16 @@
 
             <!-- NIP2 Submenu Items -->
             <ul id="cho-nip-dropdown-menu2" class="hidden py-1 pl-6 space-y-1">
-               <li id="cho-sidebar-subitem-nip-dash2">
-                  <a href="<?= url('/frontend/pages/NIP2/dashboard/') ?>" id="cho-sidebar-link-nip-dash2" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-dash2" data-sidebar-parent="NIP Program System 2">
+                  <a href="<?= url('/frontend/pages/NIP2/dashboard/') ?>" id="cho-sidebar-link-nip-dash2" data-tooltip-target="cho-sidebar-tip-nip-dash2" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg id="cho-sidebar-icon-nip-dash2" class="w-4 h-4 me-2 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/>
                      </svg>
                      Dashboard
                   </a>
                </li>
-               <li id="cho-sidebar-subitem-nip-population2">
-                  <a href="<?= url('/frontend/pages/NIP2/population/') ?>" id="cho-sidebar-link-nip-population2" title="TARGET CLIENT LIST FOR CHILD HEALTH CARE NEWBORN AND INFANTS AGE 0-12 MONTHS OLD" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
+               <li id="cho-sidebar-subitem-nip-population2" data-sidebar-parent="NIP Program System 2">
+                  <a href="<?= url('/frontend/pages/NIP2/population/') ?>" id="cho-sidebar-link-nip-population2" data-tooltip-target="cho-sidebar-tip-nip-population2" data-tooltip-placement="right" class="flex items-center p-2 text-xs font-semibold text-white/90 rounded-base hover:bg-white/10 hover:text-white transition-colors group">
                      <svg id="cho-sidebar-icon-nip-population2" class="w-4 h-4 me-2 shrink-0 text-white/85 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
                         <path d="M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
@@ -218,5 +243,35 @@
          <div class="tooltip-arrow" data-popper-arrow></div>
       </div>
       </div>
+   </div>
+
+   <!-- Flowbite Sidebar Tooltips (Specifies Parent Dropdown + Item) -->
+   <div id="cho-sidebar-tip-dashboard" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      Portal &rarr; Homepage
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-dash" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      NIP Program System &rarr; Dashboard
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-population" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      NIP Program System &rarr; Marawi Population
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-reports" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      NIP Program System &rarr; Quarterly Reports
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-stock" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      NIP Program System &rarr; Vaccine Stock Log
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-dash2" role="tooltip" class="absolute z-50 invisible inline-block px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip whitespace-nowrap">
+      NIP Program System 2 &rarr; Dashboard
+      <div class="tooltip-arrow" data-popper-arrow></div>
+   </div>
+   <div id="cho-sidebar-tip-nip-population2" role="tooltip" class="absolute z-50 invisible inline-block max-w-xs px-2.5 py-1.5 text-xs font-semibold text-white transition-opacity duration-200 bg-slate-900 rounded-lg shadow-lg opacity-0 tooltip">
+      NIP Program System 2 &rarr; Newborns Baby (TCL 0&ndash;12 Months)
+      <div class="tooltip-arrow" data-popper-arrow></div>
    </div>
 </aside>

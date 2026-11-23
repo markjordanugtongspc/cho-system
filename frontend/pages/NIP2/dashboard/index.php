@@ -271,22 +271,22 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     <div id="cho-stat-content-barangays-extra2" class="relative z-10">
                         <div id="cho-stat-header-barangays-extra2" class="flex items-center justify-between">
                             <span id="cho-stat-label-barangays-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Active Barangays
+                                Fully Completed
                             </span>
                             <span id="cho-stat-idx-barangays-extra2" class="text-xs font-black tracking-widest text-white/60">
                                 05
                             </span>
                         </div>
                         <div id="cho-stat-val-barangays-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            74
+                            1
                         </div>
                         <div id="cho-stat-divider-barangays-extra2" class="w-full border-t border-white/20 my-2.5"></div>
                         <div id="cho-stat-footer-barangays-extra2" class="flex items-center justify-between text-xs text-white/90">
                             <span id="cho-stat-sub-barangays-extra2" class="text-[11px] font-medium text-white/80">
-                                Database Ready
+                                100% All Doses Injected
                             </span>
                             <span id="cho-stat-pill-barangays-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>↑</span> Master Brgys
+                                <span>✓</span> Fully Immunized
                             </span>
                         </div>
                     </div>
@@ -305,22 +305,22 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     <div id="cho-stat-content-infants-extra2" class="relative z-10">
                         <div id="cho-stat-header-infants-extra2" class="flex items-center justify-between">
                             <span id="cho-stat-label-infants-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                CIC Accomplished
+                                Total Male Infants
                             </span>
                             <span id="cho-stat-idx-infants-extra2" class="text-xs font-black tracking-widest text-white/60">
                                 06
                             </span>
                         </div>
                         <div id="cho-stat-val-infants-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            --
+                            5
                         </div>
                         <div id="cho-stat-divider-infants-extra2" class="w-full border-t border-white/20 my-2.5"></div>
                         <div id="cho-stat-footer-infants-extra2" class="flex items-center justify-between text-xs text-white/90">
                             <span id="cho-stat-sub-infants-extra2" class="text-[11px] font-medium text-white/80">
-                                Database Ready
+                                Male Gender Total
                             </span>
                             <span id="cho-stat-pill-infants-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>👥</span> Child Cohort
+                                <span>♂</span> Male Cohort
                             </span>
                         </div>
                     </div>
@@ -339,22 +339,22 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     <div id="cho-stat-content-childrens-extra2" class="relative z-10">
                         <div id="cho-stat-header-childrens-extra2" class="flex items-center justify-between">
                             <span id="cho-stat-label-childrens-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Monitored Antigens
+                                Total Female Infants
                             </span>
                             <span id="cho-stat-idx-childrens-extra2" class="text-xs font-black tracking-widest text-white/60">
                                 07
                             </span>
                         </div>
                         <div id="cho-stat-val-childrens-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            18
+                            5
                         </div>
                         <div id="cho-stat-divider-childrens-extra2" class="w-full border-t border-white/20 my-2.5"></div>
                         <div id="cho-stat-footer-childrens-extra2" class="flex items-center justify-between text-xs text-white/90">
                             <span id="cho-stat-sub-childrens-extra2" class="text-[11px] font-medium text-white/80">
-                                Database Ready
+                                Female Gender Total
                             </span>
                             <span id="cho-stat-pill-childrens-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>✓</span> EPI Schedule
+                                <span>♀</span> Female Cohort
                             </span>
                         </div>
                     </div>
@@ -373,22 +373,22 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                     <div id="cho-stat-content-coverage-extra2" class="relative z-10">
                         <div id="cho-stat-header-coverage-extra2" class="flex items-center justify-between">
                             <span id="cho-stat-label-coverage-extra2" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                                Reporting Compliance
+                                Not Yet Completed
                             </span>
                             <span id="cho-stat-idx-coverage-extra2" class="text-xs font-black tracking-widest text-white/60">
                                 08
                             </span>
                         </div>
                         <div id="cho-stat-val-coverage-extra2" class="font-money text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
-                            100%
+                            9
                         </div>
                         <div id="cho-stat-divider-coverage-extra2" class="w-full border-t border-white/20 my-2.5"></div>
                         <div id="cho-stat-footer-coverage-extra2" class="flex items-center justify-between text-xs text-white/90">
                             <span id="cho-stat-sub-coverage-extra2" class="text-[11px] font-medium text-white/80">
-                                Database Ready
+                                Pending ≥1 Dose
                             </span>
                             <span id="cho-stat-pill-coverage-extra2" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                                <span>📊</span> Target: 95%
+                                <span>⏳</span> Needs Follow-up
                             </span>
                         </div>
                     </div>
@@ -1230,6 +1230,32 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const syncGlobalTclStats = () => {
+            try {
+                const raw = localStorage.getItem('cho_nip2_global_tcl_stats');
+                if (!raw) return;
+                const stats = JSON.parse(raw);
+                const setVal = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el && val !== undefined && val !== null) {
+                        el.textContent = Number(val).toLocaleString();
+                    }
+                };
+                setVal('cho-stat-val-barangays-extra2', stats.fullyCompleted);
+                setVal('cho-stat-val-infants-extra2', stats.male);
+                setVal('cho-stat-val-childrens-extra2', stats.female);
+                setVal('cho-stat-val-coverage-extra2', stats.notYetCompleted);
+            } catch {}
+        };
+        syncGlobalTclStats();
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'cho_nip2_global_tcl_stats') syncGlobalTclStats();
+        });
+    });
+</script>
 
 <?php
 require BASE_PATH . '/frontend/layouts/footer.php';

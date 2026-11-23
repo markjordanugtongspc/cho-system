@@ -2025,11 +2025,13 @@ export class TclInfantDrawer extends BaseDrawerController {
       ...(record.imm2?.dpt || []),
       ...(record.imm2?.opv || []),
       ...(record.imm2?.pcv || []),
-      ...(record.imm2?.ipv || [])
+      ...(record.imm2?.ipv || []),
+      ...(record.imm2?.mcv1 || []),
+      ...(record.imm2?.mcv2 || [])
     ].filter(Boolean);
 
     const completed = allDoses.filter((d) => d.status === 'INJECTED').length;
-    const total = allDoses.length || 10;
+    const total = allDoses.length || 15;
     const pct = Math.round((completed / total) * 100);
 
     const countEl = document.getElementById('tcl-overview-progress-count2');
@@ -2073,13 +2075,15 @@ export class TclInfantDrawer extends BaseDrawerController {
   }
   // END - renderNotesBox
 
-  // START - hydrateImmunization2: Populates the 1x1 vaccine cards (DPT-HiB-HepB, OPV, PCV, IPV)
+  // START - hydrateImmunization2: Populates the vaccine cards (DPT-HiB-HepB, OPV, PCV, IPV, MCV1, MCV2)
   hydrateImmunization2(imm2) {
     const targets = [
       { id: 'tcl-imm2-dpt-list2', doses: imm2.dpt || [] },
       { id: 'tcl-imm2-opv-list2', doses: imm2.opv || [] },
       { id: 'tcl-imm2-pcv-list2', doses: imm2.pcv || [] },
-      { id: 'tcl-imm2-ipv-list2', doses: imm2.ipv || [] }
+      { id: 'tcl-imm2-ipv-list2', doses: imm2.ipv || [] },
+      { id: 'tcl-imm2-mcv1-list2', doses: imm2.mcv1 || [] },
+      { id: 'tcl-imm2-mcv2-list2', doses: imm2.mcv2 || [] }
     ];
 
     targets.forEach(({ id, doses }) => {
@@ -2248,10 +2252,11 @@ function bindSexDropdown(btnId, dropdownId, displayId, hiddenId) {
 function bindVaccineDateSync(prefix) {
   const pairs = [
     ['vax-date', 'bcg'], ['hepa-date', 'hepa'],
-    ['dpt1-date', 'dpt1'], ['dpt2-date', 'dpt2'],
-    ['opv1-date', 'opv1'], ['opv2-date', 'opv2'],
+    ['dpt1-date', 'dpt1'], ['dpt2-date', 'dpt2'], ['dpt3-date', 'dpt3'],
+    ['opv1-date', 'opv1'], ['opv2-date', 'opv2'], ['opv3-date', 'opv3'],
     ['pcv1-date', 'pcv1'], ['pcv2-date', 'pcv2'], ['pcv3-date', 'pcv3'],
-    ['ipv1-date', 'ipv1']
+    ['ipv1-date', 'ipv1'], ['ipv2-date', 'ipv2'],
+    ['mcv1-date', 'mcv1'], ['mcv2-date', 'mcv2']
   ];
   pairs.forEach(([dSuffix, sSuffix]) => {
     const dateEl = document.getElementById(`${prefix}-${dSuffix}`);
@@ -2312,10 +2317,12 @@ function buildTclPayloadFromForm(prefix, rowId) {
       hepa: { status: hepa, date: fmtDate(hepaDate), iso: hepaDate }
     },
     imm2: {
-      dpt: [doseEntry('1st Dose', 'dpt1'), doseEntry('2nd Dose', 'dpt2')],
-      opv: [doseEntry('1st Dose', 'opv1'), doseEntry('2nd Dose', 'opv2')],
+      dpt: [doseEntry('1st Dose', 'dpt1'), doseEntry('2nd Dose', 'dpt2'), doseEntry('3rd Dose', 'dpt3')],
+      opv: [doseEntry('1st Dose', 'opv1'), doseEntry('2nd Dose', 'opv2'), doseEntry('3rd Dose', 'opv3')],
       pcv: [doseEntry('1st Dose', 'pcv1'), doseEntry('2nd Dose', 'pcv2'), doseEntry('3rd Dose', 'pcv3')],
-      ipv: [doseEntry('1st Dose', 'ipv1')]
+      ipv: [doseEntry('1st Dose', 'ipv1'), doseEntry('2nd Dose', 'ipv2')],
+      mcv1: [doseEntry('1st Dose', 'mcv1')],
+      mcv2: [doseEntry('1st Dose', 'mcv2')]
     }
   };
 }
@@ -2344,6 +2351,7 @@ function renderTclRowCells(tr, record) {
 
   tr.className = 'group hover:bg-sky-100 hover:shadow-sm transition-all duration-150 cursor-pointer';
   tr.dataset.rowId = String(id);
+  tr.dataset.barangay = record.barangay || '';
   tr.dataset.bcg = bcg;
   tr.dataset.sex = isMale ? 'male' : 'female';
   tr.dataset.tclRecord = JSON.stringify(record);
@@ -2574,12 +2582,17 @@ export class NipPopEditDrawer2 extends BaseDrawerController {
     };
     setDose('dpt1', record.imm2?.dpt, 0);
     setDose('dpt2', record.imm2?.dpt, 1);
+    setDose('dpt3', record.imm2?.dpt, 2);
     setDose('opv1', record.imm2?.opv, 0);
     setDose('opv2', record.imm2?.opv, 1);
+    setDose('opv3', record.imm2?.opv, 2);
     setDose('pcv1', record.imm2?.pcv, 0);
     setDose('pcv2', record.imm2?.pcv, 1);
     setDose('pcv3', record.imm2?.pcv, 2);
     setDose('ipv1', record.imm2?.ipv, 0);
+    setDose('ipv2', record.imm2?.ipv, 1);
+    setDose('mcv1', record.imm2?.mcv1, 0);
+    setDose('mcv2', record.imm2?.mcv2, 0);
 
     this.show();
   }

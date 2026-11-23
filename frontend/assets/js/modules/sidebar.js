@@ -404,12 +404,91 @@ class BackgroundSlideshow {
 }
 // END - BackgroundSlideshow
 
-// START - Sidebar: Main export unifying navigation highlights, drawer control, dropdowns, and background slideshow
+// START - SidebarSearch: Subchild smart case-insensitive menu filter above Homepage
+class SidebarSearch {
+  constructor() {
+    this.inputId = 'cho-sidebar-search-input';
+    this.clearId = 'cho-sidebar-search-clear';
+    this.navListId = 'cho-sidebar-nav-list';
+  }
+
+  /**
+   * Initializes live smart search filtering across top-level links and dropdown subitems
+   */
+  init() {
+    const input = document.getElementById(this.inputId);
+    const clearBtn = document.getElementById(this.clearId);
+    const navList = document.getElementById(this.navListId);
+    if (!input || !navList) return;
+
+    const applySearch = () => {
+      const raw = input.value.trim().toLowerCase();
+      const tokens = raw.split(/\s+/).filter(Boolean);
+      if (clearBtn) clearBtn.classList.toggle('hidden', raw.length === 0);
+
+      const topItems = Array.from(navList.children);
+      topItems.forEach((li) => {
+        const trigger = li.querySelector('[data-collapse-toggle]');
+        const submenuId = trigger?.getAttribute('data-collapse-toggle');
+        const submenu = submenuId ? document.getElementById(submenuId) : null;
+
+        if (!submenu) {
+          const text = `${li.dataset.sidebarParent || ''} ${li.textContent || ''}`.toLowerCase();
+          const matched = tokens.length === 0 || tokens.every((t) => text.includes(t));
+          li.classList.toggle('hidden', !matched);
+          return;
+        }
+
+        const parentText = (trigger?.textContent || '').toLowerCase();
+        const subItems = Array.from(submenu.children);
+
+        if (tokens.length === 0) {
+          li.classList.remove('hidden');
+          subItems.forEach((sub) => sub.classList.remove('hidden'));
+          const saved = Storage.userPreferences.getDropdownState(submenuId, false);
+          const path = window.location.pathname.toLowerCase();
+          const forceOpen =
+            (submenuId === 'cho-nip-dropdown-menu' && path.includes('/nip/')) ||
+            (submenuId === 'cho-nip-dropdown-menu2' && path.includes('/nip2/'));
+          Sidebar.dropdown.applyState(trigger, submenu, saved || forceOpen);
+          return;
+        }
+
+        const parentMatches = tokens.every((t) => parentText.includes(t));
+        let anyChildMatched = false;
+
+        subItems.forEach((sub) => {
+          const subText = `${parentText} ${sub.dataset.sidebarParent || ''} ${sub.textContent || ''}`.toLowerCase();
+          const childMatches = tokens.every((t) => subText.includes(t));
+          if (childMatches) anyChildMatched = true;
+          sub.classList.toggle('hidden', !parentMatches && !childMatches);
+        });
+
+        const showGroup = parentMatches || anyChildMatched;
+        li.classList.toggle('hidden', !showGroup);
+        if (showGroup) {
+          Sidebar.dropdown.applyState(trigger, submenu, true);
+        }
+      });
+    };
+
+    input.addEventListener('input', applySearch);
+    clearBtn?.addEventListener('click', () => {
+      input.value = '';
+      applySearch();
+      input.focus();
+    });
+  }
+}
+// END - SidebarSearch
+
+// START - Sidebar: Main export unifying navigation highlights, drawer control, dropdowns, search, and background slideshow
 export const Sidebar = {
   highlighter: new NavigationHighlighter(),
   routeDetector: ActiveRouteDetector,
   drawer: new DrawerManager(),
   dropdown: new DropdownManager(),
+  search: new SidebarSearch(),
   slideshow: new BackgroundSlideshow(),
 
   init() {
@@ -417,6 +496,7 @@ export const Sidebar = {
     this.highlighter.highlightActive();
     ActiveRouteDetector.applyDynamicActiveState();
     this.dropdown.initDropdownPersistence();
+    this.search.init();
     this.slideshow.init();
   }
 };
