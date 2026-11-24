@@ -425,55 +425,55 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
             <table id="cho-nip-pop-table2" class="w-full text-sm text-center text-slate-600">
                 <thead class="text-xs text-white uppercase bg-cho-blue-900 sticky top-0 z-10 border-b border-cho-blue-800">
                     <tr>
-                        <th scope="col" data-sort-key="row_index" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center hover:bg-cho-blue-800/70 transition-colors">
+                        <th scope="col" data-sort-key="row_index" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-900 hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>#</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="barangay_address" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-950/35 hover:bg-cho-blue-800/80 transition-colors">
+                        <th scope="col" data-sort-key="barangay_address" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-[#092b57] hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>BARANGAY ADDRESS</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="registration_date" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center hover:bg-cho-blue-800/70 transition-colors">
+                        <th scope="col" data-sort-key="registration_date" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-900 hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>DATE OF REGISTRATION</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="child_name" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-950/35 hover:bg-cho-blue-800/80 transition-colors">
+                        <th scope="col" data-sort-key="child_name" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-[#092b57] hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>NAME OF CHILD</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="dob" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center hover:bg-cho-blue-800/70 transition-colors">
+                        <th scope="col" data-sort-key="dob" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-900 hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>DATE OF BIRTH</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="age" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-950/35 hover:bg-cho-blue-800/80 transition-colors">
+                        <th scope="col" data-sort-key="age" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-[#092b57] hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>AGE</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="sex" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center hover:bg-cho-blue-800/70 transition-colors">
+                        <th scope="col" data-sort-key="sex" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-900 hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>SEX</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" data-sort-key="bcg_status" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-cho-blue-950/35 hover:bg-cho-blue-800/80 transition-colors">
+                        <th scope="col" data-sort-key="bcg_status" class="px-4 py-3.5 font-bold cursor-pointer select-none whitespace-nowrap text-center bg-[#092b57] hover:bg-cho-blue-800 transition-colors">
                             <div class="flex items-center justify-center gap-1.5">
                                 <span>BCG</span>
                                 <span class="cho-sort-icon text-white/60 text-[10px]">&#8693;</span>
                             </div>
                         </th>
-                        <th scope="col" class="px-4 py-3.5 font-bold whitespace-nowrap text-center">
+                        <th scope="col" class="px-4 py-3.5 font-bold whitespace-nowrap text-center bg-cho-blue-900">
                             <span>Actions</span>
                         </th>
                     </tr>
