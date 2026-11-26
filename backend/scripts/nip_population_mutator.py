@@ -8,6 +8,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
@@ -100,6 +101,109 @@ def resolve_workbook_path(filename: str) -> str:
         if os.path.isfile(path):
             return path
     raise FileNotFoundError(f"Workbook '{safe_name}' not found in SHEETS directory.")
+
+
+def find_marawi_pop_sheet(wb):
+    """Auto-detect MARAWI POP <year>, MARAWI POP SEMI - <year>, or fallback MARAWI POP* sheet."""
+    patterns = [
+        re.compile(r"^MARAWI\s+POP\s+\d{4}$", re.IGNORECASE),
+        re.compile(r"^MARAWI\s+POP\s+SEMI\s*-\s*\d{4}$", re.IGNORECASE),
+        re.compile(r"^MARAWI\s+POP", re.IGNORECASE),
+    ]
+    for pattern in patterns:
+        for name in wb.sheetnames:
+            if pattern.match(name.strip()):
+                return wb[name], name
+    raise ValueError("Worksheet matching 'MARAWI POP <year>' or 'MARAWI POP SEMI - <year>' not found.")
+
+
+def normalize_barangay_name(name: str) -> str:
+    return re.sub(r"\s+", " ", str(name or "").strip()).upper()
+
+
+def handle_sync_per_brgy(wb, payload: dict) -> dict:
+    """Sync matched barangay total_pop values across per brgy & Q1..Q4 for JANUARY..DECEMBER."""
+    rows = payload.get("rows") or []
+    pop_lookup = {}
+
+    for item in rows:
+        bname = normalize_barangay_name(item.get("barangay"))
+        if not bname:
+            continue
+        try:
+            pop_val = int(round(float(item.get("total_pop") or 0)))
+        except (TypeError, ValueError):
+            pop_val = 0
+        pop_lookup[bname] = pop_val
+
+    if not pop_lookup:
+        pop_sheet, _ = find_marawi_pop_sheet(wb)
+        for r in range(5, pop_sheet.max_row + 1):
+            bname = normalize_barangay_name(pop_sheet.cell(r, 2).value)
+            if not bname:
+                continue
+            raw_val = pop_sheet.cell(r, 3).value
+            try:
+                pop_val = int(round(float(raw_val or 0)))
+            except (TypeError, ValueError):
+                pop_val = 0
+            pop_lookup[bname] = pop_val
+
+    months_set = {
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    }
+    q_pattern = re.compile(r"^per\s+brgy\s*&\s*Q[1-4]$", re.IGNORECASE)
+
+    sheets_updated = []
+    months_updated = []
+    matched_barangays = set()
+    cells_updated = 0
+
+    for sheet_name in wb.sheetnames:
+        if not q_pattern.match(sheet_name.strip()):
+            continue
+        ws = wb[sheet_name]
+        sheet_touched = False
+
+        for r in range(1, ws.max_row + 1):
+            col_a = ws.cell(r, 1).value
+            if not isinstance(col_a, str):
+                continue
+            month_label = col_a.strip().upper()
+            if month_label not in months_set:
+                continue
+
+            month_touched = False
+            name_row = r + 1
+            val_row = r + 2
+            if val_row > ws.max_row:
+                continue
+
+            for c in range(2, ws.max_column + 1):
+                cell_name = ws.cell(name_row, c).value
+                if not isinstance(cell_name, str) or not cell_name.strip():
+                    continue
+                norm_name = normalize_barangay_name(cell_name)
+                if norm_name in pop_lookup:
+                    ws.cell(val_row, c).value = pop_lookup[norm_name]
+                    matched_barangays.add(norm_name)
+                    cells_updated += 1
+                    month_touched = True
+                    sheet_touched = True
+
+            if month_touched and month_label not in months_updated:
+                months_updated.append(month_label)
+
+        if sheet_touched:
+            sheets_updated.append(sheet_name)
+
+    return {
+        "sheets_updated": sheets_updated,
+        "months_updated": months_updated,
+        "matched_barangays_count": len(matched_barangays),
+        "cells_updated": cells_updated,
+    }
 
 
 def find_nip_row(sheet, barangay_name: str):
@@ -259,7 +363,7 @@ def handle_delete(sheet, payload: dict) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", required=True, choices=["add", "update", "delete"])
+    parser.add_argument("--action", required=True, choices=["add", "update", "delete", "sync_per_brgy"])
     parser.add_argument("--file", required=True)
     parser.add_argument("--payload-b64", required=True)
     args = parser.parse_args()
@@ -271,16 +375,16 @@ def main():
         cached_formulas = extract_cached_formula_values(file_path)
 
         wb = openpyxl.load_workbook(file_path)
-        if "MARAWI POP 2024" not in wb.sheetnames:
-            raise ValueError("Worksheet 'MARAWI POP 2024' not found.")
-        sheet = wb["MARAWI POP 2024"]
-
-        if args.action == "update":
-            result = handle_update(sheet, payload)
-        elif args.action == "delete":
-            result = handle_delete(sheet, payload)
+        if args.action == "sync_per_brgy":
+            result = handle_sync_per_brgy(wb, payload)
         else:
-            result = handle_add(sheet, payload)
+            sheet, _ = find_marawi_pop_sheet(wb)
+            if args.action == "update":
+                result = handle_update(sheet, payload)
+            elif args.action == "delete":
+                result = handle_delete(sheet, payload)
+            else:
+                result = handle_add(sheet, payload)
 
         wb.save(file_path)
         restore_cached_formula_values(file_path, cached_formulas)
@@ -290,6 +394,12 @@ def main():
             "file": os.path.basename(file_path),
             **result,
         }))
+    except PermissionError:
+        print(json.dumps({
+            "status": "error",
+            "message": f"Cannot write to '{os.path.basename(args.file)}' because it is currently open or locked in another program (e.g., Microsoft Excel or WPS Office). Please close the workbook there and try again.",
+        }))
+        sys.exit(1)
     except Exception as exc:
         print(json.dumps({
             "status": "error",

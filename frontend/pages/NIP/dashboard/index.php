@@ -119,7 +119,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 <!-- Top Row: Label & Index -->
                 <div id="cho-stat-header-infants" class="flex items-center justify-between">
                     <span id="cho-stat-label-infants" class="text-[11px] font-bold uppercase tracking-wider text-white/90">
-                        Eligible Population
+                        Annual Eligible Target
                     </span>
                     <span id="cho-stat-idx-infants" class="text-xs font-black tracking-widest text-white/60">
                         02
@@ -143,7 +143,7 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                         Awaiting Excel Upload
                     </span>
                     <span id="cho-stat-pill-infants" class="inline-flex items-center gap-1 text-[11px] font-semibold text-white">
-                        <span>👥</span> Eligible Pop
+                        <span>👥</span> Annual Target
                     </span>
                 </div>
             </div>

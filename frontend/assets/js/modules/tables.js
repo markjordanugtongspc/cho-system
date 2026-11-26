@@ -8,6 +8,7 @@
  */
 
 // ExcelJS is dynamically loaded only when workbook parsing is triggered in drawer.js
+import { Api } from './api.js';
 import { Notifications } from './notifications.js';
 import { Storage } from './storage.js';
 import { AppAnimations } from './animations.js';
@@ -255,7 +256,7 @@ export class MarawiPopulationTable extends BaseExcelTable {
       workbookBadgeDot.classList.remove('bg-slate-400');
       workbookBadgeDot.classList.add('bg-emerald-500');
     }
-    if (sourceStatus) sourceStatus.textContent = `Source: ${this.activeWorkbook} • Sheet: MARAWI POP 2024`;
+    if (sourceStatus) sourceStatus.textContent = `Source: ${this.activeWorkbook} • Sheet: ${cachedPop.sheet_name || 'MARAWI POP 2024'}`;
 
     this.updateSummaryCards();
     this.applyFilterAndSort();
@@ -397,6 +398,124 @@ export class MarawiPopulationTable extends BaseExcelTable {
 // END - MarawiPopulationTable
 
 // =============================================================================
+// SUBCHILD CLASS: NipPerBrgyQuarterSync
+// Syncs detected barangay total_pop values from MarawiPopulationTable into per brgy & Q1-Q4 (Jan-Dec)
+// =============================================================================
+// START - NipPerBrgyQuarterSync
+export class NipPerBrgyQuarterSync {
+  constructor() {
+    this.popTable = null;
+    this.btnId = 'cho-nip-pop-sync-per-brgy-btn';
+    this.isSyncing = false;
+  }
+
+  // START - init: Binds click handler on the clickable workbook sync button
+  init(popTable) {
+    this.popTable = popTable;
+    const btn = document.getElementById(this.btnId);
+    if (!btn || btn.dataset.syncBound === '1') return;
+
+    btn.dataset.syncBound = '1';
+    btn.addEventListener('click', () => this.syncToWorkbook());
+  }
+  // END - init
+
+  // START - normalizeName: Normalizes barangay names for case-insensitive matching
+  normalizeName(name) {
+    return String(name ?? '').trim().replace(/\s+/g, ' ').toUpperCase();
+  }
+  // END - normalizeName
+
+  // START - setButtonLoading: Toggles spinner and disabled state on the sync button
+  setButtonLoading(loading) {
+    const btn = document.getElementById(this.btnId);
+    const label = document.getElementById('cho-nip-pop-active-workbook-name');
+    const icon = document.getElementById('cho-nip-pop-sync-icon');
+    if (!btn) return;
+
+    btn.disabled = loading;
+    if (icon) {
+      icon.classList.toggle('animate-spin', loading);
+    }
+    if (label) {
+      if (loading) {
+        label.dataset.prevText = label.textContent;
+        label.textContent = 'Syncing Q1–Q4...';
+      } else if (label.dataset.prevText) {
+        label.textContent = label.dataset.prevText;
+        delete label.dataset.prevText;
+      }
+    }
+  }
+  // END - setButtonLoading
+
+  // START - syncToWorkbook: Sends table barangay total_pop rows to backend openpyxl quarterly sync
+  async syncToWorkbook() {
+    if (this.isSyncing) return;
+
+    const cachedPop = Storage.nipPopulationCache?.get?.();
+    const rows = this.popTable?.rows?.length ? this.popTable.rows : (cachedPop?.rows || []);
+    const sourceFile = cachedPop?.source_file || Storage.nipWorkbooks?.getActiveWorkbook?.();
+
+    if (!sourceFile || !Array.isArray(rows) || rows.length === 0) {
+      if (typeof Notifications.warning === 'function') {
+        Notifications.warning('Please upload an Excel workbook via NIP Dashboard first before syncing Q1–Q4.');
+      }
+      return;
+    }
+
+    this.isSyncing = true;
+    this.setButtonLoading(true);
+
+    try {
+      const payloadRows = rows.map((r) => ({
+        barangay: r.barangay,
+        normalized: this.normalizeName(r.barangay),
+        total_pop: Number(r.total_pop || 0)
+      }));
+
+      const res = await Api.post('/api/v1/nip/population/sync-per-brgy', {
+        source_file: sourceFile,
+        rows: payloadRows
+      });
+
+      if (!res || !res.success) {
+        throw new Error(res?.message || 'Failed to sync quarterly barangay worksheets.');
+      }
+
+      const data = res.data || {};
+      const brgyCount = data.matched_barangays_count ?? 0;
+      const monthCount = Array.isArray(data.months_updated) ? data.months_updated.length : 12;
+      const cellCount = data.cells_updated ?? 0;
+
+      Storage.nipResyncState?.setPending?.(sourceFile);
+      window.CHO?.Drawers?.syncDownloadCardState?.();
+      window.CHO?.Drawers?.showResyncToast?.(sourceFile);
+      window.CHO?.Drawers?.showStatusToast?.(
+        true,
+        'Quarterly Sheets Synced',
+        `Updated ${brgyCount} matched barangays across ${monthCount} months (${cellCount} cells) in ${sourceFile}.`
+      );
+
+      if (typeof Notifications.success === 'function') {
+        Notifications.success(`Synced ${brgyCount} barangays across Jan–Dec (${cellCount} cells) in ${sourceFile}.`);
+      }
+    } catch (err) {
+      console.error('[NipPerBrgyQuarterSync] Sync error:', err);
+      window.CHO?.Drawers?.showStatusToast?.(false, 'Quarterly Sync Failed', err.message || 'Could not sync Q1–Q4 sheets.');
+      if (typeof Notifications.error === 'function') {
+        Notifications.error(err.message || 'Could not sync Q1–Q4 sheets.');
+      }
+    } finally {
+      this.isSyncing = false;
+      this.setButtonLoading(false);
+    }
+  }
+  // END - syncToWorkbook
+}
+// END - NipPerBrgyQuarterSync
+
+// =============================================================================
 // ORCHESTRATOR CLASS: TablesManager
 // Boots all table subchild instances on DOM ready
 // =============================================================================
@@ -404,11 +523,13 @@ export class MarawiPopulationTable extends BaseExcelTable {
 class TablesManager {
   constructor() {
     this.marawiPopulation = new MarawiPopulationTable();
+    this.perBrgySync = new NipPerBrgyQuarterSync();
   }
 
   // START - init: Initializes active page tables
   init() {
     this.marawiPopulation.init();
+    this.perBrgySync.init(this.marawiPopulation);
   }
   // END - init
 }

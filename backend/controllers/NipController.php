@@ -264,6 +264,44 @@ class NipController
     }
 
     /**
+     * Sync matched Barangay total_pop values across per brgy & Q1..Q4 (JANUARY..DECEMBER)
+     */
+    public static function syncPerBrgyQuarterly(): void
+    {
+        $sourceFile = basename((string)(Request::input('source_file') ?? 'MARAWI NIP DATA - UPGRADED.xlsx'));
+        $rows = Request::input('rows');
+        $payload = [
+            'rows' => is_array($rows) ? $rows : [],
+        ];
+
+        $scriptPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'nip_population_mutator.py';
+        $payloadB64 = base64_encode((string)json_encode($payload, JSON_UNESCAPED_UNICODE));
+
+        $cmd = sprintf(
+            'python %s --action sync_per_brgy --file %s --payload-b64 %s 2>&1',
+            escapeshellarg($scriptPath),
+            escapeshellarg($sourceFile),
+            escapeshellarg($payloadB64)
+        );
+
+        $output = (string)shell_exec($cmd);
+        $start = strpos($output, '{');
+        $end = strrpos($output, '}');
+        $res = null;
+        if ($start !== false && $end !== false) {
+            $res = json_decode(substr($output, $start, $end - $start + 1), true);
+        }
+
+        if (is_array($res) && ($res['status'] ?? '') === 'success') {
+            Response::success($res);
+            return;
+        }
+
+        $errMsg = is_array($res) && !empty($res['message']) ? $res['message'] : ($output ?: 'Failed to sync per-barangay quarterly worksheets.');
+        Response::error($errMsg, 422);
+    }
+
+    /**
      * Shared helper invoking openpyxl mutator script for MARAWI POP 2024
      */
     private static function mutatePopulationSheet(string $action): void

@@ -157,6 +157,38 @@ export class BaseDrawerController {
 }
 
 // =============================================================================
+// SUBCHILD CLASS: NipPopWorksheetResolver
+// Auto-detects the Marawi Population worksheet across yearly/semi-annual workbooks
+// =============================================================================
+// START - NipPopWorksheetResolver
+export class NipPopWorksheetResolver {
+  // START - resolve: Finds MARAWI POP <year>, MARAWI POP SEMI - <year>, or MARAWI POP* sheet
+  resolve(workbook) {
+    if (!workbook || !Array.isArray(workbook.worksheets)) {
+      return { sheet: null, name: null };
+    }
+
+    const sheets = workbook.worksheets.filter((ws) => ws && typeof ws.name === 'string');
+    const patterns = [
+      /^MARAWI\s+POP\s+\d{4}$/i,
+      /^MARAWI\s+POP\s+SEMI\s*-\s*\d{4}$/i,
+      /^MARAWI\s+POP/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = sheets.find((ws) => pattern.test(ws.name.trim()));
+      if (match) {
+        return { sheet: match, name: match.name };
+      }
+    }
+
+    return { sheet: null, name: null };
+  }
+  // END - resolve
+}
+// END - NipPopWorksheetResolver
+
+// =============================================================================
 // SUBCHILD CLASS 1: NipLoadDrawer
 // Handles scanning, selecting, and applying active Excel workbooks
 // =============================================================================
@@ -165,6 +197,7 @@ export class NipLoadDrawer extends BaseDrawerController {
     super('drawer-nip-load');
     this.activeFile = null;
     this.filesList = [];
+    this.popResolver = new NipPopWorksheetResolver();
   }
 
   // START - init: Mounts drawer triggers, dropzone handlers, and restores cached Excel dashboard if present
@@ -177,9 +210,11 @@ export class NipLoadDrawer extends BaseDrawerController {
     this.renderStoredWorkbooks();
 
     const cached = Storage.nipDashboardCache?.get();
-    if (cached) {
+    if (cached && cached.source_file && cached.stats) {
       this.activeFile = cached.source_file || this.activeFile;
       this.applyDashboardData(cached);
+    } else {
+      this.resetDashboardToSkeleton();
     }
   }
   // END - init
@@ -650,29 +685,39 @@ export class NipLoadDrawer extends BaseDrawerController {
       const dashSheet = wb.getWorksheet('DASHBOARD');
       const annualSheet = wb.getWorksheet('ANNUAL');
       const hlSheet = wb.getWorksheet('H-L');
+      const { sheet: popSheet, name: popSheetName } = this.popResolver.resolve(wb);
       const existingDash = Storage.nipDashboardCache?.get?.();
       const b8Val = dashSheet ? dashSheet.getCell('B8').value : null;
       const hasMissingCachedFormula = Boolean(
         b8Val && typeof b8Val === 'object' && b8Val.formula && (b8Val.result === undefined || b8Val.result === null)
       );
 
-      if (hasMissingCachedFormula && existingDash && existingDash.source_file === file.name && existingDash.stats?.barangayVal > 0 && !annualSheet) {
+      if (hasMissingCachedFormula && existingDash && existingDash.source_file === file.name && existingDash.stats?.barangayVal > 0 && !annualSheet && !popSheet) {
         this.applyDashboardData(existingDash);
       } else {
-        // 1. Total Population / Barangays Card (#cho-stat-val-barangays) from ANNUAL!F5 (fallback DASHBOARD!B8)
-        const barangayVal = annualSheet
-          ? Math.round(getNum(annualSheet.getCell('F5').value))
-          : (dashSheet ? Math.round(getNum(dashSheet.getCell('B8').value)) : 0);
-        const barangaySub = dashSheet ? getText(dashSheet.getCell('B9').value, 'Marawi City Census') : 'Marawi City Census';
+        // 1. Total Population Card (#cho-stat-val-barangays) from auto-detected MARAWI POP C4 (fallback DASHBOARD!B8, ANNUAL!F5)
+        const popC4 = popSheet ? Math.round(getNum(popSheet.getCell('C4').value)) : 0;
+        const dashB8 = dashSheet ? Math.round(getNum(dashSheet.getCell('B8').value)) : 0;
+        const annualF5 = annualSheet ? Math.round(getNum(annualSheet.getCell('F5').value)) : 0;
+        const barangayVal = popC4 > 0 ? popC4 : (dashB8 > 0 ? dashB8 : annualF5);
+        const barangaySub = popSheetName
+          ? `${popSheetName} (C4)`
+          : (dashSheet ? getText(dashSheet.getCell('B9').value, 'Marawi City Census') : 'Marawi City Census');
 
-        // 2. Eligible Population Card (#cho-stat-card-infants / #cho-stat-val-infants) from ANNUAL!C27
-        let totalPop = annualSheet ? Math.round(getNum(annualSheet.getCell('C27').value)) : 0;
-        if (!annualSheet && hlSheet) {
+        // 2. Annual Eligible Target Card (#cho-stat-card-infants / #cho-stat-val-infants) from auto-detected MARAWI POP I4 (fallback DASHBOARD!D8, ANNUAL!C27)
+        const popI4 = popSheet ? Math.round(getNum(popSheet.getCell('I4').value)) : 0;
+        const dashD8 = dashSheet ? Math.round(getNum(dashSheet.getCell('D8').value)) : 0;
+        const annualC27 = annualSheet ? Math.round(getNum(annualSheet.getCell('C27').value)) : 0;
+        let totalPop = popI4 > 0 ? popI4 : (dashD8 > 0 ? dashD8 : annualC27);
+        if (totalPop === 0 && hlSheet) {
           for (let r = 3; r <= 76; r++) {
             totalPop += getNum(hlSheet.getCell(`B${r}`).value);
           }
+          totalPop = Math.round(totalPop);
         }
-        const popSub = annualSheet ? 'Eligible Population (ANNUAL)' : (dashSheet ? getText(dashSheet.getCell('D9').value, 'Marawi City Eligible Population') : 'Marawi City Eligible Population');
+        const popSub = popSheetName
+          ? `Annual Eligible Target (${popSheetName} I4)`
+          : (dashSheet ? getText(dashSheet.getCell('D9').value, 'Annual Eligible Target') : 'Annual Eligible Target');
 
         // 3. FIC Accomplished Card (#cho-stat-val-childrens) from ANNUAL!F27 (=SUM(D27:E27))
         let ficAccomplished = annualSheet ? Math.round(getNum(annualSheet.getCell('F27').value)) : 0;
@@ -687,12 +732,12 @@ export class NipLoadDrawer extends BaseDrawerController {
         }
         const ficSub = dashSheet ? getText(dashSheet.getCell('F9').value, 'Fully Immunized Children') : 'Fully Immunized Children';
 
-        // 4. FIC Coverage Card (#cho-stat-val-coverage) from ANNUAL!G27 (=F27/C27)
+        // 4. FIC Coverage Card (#cho-stat-val-coverage) computed against Annual Eligible Target (I4) or ANNUAL!G27
         const rawCoverage = annualSheet
           ? getNum(annualSheet.getCell('G27').value)
           : (dashSheet ? getNum(dashSheet.getCell('H8').value) : 0);
         let coveragePct = rawCoverage > 0 && rawCoverage <= 1 ? (rawCoverage * 100).toFixed(1) : rawCoverage.toFixed(1);
-        if (rawCoverage === 0 && totalPop > 0 && ficAccomplished > 0) {
+        if (totalPop > 0 && ficAccomplished > 0) {
           coveragePct = ((ficAccomplished / totalPop) * 100).toFixed(1);
         }
         const covSub = dashSheet ? getText(dashSheet.getCell('H9').value, 'Annual Coverage Rate') : 'Annual Coverage Rate';
@@ -789,8 +834,7 @@ export class NipLoadDrawer extends BaseDrawerController {
         this.applyDashboardData(kpiData);
       }
 
-      // 7. Parse MARAWI POP 2024 worksheet and persist to Storage.nipPopulationCache
-      const popSheet = wb.getWorksheet('MARAWI POP 2024');
+      // 7. Parse auto-detected MARAWI POP worksheet and persist to Storage.nipPopulationCache
       if (popSheet) {
         const cityTotalPop = Math.round(getNum(popSheet.getCell('C4').value));
         const cityHouseholdPop = Math.round(getNum(popSheet.getCell('D4').value));
@@ -833,6 +877,7 @@ export class NipLoadDrawer extends BaseDrawerController {
 
         Storage.nipPopulationCache?.save({
           source_file: file.name,
+          sheet_name: popSheetName || 'MARAWI POP 2024',
           citySummary: { totalPop: cityTotalPop, householdPop: cityHouseholdPop, households: cityHouseholds },
           rows: popRows
         });
@@ -842,6 +887,46 @@ export class NipLoadDrawer extends BaseDrawerController {
     }
   }
   // END - parseWorkbookDashboardStats
+
+  // START - resetDashboardToSkeleton: Restores Flowbite skeleton loaders and hides charts when no Excel is loaded
+  resetDashboardToSkeleton() {
+    const chartsContainer = document.getElementById('cho-nip-charts-container');
+    const chartsSkeleton = document.getElementById('cho-nip-charts-skeleton');
+    const canvasPlaceholder = document.getElementById('cho-nip-canvas-card');
+
+    if (chartsContainer) chartsContainer.classList.add('hidden');
+    if (chartsSkeleton) chartsSkeleton.classList.add('hidden');
+    if (canvasPlaceholder) canvasPlaceholder.classList.remove('hidden');
+
+    if (Drawers.gate) {
+      Drawers.gate.lockSystemsGrid();
+    }
+
+    const skeletonHtml = (widthClass = 'w-28') => `
+      <div role="status" class="animate-pulse py-1.5">
+        <div class="h-8 bg-white/30 rounded-md ${widthClass}"></div>
+        <span class="sr-only">Loading...</span>
+      </div>
+    `;
+
+    const cardSpecs = [
+      { valId: 'cho-stat-val-barangays', subId: 'cho-stat-sub-barangays', width: 'w-28' },
+      { valId: 'cho-stat-val-infants', subId: 'cho-stat-sub-infants', width: 'w-28' },
+      { valId: 'cho-stat-val-childrens', subId: 'cho-stat-sub-childrens', width: 'w-28' },
+      { valId: 'cho-stat-val-coverage', subId: 'cho-stat-sub-coverage', width: 'w-24' }
+    ];
+
+    cardSpecs.forEach(({ valId, subId, width }) => {
+      const valEl = document.getElementById(valId);
+      const subEl = document.getElementById(subId);
+      if (valEl) valEl.innerHTML = skeletonHtml(width);
+      if (subEl) subEl.textContent = 'Awaiting Excel Upload';
+    });
+
+    const fileCodeEl = document.getElementById('cho-nip-active-file-code');
+    if (fileCodeEl) fileCodeEl.textContent = 'None';
+  }
+  // END - resetDashboardToSkeleton
 
   // START - applyDashboardData: Populates stat cards, charts, filename indicator, and reveals #cho-systems-grid
   applyDashboardData(kpiData) {
@@ -2977,6 +3062,7 @@ export const Drawers = {
   popDelete: new NipPopDeleteModal(),
   tclInfant: new TclInfantDrawer(),
   gate: new NipWorkspaceGate(),
+  popResolver: new NipPopWorksheetResolver(),
   offline: new OfflineSyncMonitor(),
   drafts: new DrawerDraftCache(),
 

@@ -190,11 +190,16 @@ require BASE_PATH . '/frontend/layouts/sidebar.php';
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <span id="cho-nip-pop-active-workbook-badge"
-                          class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-300 text-slate-700 text-xs sm:text-sm font-medium rounded-lg px-3 py-2.5 whitespace-nowrap">
+                    <button type="button"
+                            id="cho-nip-pop-sync-per-brgy-btn"
+                            title="Click to sync Barangay Total Population to per brgy & Q1–Q4 (Jan–Dec) in Excel"
+                            class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-300 text-slate-700 hover:bg-cho-blue-50 hover:border-cho-blue-400 hover:text-cho-blue-900 active:scale-[0.99] focus:ring-2 focus:ring-cho-blue-300/40 text-xs sm:text-sm font-medium rounded-lg px-3 py-2.5 whitespace-nowrap transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                         <span class="w-2 h-2 rounded-full bg-slate-400" id="cho-nip-pop-active-dot"></span>
                         <span id="cho-nip-pop-active-workbook-name">No Workbook Uploaded</span>
-                    </span>
+                        <svg id="cho-nip-pop-sync-icon" class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
