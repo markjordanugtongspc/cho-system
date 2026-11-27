@@ -122,9 +122,31 @@ def normalize_barangay_name(name: str) -> str:
 
 
 def handle_sync_per_brgy(wb, payload: dict) -> dict:
-    """Sync matched barangay total_pop values across per brgy & Q1..Q4 for JANUARY..DECEMBER."""
+    """Auto-detect per brgy & Q# sheets, months (JANUARY..DECEMBER), and barangay columns, syncing live formulas/values."""
     rows = payload.get("rows") or []
     pop_lookup = {}
+    nip_row_lookup = {}
+    excel_row_lookup = {}
+
+    pop_sheet, pop_sheet_name = find_marawi_pop_sheet(wb)
+    for r in range(5, pop_sheet.max_row + 1):
+        bname_b = normalize_barangay_name(pop_sheet.cell(r, 2).value)
+        if bname_b:
+            excel_row_lookup[bname_b] = r
+            if bname_b not in pop_lookup:
+                try:
+                    pop_lookup[bname_b] = int(round(float(pop_sheet.cell(r, 3).value or 0)))
+                except (TypeError, ValueError):
+                    pop_lookup[bname_b] = 0
+
+        bname_g = normalize_barangay_name(pop_sheet.cell(r, 7).value)
+        if bname_g:
+            nip_row_lookup[bname_g] = r
+            if bname_g not in pop_lookup:
+                try:
+                    pop_lookup[bname_g] = int(round(float(pop_sheet.cell(r, 8).value or 0)))
+                except (TypeError, ValueError):
+                    pop_lookup[bname_g] = 0
 
     for item in rows:
         bname = normalize_barangay_name(item.get("barangay"))
@@ -136,24 +158,12 @@ def handle_sync_per_brgy(wb, payload: dict) -> dict:
             pop_val = 0
         pop_lookup[bname] = pop_val
 
-    if not pop_lookup:
-        pop_sheet, _ = find_marawi_pop_sheet(wb)
-        for r in range(5, pop_sheet.max_row + 1):
-            bname = normalize_barangay_name(pop_sheet.cell(r, 2).value)
-            if not bname:
-                continue
-            raw_val = pop_sheet.cell(r, 3).value
-            try:
-                pop_val = int(round(float(raw_val or 0)))
-            except (TypeError, ValueError):
-                pop_val = 0
-            pop_lookup[bname] = pop_val
-
+    all_known_barangays = set(pop_lookup.keys()) | set(nip_row_lookup.keys()) | set(excel_row_lookup.keys())
     months_set = {
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
         "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
     }
-    q_pattern = re.compile(r"^per\s+brgy\s*&\s*Q[1-4]$", re.IGNORECASE)
+    q_pattern = re.compile(r"^per\s+brgy\s*&\s*Q\d+$", re.IGNORECASE)
 
     sheets_updated = []
     months_updated = []
@@ -170,27 +180,47 @@ def handle_sync_per_brgy(wb, payload: dict) -> dict:
             col_a = ws.cell(r, 1).value
             if not isinstance(col_a, str):
                 continue
-            month_label = col_a.strip().upper()
+            month_label = re.sub(r"\s+", " ", col_a.strip()).upper()
             if month_label not in months_set:
                 continue
 
-            month_touched = False
+            # Auto-detect barangay header row within r..r+3 (normally r+1, e.g. B2 for JANUARY, B29 for FEBRUARY)
             name_row = r + 1
-            val_row = r + 2
-            if val_row > ws.max_row:
+            best_hits = -1
+            for candidate_r in range(r, min(r + 4, ws.max_row + 1)):
+                hits = 0
+                for c in range(2, ws.max_column + 1):
+                    v = ws.cell(candidate_r, c).value
+                    if isinstance(v, str) and normalize_barangay_name(v) in all_known_barangays:
+                        hits += 1
+                if hits > best_hits:
+                    best_hits = hits
+                    name_row = candidate_r
+
+            val_row = name_row + 1
+            if val_row > ws.max_row or best_hits <= 0:
                 continue
 
+            month_touched = False
             for c in range(2, ws.max_column + 1):
                 cell_name = ws.cell(name_row, c).value
                 if not isinstance(cell_name, str) or not cell_name.strip():
                     continue
                 norm_name = normalize_barangay_name(cell_name)
-                if norm_name in pop_lookup:
+                if norm_name not in all_known_barangays:
+                    continue
+
+                if norm_name in nip_row_lookup:
+                    ws.cell(val_row, c).value = f"='{pop_sheet_name}'!$H${nip_row_lookup[norm_name]}"
+                elif norm_name in excel_row_lookup:
+                    ws.cell(val_row, c).value = f"='{pop_sheet_name}'!$C${excel_row_lookup[norm_name]}"
+                else:
                     ws.cell(val_row, c).value = pop_lookup[norm_name]
-                    matched_barangays.add(norm_name)
-                    cells_updated += 1
-                    month_touched = True
-                    sheet_touched = True
+
+                matched_barangays.add(norm_name)
+                cells_updated += 1
+                month_touched = True
+                sheet_touched = True
 
             if month_touched and month_label not in months_updated:
                 months_updated.append(month_label)

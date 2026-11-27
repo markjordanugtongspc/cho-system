@@ -6,6 +6,8 @@
  * - Dynamic theme adaptation (Light / Dark mode colors)
  */
 
+import { Api } from './api.js';
+
 let ApexCharts = null;
 
 export const Charts = {
@@ -15,10 +17,11 @@ export const Charts = {
   _apexPromise: null,
 
   async loadApexCharts() {
-    if (ApexCharts) return ApexCharts;
+    if (typeof ApexCharts === 'function') return ApexCharts;
     if (!this._apexPromise) {
       this._apexPromise = import('apexcharts').then((m) => {
-        ApexCharts = m.default || m;
+        const resolved = m?.default?.default || m?.default || m;
+        ApexCharts = typeof resolved === 'function' ? resolved : (window.ApexCharts || resolved);
         return ApexCharts;
       });
     }
@@ -322,8 +325,7 @@ export const Charts = {
     let activeData = defaultDataset;
 
     try {
-      const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
-      const res = await fetch(`${basePath}/api/v1/nip/kpis`, {
+      const res = await fetch(Api.resolveUrl('/api/v1/nip/kpis'), {
         headers: { Accept: 'application/json' }
       });
       if (res.ok) {
@@ -866,9 +868,13 @@ export const Charts = {
   // END - getNip2DatabaseFallback
 
   // START - renderNipAntigenChart: Renders 18 antigens dumbbell / lollipop chart (ANNUAL!A11:F28)
-  renderNipAntigenChart(antigens, targetId = 'cho-nip-antigens-chart', instanceKey = 'nipAntigens') {
+  async renderNipAntigenChart(antigens, targetId = 'cho-nip-antigens-chart', instanceKey = 'nipAntigens') {
     const el = document.getElementById(targetId);
-    if (!el || typeof ApexCharts === 'undefined') return;
+    if (!el) return;
+    if (typeof ApexCharts !== 'function') {
+      await this.loadApexCharts();
+    }
+    if (typeof ApexCharts !== 'function') return;
 
     const validAntigens = antigens.filter((a) => a.name && a.name.trim() !== '');
     const seriesData = validAntigens.map((a) => {
@@ -1041,12 +1047,16 @@ export const Charts = {
   // END - renderNipAntigenChart
 
   // START - renderNipCatchmentChart: Renders FIC quota and share per Catchment
-  renderNipCatchmentChart(catchments, totalFicAccomplished = 0, suffix = '') {
+  async renderNipCatchmentChart(catchments, totalFicAccomplished = 0, suffix = '') {
     const el = document.getElementById(`cho-nip-catchments-chart${suffix}`);
     const legendEl = document.getElementById(`cho-nip-catchments-legend${suffix}`);
     const summaryEl = document.getElementById(`cho-nip-catchments-summary${suffix}`);
     const instanceKey = `nipCatchments${suffix}`;
-    if (!el || typeof ApexCharts === 'undefined') return;
+    if (!el) return;
+    if (typeof ApexCharts !== 'function') {
+      await this.loadApexCharts();
+    }
+    if (typeof ApexCharts !== 'function') return;
 
     // Filter valid catchments with positive barangays or FIC
     const valid = catchments.filter(c => c.fic_total > 0 || c.barangays > 0);

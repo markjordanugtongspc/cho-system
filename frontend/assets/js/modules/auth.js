@@ -219,12 +219,11 @@ export const Auth = {
 
       try {
         const res = await Api.post('/api/v1/auth/logout');
-        const loginUrl = window.location.pathname.includes('/CHO-System') ? '/CHO-System/index.php' : '/index.php';
+        const loginUrl = Api.resolveUrl('/index.php');
         const redirectUrl = (res.data && res.data.redirect) ? res.data.redirect : loginUrl;
         window.location.href = redirectUrl;
       } catch (err) {
-        const loginUrl = window.location.pathname.includes('/CHO-System') ? '/CHO-System/index.php' : '/index.php';
-        window.location.href = loginUrl;
+        window.location.href = Api.resolveUrl('/index.php');
       }
     });
   }

@@ -18,6 +18,7 @@ $prefs     = prefs();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
+    <meta name="app-base" content="<?= e(rtrim(url('/'), '/')) ?>">
     <meta name="description" content="City Health Office (CHO) Portal - Islamic City of Marawi, BARMM. Universal healthcare, epidemiological surveillance, and public clinical services.">
     <title><?= e($pageTitle) ?></title>
 

@@ -967,11 +967,10 @@ export class NipLoadDrawer extends BaseDrawerController {
     const downloadCard = document.getElementById('cho-nip-action-download-card');
     if (downloadCard) {
       const targetFile = kpiData.source_file || 'MARAWI NIP DATA - UPGRADED.xlsx';
-      const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
-      downloadCard.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(targetFile)}&_t=${Date.now()}`);
+      downloadCard.setAttribute('href', Api.resolveUrl(`/api/v1/nip/download?file=${encodeURIComponent(targetFile)}&_t=${Date.now()}`));
       downloadCard.onclick = () => {
         const activeFile = Storage.nipWorkbooks?.getActiveWorkbook?.() || targetFile;
-        downloadCard.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(activeFile)}&_t=${Date.now()}`);
+        downloadCard.setAttribute('href', Api.resolveUrl(`/api/v1/nip/download?file=${encodeURIComponent(activeFile)}&_t=${Date.now()}`));
       };
     }
     if (fileBtnEl && kpiData.source_file) {
@@ -1103,9 +1102,8 @@ export class NipGenerateDrawer extends BaseDrawerController {
 
         if (feedbackBox) {
           const generatedFile = res.data?.filename || `MARAWI NIP DATA - ${payload.year}.xlsx`;
-          const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
           const rawUrl = res.download_url || `/api/v1/nip/download?file=${encodeURIComponent(generatedFile)}`;
-          const downloadUrl = (rawUrl.startsWith('/api/') && basePath) ? `${basePath}${rawUrl}` : rawUrl;
+          const downloadUrl = Api.resolveUrl(rawUrl);
 
           feedbackBox.className = 'w-full';
           feedbackBox.innerHTML = `
@@ -1745,97 +1743,97 @@ export class NipPopEditDrawer extends BaseDrawerController {
       nip_pop: Number(document.getElementById('nip-pop-edit-nip-pop')?.value || 0)
     };
 
+    const applyCachedRowUpdate = (data = {}) => {
+      const latestCache = Storage.nipPopulationCache?.get?.() || cachedPop;
+      if (!latestCache || !Array.isArray(latestCache.rows)) return;
+      const target = latestCache.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
+      if (target) {
+        target.excel_row = data.excel_row || excelRow;
+        target.nip_row = data.nip_row || target.nip_row;
+        target.psgc10 = payload.psgc10 || '-';
+        target.barangay = payload.barangay;
+        target.total_pop = payload.total_pop;
+        target.household_pop = payload.household_pop;
+        target.households = payload.households;
+        target.nip_pop = payload.nip_pop;
+        target.nip_target = data.nip_target ?? (payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0);
+      }
+      Storage.nipPopulationCache?.save(latestCache);
+      window.CHO?.Tables?.marawiPopulation?.loadFromStorage();
+    };
+
+    if (!Drawers.offline?.isOnline) {
+      await Storage.offlineSync.enqueue({
+        endpoint: '/api/v1/nip/population/update',
+        method: 'POST',
+        payload,
+        label: `Edit "${payload.barangay}"`
+      });
+      applyCachedRowUpdate();
+      Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
+      this.hide();
+      Drawers.offline.showOfflineToast(`"${payload.barangay}" edit saved locally in IndexedDB and queued for auto-sync.`);
+      return;
+    }
+
+    // Show loading animation for 3 seconds while running Excel update in the background
     if (btnSubmit) btnSubmit.disabled = true;
     if (btnSpinner) btnSpinner.classList.remove('hidden');
     if (btnText) btnText.textContent = 'Saving...';
 
-    try {
-      if (!Drawers.offline?.isOnline) {
-        throw new Error('OFFLINE_MODE');
-      }
-      const res = await Api.post('/api/v1/nip/population/update', payload);
-      if (!res || !res.success) {
-        throw new Error(res?.message || 'Failed to update Excel cells.');
-      }
+    const minDelayPromise = new Promise((resolve) => setTimeout(resolve, 3000));
+    const apiPromise = Api.post('/api/v1/nip/population/update', payload)
+      .then((res) => ({ ok: true, res }))
+      .catch((err) => ({ ok: false, err }));
 
-      const data = res.data || {};
-      if (cachedPop && Array.isArray(cachedPop.rows)) {
-        const target = cachedPop.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
-        if (target) {
-          target.excel_row = data.excel_row || excelRow;
-          target.nip_row = data.nip_row || target.nip_row;
-          target.psgc10 = payload.psgc10 || '-';
-          target.barangay = payload.barangay;
-          target.total_pop = payload.total_pop;
-          target.household_pop = payload.household_pop;
-          target.households = payload.households;
-          target.nip_pop = payload.nip_pop;
-          target.nip_target = data.nip_target ?? (payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0);
-        }
-        Storage.nipPopulationCache?.save(cachedPop);
-      }
+    // Optimistic UI: update local cache + table immediately
+    applyCachedRowUpdate();
+    Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
+    if (feedbackBox) feedbackBox.classList.add('hidden');
 
-      if (window.CHO?.Tables?.marawiPopulation) {
-        window.CHO.Tables.marawiPopulation.loadFromStorage();
-      }
-
-      if (feedbackBox) {
-        feedbackBox.classList.remove('hidden');
-        feedbackBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200';
-        feedbackBox.textContent = `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`;
-      }
-
-      if (typeof Notifications.success === 'function') {
-        Notifications.success(`Updated "${payload.barangay}" in ${sourceFile}.`);
-      }
-
-      Storage.nipResyncState?.setPending(sourceFile);
-      Drawers.drafts?.clearFormDraft('nip-pop-edit-form');
-      Drawers.syncDownloadCardState();
-      this.hide();
-      Drawers.showStatusToast(true, 'Excel Updated', `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`);
-      Drawers.showResyncToast(sourceFile);
-    } catch (err) {
-      if (Drawers.offline?.isNetworkError(err)) {
-        await Storage.offlineSync.enqueue({
-          endpoint: '/api/v1/nip/population/update',
-          method: 'POST',
-          payload,
-          label: `Edit "${payload.barangay}"`
-        });
-        const cachedPop = Storage.nipPopulationCache?.get?.();
-        if (cachedPop && Array.isArray(cachedPop.rows)) {
-          const target = cachedPop.rows.find((r) => r.row_index === rowIndex || r.excel_row === excelRow);
-          if (target) {
-            target.psgc10 = payload.psgc10 || '-';
-            target.barangay = payload.barangay;
-            target.total_pop = payload.total_pop;
-            target.household_pop = payload.household_pop;
-            target.households = payload.households;
-            target.nip_pop = payload.nip_pop;
-            target.nip_target = payload.nip_pop > 0 ? Number((payload.nip_pop * 0.02056).toFixed(1)) : 0;
-          }
-          Storage.nipPopulationCache?.save(cachedPop);
-          window.CHO?.Tables?.marawiPopulation?.loadFromStorage();
-        }
-        this.hide();
-        Drawers.offline.showOfflineToast(`"${payload.barangay}" edit saved locally in IndexedDB and queued for auto-sync.`);
-        return;
-      }
-      if (feedbackBox) {
-        feedbackBox.classList.remove('hidden');
-        feedbackBox.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200';
-        feedbackBox.textContent = `Error: ${err.message}`;
-      }
-      Drawers.showStatusToast(false, 'Update Failed', err.message || 'Could not update Excel cells.');
-      if (typeof Notifications.error === 'function') {
-        Notifications.error(err.message || 'Could not update Excel cells.');
-      }
-    } finally {
+    // Close drawer right after the 3-second loading animation (non-blocking if backend takes longer)
+    minDelayPromise.then(() => {
       if (btnSubmit) btnSubmit.disabled = false;
       if (btnSpinner) btnSpinner.classList.add('hidden');
       if (btnText) btnText.textContent = 'Update Excel Cells';
-    }
+      this.hide();
+    });
+
+    // Fire completion toasts only after BOTH the 3-second animation AND the backend Excel edit finish
+    Promise.all([minDelayPromise, apiPromise]).then(async ([, outcome]) => {
+      try {
+        if (!outcome.ok) throw outcome.err;
+        const res = outcome.res;
+        if (!res || !res.success) {
+          throw new Error(res?.message || 'Failed to update Excel cells.');
+        }
+
+        applyCachedRowUpdate(res.data || {});
+        Storage.nipResyncState?.setPending(sourceFile);
+        Drawers.syncDownloadCardState();
+
+        if (typeof Notifications.success === 'function') {
+          Notifications.success(`Updated "${payload.barangay}" in ${sourceFile}.`);
+        }
+        Drawers.showStatusToast(true, 'Excel Updated', `Updated "${payload.barangay}" (Row ${excelRow}) in ${sourceFile}.`);
+        Drawers.showResyncToast(sourceFile);
+      } catch (err) {
+        if (Drawers.offline?.isNetworkError(err)) {
+          await Storage.offlineSync.enqueue({
+            endpoint: '/api/v1/nip/population/update',
+            method: 'POST',
+            payload,
+            label: `Edit "${payload.barangay}"`
+          });
+          Drawers.offline.showOfflineToast(`"${payload.barangay}" edit saved locally in IndexedDB and queued for auto-sync.`);
+          return;
+        }
+        Drawers.showStatusToast(false, 'Update Failed', err.message || 'Could not update Excel cells.');
+        if (typeof Notifications.error === 'function') {
+          Notifications.error(err.message || 'Could not update Excel cells.');
+        }
+      }
+    });
   }
   // END - handleEdit
 }
@@ -3166,7 +3164,7 @@ export const Drawers = {
     const existing = document.getElementById('cho-nip-resync-toast');
     if (existing) existing.remove();
 
-    const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
+    const downloadHref = Api.resolveUrl(`/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`);
     const toast = document.createElement('div');
     toast.id = 'cho-nip-resync-toast';
     toast.setAttribute('role', 'banner');
@@ -3192,7 +3190,7 @@ export const Drawers = {
             Resync &amp; Refresh
           </button>
           <a id="cho-nip-toast-save-btn"
-             href="${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}"
+             href="${downloadHref}"
              class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
             Save .xlsx
           </a>
@@ -3214,11 +3212,12 @@ export const Drawers = {
 
     document.getElementById('cho-nip-toast-save-btn')?.addEventListener('click', async (e) => {
       const link = e.currentTarget;
-      link.setAttribute('href', `${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`);
+      const freshHref = Api.resolveUrl(`/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`);
+      link.setAttribute('href', freshHref);
       Storage.nipResyncState?.clear();
       Drawers.syncDownloadCardState();
       try {
-        const res = await fetch(`${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`, {
+        const res = await fetch(freshHref, {
           cache: 'no-store'
         });
         if (res.ok) {
@@ -3239,7 +3238,7 @@ export const Drawers = {
       btn.disabled = true;
       btn.textContent = 'Resyncing...';
       try {
-        const res = await fetch(`${basePath}/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`, {
+        const res = await fetch(Api.resolveUrl(`/api/v1/nip/download?file=${encodeURIComponent(sourceFile)}&_t=${Date.now()}`), {
           cache: 'no-store'
         });
         if (res.ok) {

@@ -15,8 +15,8 @@ import argparse
 import openpyxl
 from openpyxl.utils import get_column_letter
 
-TEMPLATE_PATH = r"d:\laragon\www\SHEETS\MARAWI NIP DATA - UPGRADED.xlsx"
-SHEETS_DIR = r"d:\laragon\www\SHEETS"
+SHEETS_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_PATH = os.path.join(SHEETS_DIR, "MARAWI NIP DATA - UPGRADED.xlsx")
 
 # 74 Barangay columns starting at B (2), stepping by 4
 BRGY_COLS = [2 + i * 4 for i in range(74)]

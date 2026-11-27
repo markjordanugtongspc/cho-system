@@ -11,6 +11,28 @@ export const Api = {
   csrfToken: null,
 
   /**
+   * Resolve the application base path from <meta name="app-base"> or URL path
+   */
+  getBasePath() {
+    const meta = document.querySelector('meta[name="app-base"]');
+    if (meta) return meta.content.replace(/\/+$/, '');
+    const match = window.location.pathname.match(/^(.*?)\/(?:frontend|index\.php)/i);
+    return match ? match[1] : '';
+  },
+
+  /**
+   * Prefix root-relative app URLs (e.g. '/api/...') with the detected base path
+   */
+  resolveUrl(endpoint) {
+    if (!endpoint || /^https?:\/\//i.test(endpoint)) return endpoint;
+    const basePath = this.getBasePath();
+    if (basePath && endpoint.startsWith('/') && !endpoint.startsWith(`${basePath}/`)) {
+      return `${basePath}${endpoint}`;
+    }
+    return endpoint;
+  },
+
+  /**
    * Get current CSRF token from page meta tag or cached value
    */
   getCsrfToken() {
@@ -28,7 +50,7 @@ export const Api = {
    */
   async refreshCsrfToken() {
     try {
-      const res = await fetch('/api/v1/auth/csrf', {
+      const res = await fetch(this.resolveUrl('/api/v1/auth/csrf'), {
         headers: { 'Accept': 'application/json' }
       });
       const json = await res.json();
@@ -67,8 +89,7 @@ export const Api = {
       headers['X-CSRF-Token'] = this.getCsrfToken();
     }
 
-    const basePath = window.location.pathname.includes('/CHO-System') ? '/CHO-System' : '';
-    const resolvedEndpoint = (basePath && endpoint.startsWith('/api/')) ? `${basePath}${endpoint}` : endpoint;
+    const resolvedEndpoint = this.resolveUrl(endpoint);
 
     try {
       const response = await fetch(resolvedEndpoint, {

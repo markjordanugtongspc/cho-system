@@ -68,7 +68,7 @@ function url(string $path = '/'): string
     $base = config('app.base_path');
     if ($base === '' || $base === null) {
         $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
-        $base = preg_replace('#/frontend/(pages|components)/.*$#', '', $scriptDir);
+        $base = preg_replace('#/(frontend/(pages|components)|backend/api)(/.*)?$#', '', $scriptDir);
         $base = ($base === '/' || $base === '\\' || $base === '.') ? '' : rtrim($base, '/');
     }
     return rtrim((string)$base, '/') . '/' . ltrim($path, '/');

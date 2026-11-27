@@ -117,6 +117,7 @@ function copyStaticAssetsPlugin() {
 }
 
 export default defineConfig({
+  base: './',
   plugins: [
     tailwindcss(),
     hotFilePlugin(),

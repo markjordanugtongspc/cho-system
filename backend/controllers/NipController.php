@@ -13,8 +13,15 @@ use App\Core\Response;
 
 class NipController
 {
-    private static string $engineScript = 'd:\\laragon\\www\\SHEETS\\nip_workbook_engine.py';
-    private static string $sheetsDir = 'd:\\laragon\\www\\CHO-System\\SHEETS';
+    private static function engineScript(): string
+    {
+        return base_path('SHEETS/nip_workbook_engine.py');
+    }
+
+    private static function sheetsDir(): string
+    {
+        return base_path('SHEETS');
+    }
 
     /**
      * List all available Excel workbooks (.xlsx / .xlsm) in the SHEETS workspace
@@ -22,13 +29,14 @@ class NipController
     public static function files(): void
     {
         $files = [];
-        if (is_dir(self::$sheetsDir)) {
-            $entries = scandir(self::$sheetsDir) ?: [];
+        $sheetsDir = self::sheetsDir();
+        if (is_dir($sheetsDir)) {
+            $entries = scandir($sheetsDir) ?: [];
             foreach ($entries as $entry) {
-                if ($entry === '.' || $entry === '..') {
+                if ($entry === '.' || $entry === '..' || str_starts_with($entry, '~$')) {
                     continue;
                 }
-                $fullPath = self::$sheetsDir . DIRECTORY_SEPARATOR . $entry;
+                $fullPath = $sheetsDir . DIRECTORY_SEPARATOR . $entry;
                 if (is_file($fullPath) && preg_match('/\.(xlsx|xlsm)$/i', $entry)) {
                     $files[] = [
                         'name' => $entry,
@@ -75,7 +83,7 @@ class NipController
 
         // Sanitize filename
         $safeName = preg_replace('/[^A-Za-z0-9 _\-\.\(\)]/', '', $origName) ?: ('UPLOADED_NIP_' . time() . '.' . $ext);
-        $destPath = self::$sheetsDir . DIRECTORY_SEPARATOR . $safeName;
+        $destPath = self::sheetsDir() . DIRECTORY_SEPARATOR . $safeName;
 
         if (!move_uploaded_file($uploaded['tmp_name'], $destPath)) {
             Response::error('Failed to save uploaded workbook to workspace.', 500);
@@ -100,7 +108,7 @@ class NipController
         $file = basename((string)($_GET['file'] ?? 'MARAWI NIP DATA - UPGRADED.xlsx'));
         $cmd = sprintf(
             'python %s get-kpis --file %s 2>&1',
-            escapeshellarg(self::$engineScript),
+            escapeshellarg(self::engineScript()),
             escapeshellarg($file)
         );
         $output = shell_exec($cmd);
@@ -147,7 +155,7 @@ class NipController
 
         $cmd = sprintf(
             'python %s create-year --year %d --month %s --day %d --file %s 2>&1',
-            escapeshellarg(self::$engineScript),
+            escapeshellarg(self::engineScript()),
             $year,
             escapeshellarg($month),
             $day,
@@ -168,7 +176,7 @@ class NipController
             Response::success([
                 'message' => "Successfully generated clean workbook '{$outFile}' from '{$sourceFile}'!",
                 'data' => $res,
-                'download_url' => "/CHO-System/api/v1/nip/download?file=" . urlencode($outFile)
+                'download_url' => url('/api/v1/nip/download?file=' . urlencode($outFile))
             ]);
             return;
         }
@@ -187,7 +195,7 @@ class NipController
 
         $cmd = sprintf(
             'python %s reset-quarter --file %s --quarter %s %s 2>&1',
-            escapeshellarg(self::$engineScript),
+            escapeshellarg(self::engineScript()),
             escapeshellarg($sourceFile),
             escapeshellarg($quarter),
             $monthSlot ? ('--month-slot ' . (int)$monthSlot) : ''
@@ -206,7 +214,7 @@ class NipController
             Response::success([
                 'message' => "Cleared {$res['total_cleared_cells']} raw input cells in {$quarter} of '{$sourceFile}' (all formulas preserved)!",
                 'data' => $res,
-                'download_url' => "/CHO-System/api/v1/nip/download?file=" . urlencode($sourceFile)
+                'download_url' => url('/api/v1/nip/download?file=' . urlencode($sourceFile))
             ]);
             return;
         }
@@ -220,7 +228,7 @@ class NipController
     public static function download(): void
     {
         $file = basename((string)($_GET['file'] ?? 'MARAWI NIP DATA - UPGRADED.xlsx'));
-        $filePath = self::$sheetsDir . DIRECTORY_SEPARATOR . $file;
+        $filePath = self::sheetsDir() . DIRECTORY_SEPARATOR . $file;
 
         if (!file_exists($filePath)) {
             http_response_code(404);
